@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "156247917489",
+    "project_id": "fintrack-544d3",
+    "storage_bucket": "fintrack-544d3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156247917489:android:89867e1858c49968663390",
+        "android_client_info": {
+          "package_name": "com.example.ft_v2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWcqDS5GEjmcn1ANVOyzwYtOPjenULNeU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
