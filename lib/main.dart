@@ -14,11 +14,18 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // This widget is the root of  application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'FinTrack',
+      builder: (context, child) {
+        return MediaQuery(
+            //note
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(1.0)),
+            child: child!);
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,

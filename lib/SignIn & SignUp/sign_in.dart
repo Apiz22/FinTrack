@@ -46,8 +46,6 @@ class _SignInPageState extends State<SignInPage> {
       setState(() {
         isLoader = false;
       });
-      // ScaffoldMessenger.of(_formKey.currentContext!).showSnackBar(
-      //     const SnackBar(content: Text("Form Submitted succesfully")));
     }
   }
 
@@ -106,6 +104,7 @@ class _SignInPageState extends State<SignInPage> {
                     controller: _passwordController,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: appValidator.validatePassword,
+                    obscureText: true,
                     decoration: _buildInputDecoration("Password", Icons.lock)),
                 const SizedBox(
                   height: 10,
@@ -118,16 +117,14 @@ class _SignInPageState extends State<SignInPage> {
                       isLoader ? print("loading") : _submitForm();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Colors.black, // Sets the background color to black
+                      backgroundColor: Colors.black,
                     ),
                     child: isLoader
                         ? const Center(child: CircularProgressIndicator())
                         : const Text(
                             "Login",
                             style: TextStyle(
-                              color:
-                                  Colors.white, // Sets the text color to white
+                              color: Colors.white,
                             ),
                           ),
                   ),

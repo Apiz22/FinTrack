@@ -17,6 +17,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _reConfirmpasswordController = TextEditingController();
 
   var authService = AuthService();
   var isLoader = false;
@@ -32,14 +33,37 @@ class _SignUpPageState extends State<SignUpPage> {
         "email": _emailController.text,
         "password": _passwordController.text,
         "phone": _phoneController.text,
+        "remainAmount": 0,
+        "totalCredit": 0,
+        "totalDebit": 0,
       };
 
-      await authService.createUser(data, context);
+      //     await authService.createUser(data, context);
+
+      //     setState(() {
+      //       isLoader = false;
+      //     });
+      //     // ScaffoldMessenger.of(_formKey.currentContext!).showSnackBar(
+      //     //     const SnackBar(content: Text("Form Submitted succesfully")));
+      //   }
+      // }
+      try {
+        await authService.createUser(data, context);
+
+        // Show success message as a SnackBar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("User registered successfully")),
+        );
+      } catch (e) {
+        // Show error message as a SnackBar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error occurred: $e")),
+        );
+      }
+
       setState(() {
         isLoader = false;
       });
-      // ScaffoldMessenger.of(_formKey.currentContext!).showSnackBar(
-      //     const SnackBar(content: Text("Form Submitted succesfully")));
     }
   }
 
@@ -82,6 +106,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(
                   height: 40,
                 ),
+                //username
                 TextFormField(
                   controller: _userNameController,
                   keyboardType: TextInputType.emailAddress,
@@ -92,6 +117,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(
                   height: 10,
                 ),
+                //email
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -102,9 +128,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(
                   height: 10,
                 ),
+                //phone number
                 TextFormField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
+                    maxLength: 10,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: appValidator.validatePhoneNumber,
                     decoration:
@@ -112,11 +140,29 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(
                   height: 10,
                 ),
+                //password
                 TextFormField(
                     controller: _passwordController,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: appValidator.validatePassword,
+                    obscureText: true,
                     decoration: _buildInputDecoration("Password", Icons.lock)),
+                const SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                  controller: _reConfirmpasswordController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    if (value != _passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                  obscureText: true,
+                  decoration:
+                      _buildInputDecoration("Confirm Password", Icons.lock),
+                ),
                 const SizedBox(
                   height: 10,
                 ),
@@ -128,16 +174,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       isLoader ? print("loading") : _submitForm();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Colors.black, // Sets the background color to black
+                      backgroundColor: Colors.black,
                     ),
                     child: isLoader
                         ? const Center(child: CircularProgressIndicator())
                         : const Text(
                             "Submit",
                             style: TextStyle(
-                              color:
-                                  Colors.white, // Sets the text color to white
+                              color: Colors.white,
                             ),
                           ),
                   ),

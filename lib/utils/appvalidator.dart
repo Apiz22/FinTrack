@@ -38,10 +38,26 @@ class AppValidator {
     return null;
   }
 
-  //validate username
+  //validate password
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return "Please enter a password";
+    }
+    return null;
+  }
+
+  //validate password
+  String? validateReconfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Please reconfirm password";
+    }
+    return null;
+  }
+
+//validate checkbox empty
+  String? isEmptyCheck(value) {
+    if (value!.isEmpty) {
+      return "Please fill details";
     }
     return null;
   }
