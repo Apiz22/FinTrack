@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class TopSplit extends StatelessWidget {
-  TopSplit({
+  const TopSplit({
     super.key,
     required this.userId,
     required this.monthYear,
@@ -16,7 +16,7 @@ class TopSplit extends StatelessWidget {
     final Stream<DocumentSnapshot> _usersStream = FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
-        .collection('monthyear')
+        .collection('monthly_income')
         .doc(monthYear)
         .snapshots();
 
@@ -25,13 +25,13 @@ class TopSplit extends StatelessWidget {
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
-          return Text('Something went wrong');
+          return const Text('Something went wrong');
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return const Text("Loading");
         }
         if (!snapshot.hasData || !snapshot.data!.exists) {
-          return Text('Data not available');
+          return const Text('Data not available');
         }
 
         var data = snapshot.data!.data() as Map<String, dynamic>;
@@ -59,7 +59,7 @@ class TotalCard extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Total Balance",
               style: TextStyle(
                 fontSize: 18,
@@ -69,7 +69,7 @@ class TotalCard extends StatelessWidget {
             ),
             Text(
               "RM ${data["remainAmount"]}",
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
@@ -78,9 +78,9 @@ class TotalCard extends StatelessWidget {
           ],
         ),
         Container(
-          padding: EdgeInsets.all(5),
+          padding: const EdgeInsets.all(5),
           // EdgeInsets.only(top: 30, bottom: 10, left: 10, right: 10),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.white,
             // borderRadius: BorderRadius.only(
             //   topLeft: Radius.circular(30),
@@ -95,7 +95,7 @@ class TotalCard extends StatelessWidget {
                 header: 'Credit',
                 amount: '${data["totalCredit"]}',
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               OneCard(
@@ -156,7 +156,7 @@ class OneCard extends StatelessWidget {
               ),
               const Spacer(),
               Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: Icon(
                   header == "Credit"
                       ? Icons.arrow_upward_outlined

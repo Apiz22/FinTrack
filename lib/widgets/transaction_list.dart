@@ -21,8 +21,6 @@ class TransactionList extends StatelessWidget {
     Query query = FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
-        // .collection('monthyear')
-        // .doc(monthYear)
         .collection("transactions")
         .orderBy('timestamp', descending: true)
         .where("monthyear", isEqualTo: monthYear)

@@ -16,7 +16,7 @@ class _UserPageState extends State<UserPage> {
   DateTime date = DateTime.now();
   String? selectedBudgetRule;
 
-  bool incomeDialogShown = false; // Flag to track if the dialog has been shown
+  bool incomeDialogShown = false;
 
   logOut() async {
     setState(() {
@@ -30,16 +30,6 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Check if the current date is the 17th day of the month
-    bool is30Day = date.day == 29 && !incomeDialogShown;
-
-    // Show a dialog if it's the 17th day of the month
-    if (is30Day) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
-        _showDialog();
-      });
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("User Page"),
@@ -67,11 +57,11 @@ class _UserPageState extends State<UserPage> {
               });
             },
             items: [
-              DropdownMenuItem<String>(
+              const DropdownMenuItem<String>(
                 value: '80/20',
                 child: Text('80/20'),
               ),
-              DropdownMenuItem<String>(
+              const DropdownMenuItem<String>(
                 value: '50/30/20',
                 child: Text('50/30/20'),
               ),
@@ -82,88 +72,17 @@ class _UserPageState extends State<UserPage> {
               saveBudgetRuleToFirebase(
                   selectedBudgetRule); // Call function to save budget rule
             },
-            child: Text('Save'),
+            child: const Text('Save'),
           ),
           const SizedBox(height: 50),
-          Expanded(
-            child: const Center(
+          const Expanded(
+            child: Center(
               child: Text("User"),
             ),
           ),
         ],
       ),
     );
-  }
-
-  // Function to show the dialog
-  void _showDialog() {
-    TextEditingController incomeController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Insert Income'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: incomeController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Enter Income',
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Get the entered income value
-                String income = incomeController.text;
-
-                // Save the income to Firebase
-                _saveIncomeToFirebase(income);
-
-                // Set the flag to true to indicate that the dialog has been shown
-                setState(() {
-                  incomeDialogShown = true;
-                });
-
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _saveIncomeToFirebase(String income) {
-    String monthyear = DateFormat("MMM y").format(date);
-    // Access Firebase and save the income data
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(userId)
-        .collection('monthyear')
-        .doc(monthyear)
-        .update({
-      'remainAmount': income,
-      'totalIncome': income,
-    }).then((value) {
-      // Handle success
-      print('Income saved successfully!');
-    }).catchError((error) {
-      // Handle error
-      print('Failed to save income: $error');
-    });
   }
 
   // Function to save the selected budget rule to Firebase

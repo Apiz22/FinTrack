@@ -24,7 +24,7 @@ class _AddExpPageState extends State<AddExpPage> {
   var appValidator = AppValidator();
   var amountEditController = TextEditingController();
   var titleEditController = TextEditingController();
-  var uid = Uuid();
+  var uid = const Uuid();
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -33,26 +33,25 @@ class _AddExpPageState extends State<AddExpPage> {
       });
 
       final user = FirebaseAuth.instance.currentUser;
-      int timestamp = DateTime.now().millisecondsSinceEpoch;
+      int timestamp = DateTime.now().microsecondsSinceEpoch;
       var amount = int.parse(amountEditController.text);
       DateTime date = DateTime.now();
-
       var id = uid.v4();
       String monthyear = DateFormat("MMM y").format(date);
-
-      // String month = DateFormat("MMM").format(date);
-      // String year = DateFormat("y").format(date);
 
       final userDoc = await FirebaseFirestore.instance
           .collection("users")
           .doc(user!.uid)
-          .collection('monthyear')
+          .collection('monthly_income')
           .doc(monthyear)
           .get();
 
       int remainAmount = userDoc["remainAmount"];
       int totalCredit = userDoc["totalCredit"];
       int totalDebit = userDoc["totalDebit"];
+      int expNeeds = userDoc["needs"];
+      int expWants = userDoc["wants"];
+      int expSavings = userDoc["savings"];
 
       if (type == "credit") {
         remainAmount += amount;
@@ -62,12 +61,23 @@ class _AddExpPageState extends State<AddExpPage> {
         totalDebit += amount;
       }
 
+      if (budget == "needs") {
+        expNeeds += amount;
+      } else if (budget == "wants") {
+        expWants += amount;
+      } else {
+        expSavings += amount;
+      }
+
       await FirebaseFirestore.instance
           .collection("users")
           .doc(user.uid)
-          .collection('monthyear')
+          .collection('monthly_income')
           .doc(monthyear)
           .update({
+        "needs": expNeeds,
+        "wants": expWants,
+        "savings": expSavings,
         "remainAmount": remainAmount,
         "totalCredit": totalCredit,
         "totalDebit": totalDebit,
@@ -85,25 +95,11 @@ class _AddExpPageState extends State<AddExpPage> {
         "totalDebit": totalDebit,
         "monthyear": monthyear,
         "category": category,
-        // "budget": budget,
       };
 
-      // Save transaction data to the "history" subcollection of the user document
-      // await FirebaseFirestore.instance
-      //     .collection("users")
-      //     .doc(user.uid)
-      //     .collection("transactions")
-      //     .doc(id)
-      //     .set(data);
-
-      // Navigator.pop(context);
-
-      // Save transaction data to the "transactions" subcollection "monthYear" of the user document
       await FirebaseFirestore.instance
           .collection("users")
           .doc(user.uid)
-          .collection("monthyear")
-          .doc(monthyear)
           .collection("transactions")
           .doc(id)
           .set(data);
@@ -127,6 +123,7 @@ class _AddExpPageState extends State<AddExpPage> {
           key: _formKey,
           child: Column(
             children: [
+              //add title
               TextFormField(
                 controller: titleEditController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -135,6 +132,7 @@ class _AddExpPageState extends State<AddExpPage> {
                   labelText: "title",
                 ),
               ),
+              //add value
               TextFormField(
                 controller: amountEditController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -160,19 +158,19 @@ class _AddExpPageState extends State<AddExpPage> {
               ),
               //budget type (needs, wants , saving)
               DropdownButtonFormField(
-                value: 'savings',
+                value: budget,
                 items: const [
                   DropdownMenuItem(
-                    child: Text("needs"),
                     value: "needs",
+                    child: Text("needs"),
                   ),
                   DropdownMenuItem(
-                    child: Text("wants"),
                     value: "wants",
+                    child: Text("wants"),
                   ),
                   DropdownMenuItem(
-                    child: Text("saving"),
                     value: "savings",
+                    child: Text("saving"),
                   ),
                 ],
                 onChanged: (value) {
@@ -193,12 +191,12 @@ class _AddExpPageState extends State<AddExpPage> {
                 value: 'credit',
                 items: const [
                   DropdownMenuItem(
-                    child: Text("debit"),
                     value: "debit",
+                    child: Text("debit"),
                   ),
                   DropdownMenuItem(
-                    child: Text("credit"),
                     value: "credit",
+                    child: Text("credit"),
                   ),
                 ],
                 onChanged: (value) {

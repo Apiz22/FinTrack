@@ -46,8 +46,6 @@ class RecentTransactionList extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
-            .collection('monthyear')
-            .doc(monthYear)
             .collection("transactions")
             .orderBy('timestamp', descending: false)
             .snapshots(),

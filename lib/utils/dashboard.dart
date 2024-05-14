@@ -39,21 +39,4 @@ class _HomePageState extends State<HomePage> {
       // body: _buildBody(currentPageIndex),
     );
   }
-
-  // Widget _buildBody(int index) {
-  //   switch (index) {
-  //     case 0:
-  //       return const MainPage(); // Return MainPage widget
-  //     case 1:
-  //       return const ExpensesPage();
-  //     case 2:
-  //       return const AddExpPage();
-  //     case 3:
-  //       return const RankPage();
-  //     case 4:
-  //       return const UserPage(); // Return UserPage widget
-  //     default:
-  //       return Container(); // Return an empty container if index is invalid
-  //   }
-  // }
 }
