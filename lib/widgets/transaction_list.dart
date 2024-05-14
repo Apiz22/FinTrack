@@ -15,11 +15,14 @@ class TransactionList extends StatelessWidget {
   final String type;
   final String monthYear;
 
+//monthyear
   @override
   Widget build(BuildContext context) {
     Query query = FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
+        // .collection('monthyear')
+        // .doc(monthYear)
         .collection("transactions")
         .orderBy('timestamp', descending: true)
         .where("monthyear", isEqualTo: monthYear)

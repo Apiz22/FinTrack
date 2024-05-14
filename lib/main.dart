@@ -21,7 +21,6 @@ class MyApp extends StatelessWidget {
       title: 'FinTrack',
       builder: (context, child) {
         return MediaQuery(
-            //note
             data: MediaQuery.of(context)
                 .copyWith(textScaler: TextScaler.linear(1.0)),
             child: child!);

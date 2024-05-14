@@ -5,7 +5,7 @@ import 'package:ft_v2/service/auth_service.dart';
 import '../utils/appvalidator.dart';
 
 class SignUpPage extends StatefulWidget {
-  SignUpPage({super.key});
+  const SignUpPage({super.key});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -22,6 +22,16 @@ class _SignUpPageState extends State<SignUpPage> {
   var authService = AuthService();
   var isLoader = false;
 
+  @override
+  void dispose() {
+    _userNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _reConfirmpasswordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -33,9 +43,6 @@ class _SignUpPageState extends State<SignUpPage> {
         "email": _emailController.text,
         "password": _passwordController.text,
         "phone": _phoneController.text,
-        "remainAmount": 0,
-        "totalCredit": 0,
-        "totalDebit": 0,
       };
 
       //     await authService.createUser(data, context);

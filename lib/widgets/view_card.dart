@@ -5,14 +5,20 @@ class TopSplit extends StatelessWidget {
   TopSplit({
     super.key,
     required this.userId,
+    required this.monthYear,
   });
 
   final String userId;
+  final String monthYear;
 
   @override
   Widget build(BuildContext context) {
-    final Stream<DocumentSnapshot> _usersStream =
-        FirebaseFirestore.instance.collection('users').doc(userId).snapshots();
+    final Stream<DocumentSnapshot> _usersStream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('monthyear')
+        .doc(monthYear)
+        .snapshots();
 
     return StreamBuilder<DocumentSnapshot>(
       stream: _usersStream,
@@ -148,7 +154,7 @@ class OneCard extends StatelessWidget {
                   ),
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               Padding(
                 padding: EdgeInsets.all(8),
                 child: Icon(

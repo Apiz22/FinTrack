@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ft_v2/widgets/budget_card.dart';
@@ -16,12 +15,15 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final userId = FirebaseAuth.instance.currentUser!.uid;
 
+  @override
   Widget build(BuildContext context) {
-    String currentDate = DateFormat("dd MMMM").format(DateTime.now());
+    DateTime date = DateTime.now();
+    String currentDate = DateFormat("dd MMMM").format(date);
+    String monthyear = DateFormat("MMM y").format(date);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "FinTrack",
           style: TextStyle(
             color: Colors.white,
@@ -33,7 +35,7 @@ class _MainPageState extends State<MainPage> {
             padding: const EdgeInsets.all(8.0),
             child: Text(
               currentDate,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 color: Colors.white,
               ),
@@ -49,14 +51,16 @@ class _MainPageState extends State<MainPage> {
               color: Colors.blue,
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
+                //TopSplit display total balance, credit and debit
                 child: TopSplit(
                   userId: userId,
+                  monthYear: monthyear,
                 ),
               ),
             ),
-            SizedBox(),
+            const SizedBox(),
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               color: const Color.fromARGB(255, 199, 124, 124),
               child: const Column(
                 children: [
@@ -68,9 +72,9 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
             //Expenses breakdown
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: const Column(
+            const Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Column(
                 children: [
                   Text("Expenses breakdown"),
                   budgetCard(),

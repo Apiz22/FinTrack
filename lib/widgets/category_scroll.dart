@@ -55,7 +55,7 @@ class _CategoryListState extends State<CategoryList> {
               decoration: BoxDecoration(
                   color: currentCategory == data['name']
                       ? Colors.black
-                      : Colors.red.withOpacity(0.1),
+                      : Colors.blue.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20)),
               child: Center(
                   child: Row(

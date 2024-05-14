@@ -23,7 +23,7 @@ class _AddExpPageState extends State<AddExpPage> {
   var isLoader = false;
   var appValidator = AppValidator();
   var amountEditController = TextEditingController();
-  var titleEditCntroller = TextEditingController();
+  var titleEditController = TextEditingController();
   var uid = Uuid();
 
   Future<void> _submitForm() async {
@@ -40,9 +40,14 @@ class _AddExpPageState extends State<AddExpPage> {
       var id = uid.v4();
       String monthyear = DateFormat("MMM y").format(date);
 
+      // String month = DateFormat("MMM").format(date);
+      // String year = DateFormat("y").format(date);
+
       final userDoc = await FirebaseFirestore.instance
           .collection("users")
           .doc(user!.uid)
+          .collection('monthyear')
+          .doc(monthyear)
           .get();
 
       int remainAmount = userDoc["remainAmount"];
@@ -60,6 +65,8 @@ class _AddExpPageState extends State<AddExpPage> {
       await FirebaseFirestore.instance
           .collection("users")
           .doc(user.uid)
+          .collection('monthyear')
+          .doc(monthyear)
           .update({
         "remainAmount": remainAmount,
         "totalCredit": totalCredit,
@@ -69,7 +76,7 @@ class _AddExpPageState extends State<AddExpPage> {
 
       var data = {
         "id": id,
-        "title": titleEditCntroller.text,
+        "title": titleEditController.text,
         "amount": amount,
         "type": type,
         "timestamp": timestamp,
@@ -82,14 +89,24 @@ class _AddExpPageState extends State<AddExpPage> {
       };
 
       // Save transaction data to the "history" subcollection of the user document
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(user.uid) //!uid
-          .collection("transactions")
-          .doc(id) // Use transaction ID as document ID
-          .set(data);
+      // await FirebaseFirestore.instance
+      //     .collection("users")
+      //     .doc(user.uid)
+      //     .collection("transactions")
+      //     .doc(id)
+      //     .set(data);
 
       // Navigator.pop(context);
+
+      // Save transaction data to the "transactions" subcollection "monthYear" of the user document
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid)
+          .collection("monthyear")
+          .doc(monthyear)
+          .collection("transactions")
+          .doc(id)
+          .set(data);
 
       setState(() {
         isLoader = false;
@@ -101,7 +118,7 @@ class _AddExpPageState extends State<AddExpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add page"),
+        title: const Text("Add page"),
         backgroundColor: Colors.green,
       ),
       body: Padding(
@@ -111,10 +128,10 @@ class _AddExpPageState extends State<AddExpPage> {
           child: Column(
             children: [
               TextFormField(
-                controller: titleEditCntroller,
+                controller: titleEditController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: appValidator.isEmptyCheck,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "title",
                 ),
               ),
@@ -123,7 +140,7 @@ class _AddExpPageState extends State<AddExpPage> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: appValidator.isEmptyCheck,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "value",
                 ),
               ),
@@ -138,13 +155,13 @@ class _AddExpPageState extends State<AddExpPage> {
                   }
                 },
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               //budget type (needs, wants , saving)
               DropdownButtonFormField(
                 value: 'savings',
-                items: [
+                items: const [
                   DropdownMenuItem(
                     child: Text("needs"),
                     value: "needs",
@@ -169,12 +186,12 @@ class _AddExpPageState extends State<AddExpPage> {
                 },
               ),
               //type credit or debit
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               DropdownButtonFormField(
                 value: 'credit',
-                items: [
+                items: const [
                   DropdownMenuItem(
                     child: Text("debit"),
                     value: "debit",
@@ -194,7 +211,7 @@ class _AddExpPageState extends State<AddExpPage> {
                   }
                 },
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
               //add transaction button

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ft_v2/widgets/transaction_Item.dart';
+import 'package:intl/intl.dart';
 
 class TransactionsCard extends StatelessWidget {
   TransactionsCard({super.key});
@@ -37,6 +38,7 @@ class RecentTransactionList extends StatelessWidget {
   });
 
   final userId = FirebaseAuth.instance.currentUser!.uid;
+  String monthYear = DateFormat("MMM y").format(DateTime.now());
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +46,8 @@ class RecentTransactionList extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
+            .collection('monthyear')
+            .doc(monthYear)
             .collection("transactions")
             .orderBy('timestamp', descending: false)
             .snapshots(),

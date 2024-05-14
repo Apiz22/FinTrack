@@ -24,8 +24,16 @@ class _SignInPageState extends State<SignInPage> {
   @override
   void initState() {
     super.initState();
-    _emailController = TextEditingController(); // Initialize here
-    _passwordController = TextEditingController(); // Initialize here
+    //sign in controller
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   var isLoader = false;
