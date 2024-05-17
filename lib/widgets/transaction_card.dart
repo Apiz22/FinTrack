@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ft_v2/widgets/transaction_Item.dart';
+import 'package:ft_v2/widgets/transaction_item.dart';
 import 'package:intl/intl.dart';
 
 class TransactionsCard extends StatelessWidget {
-  TransactionsCard({super.key});
+  const TransactionsCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,15 +14,15 @@ class TransactionsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "Recent Transaction",
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: 10), // Add SizedBox for spacing
-          Container(
+          const SizedBox(height: 10), // Add SizedBox for spacing
+          SizedBox(
             height: 500, // Set a fixed height for the ListView
             child: RecentTransactionList(),
           ),
@@ -51,19 +51,19 @@ class RecentTransactionList extends StatelessWidget {
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
-            return Text('Something went wrong');
+            return const Text('Something went wrong');
           } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("Loading");
+            return const Text("Loading");
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Text("No transactions found");
+            return const Text("No transactions found");
           }
 
           var data = snapshot.data!.docs;
 
           return ListView.builder(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemCount:
                 data.length, // Set the number of items you want to display
             itemBuilder: (context, index) {

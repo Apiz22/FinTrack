@@ -26,7 +26,7 @@ class TransactionItem extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
-              offset: Offset(0, 10),
+              offset: const Offset(0, 10),
               blurRadius: 10,
               spreadRadius: 4,
             ),
@@ -36,8 +36,9 @@ class TransactionItem extends StatelessWidget {
           padding: const EdgeInsets.all(5.0),
           child: ListTile(
             minVerticalPadding: 8,
-            contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 0),
-            leading: Container(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0),
+            leading: SizedBox(
               width: 70,
               height: 100,
               child: Container(
@@ -71,11 +72,11 @@ class TransactionItem extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text("balance"),
-                    Spacer(),
+                    const Text("balance"),
+                    const Spacer(),
                     Text(
                       "RM ${data['remainAmount']}",
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black45,
                       ),
                     ),
@@ -83,7 +84,7 @@ class TransactionItem extends StatelessWidget {
                 ),
                 Text(
                   formatDate,
-                  style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+                  style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                 )
               ],
             ),
