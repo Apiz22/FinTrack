@@ -92,7 +92,7 @@ class _UserPageState extends State<UserPage> {
       FirebaseFirestore.instance
           .collection("users")
           .doc(userId)
-          .collection('monthyear')
+          .collection('monthly_income')
           .doc(monthYear)
           .update({
         'budgetRule': budgetRule,

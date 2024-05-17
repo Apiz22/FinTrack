@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ft_v2/widgets/gamification/test_badges.dart';
 
 class RankPage extends StatelessWidget {
   const RankPage({super.key});
@@ -7,10 +8,17 @@ class RankPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Ranking page"),
+        title: const Text("Ranking page"),
         backgroundColor: Colors.green,
       ),
-      body: Text("rank page"),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text("Rank page"),
+            NumberGuessingGame(),
+          ],
+        ),
+      ),
     );
   }
 }

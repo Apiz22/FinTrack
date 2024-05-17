@@ -95,9 +95,9 @@ class TotalCard extends StatelessWidget {
                 header: 'Credit',
                 amount: '${data["totalCredit"]}',
               ),
-              const SizedBox(
-                width: 10,
-              ),
+              // const SizedBox(
+              //   width: 10,
+              // ),
               OneCard(
                 color: Colors.amber,
                 header: 'Debit',

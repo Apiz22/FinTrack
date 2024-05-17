@@ -81,11 +81,11 @@ class _MainPageState extends State<MainPage> {
             //Expenses breakdown
             Padding(
               padding: EdgeInsets.all(10.0),
-              child: budgetCard(
+              child: BudgetCard(
                 userId: userId,
                 currentMonthYear: monthyear,
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -121,7 +121,8 @@ class _MainPageState extends State<MainPage> {
               ElevatedButton(
                 onPressed: () {
                   // Get the entered total income value
-                  String totalIncome = incomeController.text;
+                  String totalIncomeStr = incomeController.text;
+                  double totalIncome = double.parse(totalIncomeStr);
 
                   // Save the total income and other initial values to Firebase
                   FirebaseFirestore.instance
@@ -130,20 +131,21 @@ class _MainPageState extends State<MainPage> {
                       .collection('monthly_income')
                       .doc(currentmonthyear)
                       .set({
-                    'totalIncome': int.parse(totalIncome),
-                    'remainAmount': int.parse(totalIncome),
-                    'totalCredit': 0,
-                    'totalDebit': 0,
-                    'needs': 0,
-                    'wants': 0,
-                    'savings': 0,
-                    'cal_needs': double.parse(totalIncome) * 0.5,
-                    'cal_wants': double.parse(totalIncome) * 0.3,
-                    'cal_savings': double.parse(totalIncome) * 0.2,
+                    'totalIncome': totalIncome,
+                    'remainAmount': totalIncome,
+                    'totalCredit': 0.0,
+                    'totalDebit': 0.0,
+                    'needs': 0.0,
+                    'wants': 0.0,
+                    'savings': 0.0,
+                    'cal_needs': totalIncome * 0.5,
+                    'cal_wants': totalIncome * 0.3,
+                    'cal_savings': totalIncome * 0.2,
                     'budgetRule': "80/20",
                   }).then((_) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Income saved successfully!')),
+                      SnackBar(
+                          content: const Text('Income saved successfully!')),
                     );
                   }).catchError((error) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -153,7 +155,7 @@ class _MainPageState extends State<MainPage> {
 
                   Navigator.of(context).pop(); // Close the dialog
                 },
-                child: Text('Save'),
+                child: const Text('Save'),
               ),
             ],
           );

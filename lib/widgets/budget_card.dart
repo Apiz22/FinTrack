@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:ft_v2/widgets/view_card.dart';
+import 'package:ft_v2/widgets/gamification/progress_bar.dart';
 
-class budgetCard extends StatelessWidget {
-  const budgetCard({super.key, required this.userId, this.currentMonthYear});
+class BudgetCard extends StatelessWidget {
+  const BudgetCard({super.key, required this.userId, this.currentMonthYear});
 
   final String userId;
   final currentMonthYear;
   @override
   Widget build(BuildContext context) {
-    final Stream<DocumentSnapshot> _usersStream = FirebaseFirestore.instance
+    final Stream<DocumentSnapshot> usersStream = FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('monthly_income')
@@ -19,7 +19,7 @@ class budgetCard extends StatelessWidget {
     return Column(
       children: [
         StreamBuilder(
-          stream: _usersStream,
+          stream: usersStream,
           builder:
               (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
             if (snapshot.hasError) {
@@ -36,6 +36,9 @@ class budgetCard extends StatelessWidget {
             double calNeeds = data["cal_needs"];
             double calWants = data["cal_wants"];
             double calSaving = data["cal_savings"];
+            double needs = data["needs"];
+            double wants = data["wants"];
+            double savings = data["savings"];
 
             return Column(
               children: [
@@ -45,13 +48,13 @@ class budgetCard extends StatelessWidget {
                 ),
                 Text(
                   '${data["budgetRule"]}',
-                  style: const TextStyle(fontWeight: FontWeight.w500),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                _buildRow(context, "Need", calNeeds,
+                _buildRow(context, "Need", calNeeds, needs,
                     "Needs — as you may gathered — are the things that you absolutely cannot do without. They are those goods and services that you must have to lead a decent life. The most common needs are air, food, water, clothing and shelter. Without these basic necessities, your life may be extremely challenging or downright hard."),
-                _buildRow(context, "Wants", calWants,
+                _buildRow(context, "Wants", calWants, wants,
                     "Wants, or discretionary expenses, are the things that you don’t really need. They are the costs of the products and services that you would like to have. If it comes down to it, you can eliminate all the wants or inessential expenses from your budget and still lead a fairly comfortable life."),
-                _buildRow(context, "Savings", calSaving,
+                _buildRow(context, "Savings", calSaving, savings,
                     "Savings are kept in the form of cash or cash equivalents (e.g. as bank deposits), which are exposed to no risk of loss but also come with correspondingly minimal returns."),
               ],
             );
@@ -62,13 +65,13 @@ class budgetCard extends StatelessWidget {
   }
 }
 
-Widget _buildRow(
-    BuildContext context, String header, double amount, String description) {
+Widget _buildRow(BuildContext context, String header, double calAmount,
+    double amount, String description) {
   return Padding(
     padding: const EdgeInsets.all(2.0),
     child: Row(
       children: [
-        budgetCategory(header, amount),
+        budgetCategory(header, calAmount, amount),
         IconButton(
           //info budget
           icon: const Icon(Icons.info),
@@ -99,7 +102,7 @@ Widget _buildRow(
   );
 }
 
-Expanded budgetCategory(String header, double amount) {
+Expanded budgetCategory(String header, double calAmount, double amount) {
   return Expanded(
     child: Container(
       decoration: BoxDecoration(
@@ -110,24 +113,29 @@ Expanded budgetCategory(String header, double amount) {
         padding: const EdgeInsets.all(10.0),
         child: Row(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  header,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    header,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                    ),
                   ),
-                ),
-                Text(
-                  "RM $amount",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 30,
+                  Text(
+                    "RM $amount / $calAmount",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 30,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            ),
+            ProgressBar(
+              percent: amount / calAmount,
             ),
           ],
         ),
