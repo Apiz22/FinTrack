@@ -1,8 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:ft_v2/widgets/gamification/badge_class.dart';
+import 'package:ft_v2/widgets/gamification/leaderboard.dart';
 import 'package:ft_v2/widgets/gamification/test_badges.dart';
 
-class RankPage extends StatelessWidget {
+class RankPage extends StatefulWidget {
   const RankPage({super.key});
+
+  @override
+  State<RankPage> createState() => _RankPageState();
+}
+
+class _RankPageState extends State<RankPage> {
+  // Instance of Badges class
+  final Badges badges = Badges();
+
+  @override
+  void initState() {
+    super.initState();
+    totalBadges();
+  }
+
+  void totalBadges() async {
+    await badges.retriveTotalBadge();
+    setState(() {}); // This will rebuild the widget to reflect any changes
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,11 +32,13 @@ class RankPage extends StatelessWidget {
         title: const Text("Ranking page"),
         backgroundColor: Colors.green,
       ),
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         child: Column(
           children: [
             Text("Rank page"),
             NumberGuessingGame(),
+            Text("leaderboard"),
+            Leaderboard(),
           ],
         ),
       ),

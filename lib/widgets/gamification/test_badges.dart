@@ -13,6 +13,7 @@ class _NumberGuessingGameState extends State<NumberGuessingGame> {
   final int _targetNumber = 7; // The correct number to guess
   bool _badgeAwarded = false;
   bool isLoader = false;
+  int _consecutiveCorrectGuesses = 0; // Counter for consecutive correct guesses
 
   final Badges _badges = Badges(); // Create an instance of Badges
 
@@ -29,15 +30,22 @@ class _NumberGuessingGameState extends State<NumberGuessingGame> {
       setState(() {
         _badgeAwarded = true;
         isLoader = true;
+        _consecutiveCorrectGuesses++; // Increment counter for correct guess
       });
-      await _badges.awardBadge("test2", context); // Use the Badges class
+      await _badges.awardBadge("First Income", context); // Use the Badges class
       setState(() {
         isLoader = false;
       });
     } else {
+      _consecutiveCorrectGuesses = 0;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Try again!')),
       );
+    }
+    if (_consecutiveCorrectGuesses == 3) {
+      await _badges.awardBadge(
+          "test", context); // Award badge for 3 consecutive correct guesses
+      _consecutiveCorrectGuesses = 0; // Reset counter after awarding badge
     }
   }
 

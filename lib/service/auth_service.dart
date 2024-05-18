@@ -16,7 +16,7 @@ class AuthService {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text("Sign Up Failed"),
+              title: const Text("Sign Up Failed"),
               content: Text(e.toString()),
             );
           });
@@ -34,7 +34,7 @@ class AuthService {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text("Login Failed"),
+              title: const Text("Login Failed"),
               content: Text(e.toString()),
             );
           });

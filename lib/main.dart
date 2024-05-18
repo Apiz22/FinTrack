@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ft_v2/firebase_options.dart';
-import 'package:ft_v2/widgets/auth_date.dart';
+import 'package:ft_v2/service/auth_gate.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -44,17 +44,19 @@ class TransactionList extends StatelessWidget {
 
           var data = snapshot.data!.docs;
 
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount:
-                data.length, // Set the number of items you want to display
-            itemBuilder: (context, index) {
-              var cardInt = data[index];
-              return TransactionItem(
-                data: cardInt,
-              );
-            },
+          return SingleChildScrollView(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount:
+                  data.length, // Set the number of items you want to display
+              itemBuilder: (context, index) {
+                var cardInt = data[index];
+                return TransactionItem(
+                  data: cardInt,
+                );
+              },
+            ),
           );
         });
   }

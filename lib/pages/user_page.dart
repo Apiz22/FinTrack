@@ -15,8 +15,14 @@ class _UserPageState extends State<UserPage> {
   final userId = FirebaseAuth.instance.currentUser!.uid;
   DateTime date = DateTime.now();
   String? selectedBudgetRule;
+  int dayCount = 0;
+  int totalBadgesObtained = 0;
 
-  bool incomeDialogShown = false;
+  @override
+  void initState() {
+    super.initState();
+    _loadDayCount();
+  }
 
   logOut() async {
     setState(() {
@@ -25,6 +31,14 @@ class _UserPageState extends State<UserPage> {
     await FirebaseAuth.instance.signOut();
     setState(() {
       isLogOut = false;
+    });
+  }
+
+  void _loadDayCount() {
+    // Load the day count from wherever you are storing it (e.g., SharedPreferences)
+    // For now, I'll set it to a random number for demonstration purposes
+    setState(() {
+      dayCount = 10; // Set the day count to a random number
     });
   }
 
@@ -49,36 +63,65 @@ class _UserPageState extends State<UserPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 20),
-          DropdownButtonFormField<String>(
-            value: selectedBudgetRule, // Use the selected value
-            onChanged: (String? value) {
-              setState(() {
-                selectedBudgetRule = value; // Update the selected value
-              });
+          StreamBuilder<DocumentSnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection("users")
+                .doc(userId)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              if (snapshot.hasError) {
+                return const Text("Error loading badges");
+              }
+              if (snapshot.hasData) {
+                var userDoc = snapshot.data!;
+                totalBadgesObtained = userDoc['totalBadgesObtained'] ?? 0;
+                return Column(
+                  children: [
+                    DropdownButtonFormField<String>(
+                      value: selectedBudgetRule, // Use the selected value
+                      onChanged: (totalBadgesObtained > 3)
+                          ? (String? value) {
+                              setState(() {
+                                selectedBudgetRule =
+                                    value; // Update the selected value
+                              });
+                            }
+                          : null,
+                      items: const [
+                        DropdownMenuItem<String>(
+                          value: '80/20',
+                          child: Text('80/20'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: '50/30/20',
+                          child: Text('50/30/20'),
+                        ),
+                      ],
+                      decoration: InputDecoration(
+                        labelText: 'Budget Rule',
+                        enabled: totalBadgesObtained > 3,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: (totalBadgesObtained > 3)
+                          ? () {
+                              saveBudgetRuleToFirebase(
+                                  selectedBudgetRule); // Call function to save budget rule
+                            }
+                          : null,
+                      child: const Text('Save'),
+                    ),
+                    const SizedBox(height: 50),
+                    Text('Days App Used: $dayCount'),
+                    Text("Total user obtained badges: $totalBadgesObtained"),
+                  ],
+                );
+              }
+              return const Text("No data available");
             },
-            items: [
-              const DropdownMenuItem<String>(
-                value: '80/20',
-                child: Text('80/20'),
-              ),
-              const DropdownMenuItem<String>(
-                value: '50/30/20',
-                child: Text('50/30/20'),
-              ),
-            ],
-          ),
-          ElevatedButton(
-            onPressed: () {
-              saveBudgetRuleToFirebase(
-                  selectedBudgetRule); // Call function to save budget rule
-            },
-            child: const Text('Save'),
-          ),
-          const SizedBox(height: 50),
-          const Expanded(
-            child: Center(
-              child: Text("User"),
-            ),
           ),
         ],
       ),

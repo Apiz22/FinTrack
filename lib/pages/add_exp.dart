@@ -59,15 +59,22 @@ class _AddExpPageState extends State<AddExpPage> {
       } else {
         remainAmount -= amount;
         totalDebit += amount;
+        if (budget == "needs") {
+          expNeeds += amount;
+        } else if (budget == "wants") {
+          expWants += amount;
+        } else {
+          expSavings += amount;
+        }
       }
 
-      if (budget == "needs") {
-        expNeeds += amount;
-      } else if (budget == "wants") {
-        expWants += amount;
-      } else {
-        expSavings += amount;
-      }
+// Format values to 2 decimal places
+      remainAmount = double.parse(remainAmount.toStringAsFixed(2));
+      totalCredit = double.parse(totalCredit.toStringAsFixed(2));
+      totalDebit = double.parse(totalDebit.toStringAsFixed(2));
+      expNeeds = double.parse(expNeeds.toStringAsFixed(2));
+      expWants = double.parse(expWants.toStringAsFixed(2));
+      expSavings = double.parse(expSavings.toStringAsFixed(2));
 
       await FirebaseFirestore.instance
           .collection("users")
@@ -137,7 +144,7 @@ class _AddExpPageState extends State<AddExpPage> {
                 controller: titleEditController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: appValidator.isEmptyCheck,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Title",
                   border: OutlineInputBorder(),
                   hintText: "Enter transaction title",
@@ -149,7 +156,7 @@ class _AddExpPageState extends State<AddExpPage> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: appValidator.isEmptyCheck,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Amount",
                   border: OutlineInputBorder(),
                   hintText: "Enter transaction amount",
@@ -192,7 +199,7 @@ class _AddExpPageState extends State<AddExpPage> {
                     );
                   }
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Budget Type",
                   border: OutlineInputBorder(),
                 ),
@@ -219,7 +226,7 @@ class _AddExpPageState extends State<AddExpPage> {
                     );
                   }
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Transaction Type",
                   border: OutlineInputBorder(),
                 ),

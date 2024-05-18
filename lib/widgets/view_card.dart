@@ -13,7 +13,7 @@ class TopSplit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Stream<DocumentSnapshot> _usersStream = FirebaseFirestore.instance
+    final Stream<DocumentSnapshot> usersStream = FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('monthly_income')
@@ -21,7 +21,7 @@ class TopSplit extends StatelessWidget {
         .snapshots();
 
     return StreamBuilder<DocumentSnapshot>(
-      stream: _usersStream,
+      stream: usersStream,
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
@@ -68,7 +68,7 @@ class TotalCard extends StatelessWidget {
               ),
             ),
             Text(
-              "RM ${data["remainAmount"]}",
+              "RM ${data["remainAmount"].toStringAsFixed(2)}",
               style: const TextStyle(
                 fontSize: 18,
                 color: Colors.white,
@@ -93,7 +93,7 @@ class TotalCard extends StatelessWidget {
               OneCard(
                 color: Colors.green,
                 header: 'Credit',
-                amount: '${data["totalCredit"]}',
+                amount: '${data["totalCredit"].toStringAsFixed(2)}',
               ),
               // const SizedBox(
               //   width: 10,
@@ -101,7 +101,7 @@ class TotalCard extends StatelessWidget {
               OneCard(
                 color: Colors.amber,
                 header: 'Debit',
-                amount: '${data["totalDebit"]}',
+                amount: '${data["totalDebit"].toStringAsFixed(2)}',
               ),
             ],
           ),
@@ -138,32 +138,33 @@ class OneCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    header,
-                    style: TextStyle(
-                      color: color,
-                      fontSize: 15,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        header,
+                        style: TextStyle(
+                          color: color,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(width: 30),
+                      Icon(
+                        header == "Credit"
+                            ? Icons.arrow_upward_outlined
+                            : Icons.arrow_downward,
+                        color: color,
+                      ),
+                    ],
                   ),
                   Text(
-                    "RM ${amount}",
+                    "RM $amount",
                     style: TextStyle(
                       color: color,
-                      fontSize: 30,
+                      fontSize: 28,
                     ),
                   ),
                 ],
               ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: Icon(
-                  header == "Credit"
-                      ? Icons.arrow_upward_outlined
-                      : Icons.arrow_downward,
-                  color: color,
-                ),
-              )
             ],
           ),
         ),

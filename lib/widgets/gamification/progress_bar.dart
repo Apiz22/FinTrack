@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class ProgressBar extends StatelessWidget {
-  const ProgressBar({super.key, required this.percent});
+  const ProgressBar(
+      {super.key, required this.percent, required this.onComplete});
 
   final double percent;
+  final VoidCallback onComplete;
 
   @override
   Widget build(BuildContext context) {
     String per100 = (percent * 100).toStringAsFixed(0);
+
+    if (percent >= 1.0) {
+      // If percent is 100%, call the onComplete callback
+      onComplete();
+    }
 
     return CircularPercentIndicator(
       radius: 30,

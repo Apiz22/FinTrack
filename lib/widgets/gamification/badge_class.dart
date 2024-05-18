@@ -53,11 +53,11 @@ class Badges {
               const SnackBar(content: Text('Badge not found.')),
             );
           }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('You have already been awarded this badge.')),
-          );
+          // } else {
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     const SnackBar(
+          //         content: Text('You have already been awarded this badge.')),
+          //   );
         }
       } else {
         throw Exception("User document not found");
@@ -66,6 +66,42 @@ class Badges {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error awarding badge: $e')),
       );
+    }
+  }
+
+  // Retrieve user_badges and update the total badge count
+  Future<void> retriveTotalBadge() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User not logged in");
+      }
+
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Check user badges
+      DocumentSnapshot userBadgeDoc =
+          await firestore.collection('users').doc(user.uid).get();
+
+      if (userBadgeDoc.exists) {
+        QuerySnapshot userBadges = await firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('user_badges')
+            .get();
+
+        // Calculate total badges
+        int totalBadgesObtained = userBadges.docs.length;
+
+        // Update the totalBadgesObtained
+        await firestore.collection("users").doc(user.uid).update({
+          "totalBadgesObtained": totalBadgesObtained,
+        });
+      } else {
+        throw Exception("User document not found");
+      }
+    } catch (e) {
+      print("Error retrieving total badges: $e");
     }
   }
 }

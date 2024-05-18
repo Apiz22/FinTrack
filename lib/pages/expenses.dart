@@ -59,7 +59,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
             category: category,
             monthYear: monthYear,
           ),
-          TransactionsCard(),
+          const TransactionsCard(),
         ]),
       ),
     );
