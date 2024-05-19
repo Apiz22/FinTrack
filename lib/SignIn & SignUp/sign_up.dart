@@ -43,6 +43,7 @@ class _SignUpPageState extends State<SignUpPage> {
         "email": _emailController.text,
         "password": _passwordController.text,
         "phone": _phoneController.text,
+        "totalBadgesObtained": 0,
       };
 
       //     await authService.createUser(data, context);

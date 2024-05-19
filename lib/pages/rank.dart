@@ -7,10 +7,10 @@ class RankPage extends StatefulWidget {
   const RankPage({super.key});
 
   @override
-  State<RankPage> createState() => _RankPageState();
+  State<RankPage> createState() => RankPageState();
 }
 
-class _RankPageState extends State<RankPage> {
+class RankPageState extends State<RankPage> {
   // Instance of Badges class
   final Badges badges = Badges();
 
@@ -35,9 +35,9 @@ class _RankPageState extends State<RankPage> {
       body: const SingleChildScrollView(
         child: Column(
           children: [
-            Text("Rank page"),
             NumberGuessingGame(),
             Text("leaderboard"),
+            Text("User Current Rank:"),
             Leaderboard(),
           ],
         ),
