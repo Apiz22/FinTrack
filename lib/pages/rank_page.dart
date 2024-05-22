@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ft_v2/widgets/gamification/badge_class.dart';
-import 'package:ft_v2/widgets/gamification/leaderboard.dart';
-import 'package:ft_v2/widgets/gamification/test_badges.dart';
+import 'package:ft_v2/gamification/class/badge_class.dart';
+import 'package:ft_v2/gamification/leaderboard.dart';
+import 'package:ft_v2/gamification/test_badges.dart';
 
 class RankPage extends StatefulWidget {
   const RankPage({super.key});
@@ -13,6 +13,7 @@ class RankPage extends StatefulWidget {
 class RankPageState extends State<RankPage> {
   // Instance of Badges class
   final Badges badges = Badges();
+  int totalBadgesObtained = 0;
 
   @override
   void initState() {
@@ -21,8 +22,10 @@ class RankPageState extends State<RankPage> {
   }
 
   void totalBadges() async {
-    await badges.retriveTotalBadge();
-    setState(() {}); // This will rebuild the widget to reflect any changes
+    int badgesCount = await badges.retriveTotalBadge();
+    setState(() {
+      totalBadgesObtained = badgesCount;
+    });
   }
 
   @override
@@ -32,13 +35,13 @@ class RankPageState extends State<RankPage> {
         title: const Text("Ranking page"),
         backgroundColor: Colors.green,
       ),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            NumberGuessingGame(),
-            Text("leaderboard"),
-            Text("User Current Rank:"),
-            Leaderboard(),
+            const NumberGuessingGame(),
+            const Text("leaderboard"),
+            Text("User Current Badges: $totalBadgesObtained"),
+            const Leaderboard(),
           ],
         ),
       ),

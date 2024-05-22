@@ -68,13 +68,13 @@ class _AddExpPageState extends State<AddExpPage> {
         }
       }
 
-// Format values to 2 decimal places
-      remainAmount = double.parse(remainAmount.toStringAsFixed(2));
-      totalCredit = double.parse(totalCredit.toStringAsFixed(2));
-      totalDebit = double.parse(totalDebit.toStringAsFixed(2));
-      expNeeds = double.parse(expNeeds.toStringAsFixed(2));
-      expWants = double.parse(expWants.toStringAsFixed(2));
-      expSavings = double.parse(expSavings.toStringAsFixed(2));
+// // Format values to 2 decimal places
+//       remainAmount = double.parse(remainAmount.toStringAsFixed(2));
+//       totalCredit = double.parse(totalCredit.toStringAsFixed(2));
+//       totalDebit = double.parse(totalDebit.toStringAsFixed(2));
+//       expNeeds = double.parse(expNeeds.toStringAsFixed(2));
+//       expWants = double.parse(expWants.toStringAsFixed(2));
+//       expSavings = double.parse(expSavings.toStringAsFixed(2));
 
       await FirebaseFirestore.instance
           .collection("users")

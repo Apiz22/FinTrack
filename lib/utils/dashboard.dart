@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:ft_v2/pages/add_exp.dart';
-import 'package:ft_v2/pages/expenses.dart';
+import 'package:ft_v2/pages/add_exp_page.dart';
+import 'package:ft_v2/pages/expenses_page.dart';
 import 'package:ft_v2/pages/home_screen.dart';
-import 'package:ft_v2/pages/rank.dart';
+import 'package:ft_v2/pages/rank_page.dart';
 import 'package:ft_v2/pages/user_page.dart';
 import 'package:ft_v2/widgets/nav_bar.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<Dashboard> createState() => DashboardState();
 }
 
-class _HomePageState extends State<HomePage> {
+class DashboardState extends State<Dashboard> {
   int currentPageIndex = 0;
   // var isLogOut = false;
   var pageViewList = [

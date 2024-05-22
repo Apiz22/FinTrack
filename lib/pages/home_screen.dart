@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ft_v2/service/database.dart';
-import 'package:ft_v2/widgets/budget_card.dart';
+import 'package:ft_v2/widgets/budget/budget_card.dart';
 import 'package:ft_v2/widgets/note.dart';
 import 'package:ft_v2/widgets/view_card.dart';
 import 'package:intl/intl.dart';
@@ -66,20 +66,11 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
             ),
-            const SizedBox(),
-            Container(
-              padding: const EdgeInsets.all(10),
-              color: const Color.fromARGB(255, 199, 124, 124),
-              child: const Column(
-                children: [
-                  note(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                ],
-              ),
+            const SizedBox(
+              height: 10,
             ),
-            //Expenses breakdown
+
+            //Expenses breakdown & Leaderboard
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: BudgetCard(
@@ -87,6 +78,18 @@ class _MainPageState extends State<MainPage> {
                 currentMonthYear: monthyear,
               ),
             ),
+            // Container(
+            //   padding: const EdgeInsets.all(10),
+            //   color: const Color.fromARGB(255, 199, 124, 124),
+            //   child: const Column(
+            //     children: [
+            //       note(),
+            //       SizedBox(
+            //         height: 10,
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

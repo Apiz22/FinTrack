@@ -107,16 +107,16 @@ class _LeaderboardState extends State<Leaderboard> {
                   Color color;
                   switch (index) {
                     case 0:
-                      color = Colors.amber;
+                      color = const Color.fromARGB(255, 247, 207, 86);
                       break;
                     case 1:
-                      color = Colors.grey;
+                      color = Color.fromARGB(255, 195, 195, 195);
                       break;
                     case 2:
-                      color = Colors.brown;
+                      color = const Color.fromARGB(255, 237, 127, 87);
                       break;
                     default:
-                      color = Colors.white;
+                      color = Color.fromARGB(255, 238, 238, 238);
                   }
                   return Container(
                     color: color,
@@ -131,7 +131,7 @@ class _LeaderboardState extends State<Leaderboard> {
                         style: const TextStyle(fontSize: 20),
                       ),
                       trailing: Text(
-                        '${_users[index]['totalBadges']} pts',
+                        '${_users[index]['totalBadges']} badges',
                         style: const TextStyle(fontSize: 20),
                       ),
                     ),

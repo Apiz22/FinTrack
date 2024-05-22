@@ -70,7 +70,8 @@ class Badges {
   }
 
   // Retrieve user_badges and update the total badge count
-  Future<void> retriveTotalBadge() async {
+  Future<int> retriveTotalBadge() async {
+    int totalBadgesObtained = 0; // Initialize totalBadgesObtained
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
@@ -91,17 +92,13 @@ class Badges {
             .get();
 
         // Calculate total badges
-        int totalBadgesObtained = userBadges.docs.length;
-
-        // Update the totalBadgesObtained
-        await firestore.collection("users").doc(user.uid).update({
-          "totalBadgesObtained": totalBadgesObtained,
-        });
+        totalBadgesObtained = userBadges.docs.length;
       } else {
         throw Exception("User document not found");
       }
     } catch (e) {
       print("Error retrieving total badges: $e");
     }
+    return totalBadgesObtained;
   }
 }

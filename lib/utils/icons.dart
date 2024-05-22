@@ -12,16 +12,24 @@ class AppIcons {
       "icon": FontAwesomeIcons.wifi,
     },
     {
-      "name": "Needs", // Changed from "needs" to "Needs" for uniqueness
-      "icon": FontAwesomeIcons.wallet,
+      "name": "Foods & Beverage",
+      "icon": FontAwesomeIcons.bowlRice,
     },
     {
-      "name": "Wants", // Changed from "needs" to "Needs" for uniqueness
-      "icon": FontAwesomeIcons.wallet,
+      "name": "Medical",
+      "icon": FontAwesomeIcons.pills,
     },
     {
-      "name": "Savings", // Changed from "needs" to "Needs" for uniqueness
-      "icon": FontAwesomeIcons.wallet,
+      "name": "Entertainment",
+      "icon": FontAwesomeIcons.film,
+    },
+    {
+      "name": "Transportation",
+      "icon": FontAwesomeIcons.trainTram,
+    },
+    {
+      "name": "Shopping",
+      "icon": FontAwesomeIcons.bagShopping,
     },
     {
       "name": "Others",

@@ -25,7 +25,7 @@ class _TimeLineMonthState extends State<TimeLineMonth> {
     }
     currentMonth = DateFormat('MMM y').format(now);
 
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       scrollToSelectedMonth();
     });
   }
@@ -35,13 +35,13 @@ class _TimeLineMonthState extends State<TimeLineMonth> {
     if (selectedMonthIndex != -1) {
       final scrollOffset = (selectedMonthIndex * 100.0) - 170;
       scrollController.animateTo(scrollOffset,
-          duration: Duration(milliseconds: 500), curve: Curves.ease);
+          duration: const Duration(milliseconds: 500), curve: Curves.ease);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 40,
       child: ListView.builder(
         controller: scrollController,
@@ -58,7 +58,7 @@ class _TimeLineMonthState extends State<TimeLineMonth> {
             },
             child: Container(
               width: 80,
-              margin: EdgeInsets.all(8),
+              margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                   color: currentMonth == months[index]
                       ? Colors.black
@@ -69,7 +69,7 @@ class _TimeLineMonthState extends State<TimeLineMonth> {
                 months[index],
                 style: TextStyle(
                   color: currentMonth == months[index]
-                      ? Color.fromRGBO(253, 253, 253, 1)
+                      ? const Color.fromRGBO(253, 253, 253, 1)
                       : const Color.fromARGB(255, 19, 1, 0),
                 ),
               )),
