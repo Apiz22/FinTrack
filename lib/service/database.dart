@@ -5,41 +5,56 @@ import 'package:intl/intl.dart';
 
 class Database {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
+  String currentmonthyear = DateFormat("MMM y").format(DateTime.now());
 
   Future<void> addUser(data, context) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     try {
       // Set the user document
       await users.doc(userId).set(data);
-
-      // // Get the current month and year
-      // String monthYear = DateFormat("MMM y").format(DateTime.now());
-
-      // // Add a new document under the 'monthyear' subcollection
-      // await users.doc(userId).collection('monthyear').doc(monthYear).set({
-      //   'totalIncome': 0,
-      //   'remainAmount': 0,
-      //   'totalCredit': 0,
-      //   'totalDebit': 0,
-      //   'budgetRule': "80/20",
-      // });
     } catch (error) {
-      // showDialog(
-      //   context: context,
-      //   builder: (context) {
-      //     return AlertDialog(
-      //       title: const Text("Sign Up Failed"),
-      //       content: Text(error.toString()),
-      //     );
-      //   },
-      // );
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Sign Up Failed"),
+            content: Text(error.toString()),
+          );
+        },
+      );
+    }
+  }
+
+  //create user point history
+  Future<void> createMonthlyPointHistory(String userId) async {
+    bool documentExists = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('point_history')
+        .doc(currentmonthyear)
+        .get()
+        .then((doc) => doc.exists);
+
+    if (!documentExists) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('point_history')
+          .doc(currentmonthyear)
+          .set({
+        "TotalLimitPoints": 100,
+        "CurrentPoints": 0,
+        "NeedsPoints": 0,
+        "WantsPoints": 0,
+        "SavingsPoints": 0,
+
+        // "date": currentmonthyear,
+      });
     }
   }
 
   // Check and create new monthyear file if does not exist
   Future<void> createMonthlyIncomeDocument(String userId, context) async {
-    String currentmonthyear = DateFormat("MMM y").format(DateTime.now());
-
     bool documentExists = await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
@@ -93,7 +108,7 @@ class Database {
                     'cal_needs': calneeds,
                     'cal_wants': calwants,
                     'cal_savings': calsavings,
-                    'budgetRule': "80/20",
+                    'budgetRule': "50/30/20",
                   }).then((_) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -114,5 +129,14 @@ class Database {
         },
       );
     }
+  }
+
+  Stream<DocumentSnapshot> getPointsStream(String userId, String monthyear) {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .doc(userId)
+        .collection('point_history')
+        .doc(monthyear)
+        .snapshots();
   }
 }

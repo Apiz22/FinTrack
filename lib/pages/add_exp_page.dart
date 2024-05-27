@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ft_v2/gamification/points.dart';
 import 'package:ft_v2/utils/appvalidator.dart';
 import 'package:ft_v2/widgets/category_dropdown.dart';
 import 'package:uuid/uuid.dart';
@@ -26,7 +27,9 @@ class _AddExpPageState extends State<AddExpPage> {
   var titleEditController = TextEditingController();
   var uid = const Uuid();
 
-  Future<void> _submitForm() async {
+  final Points points = Points();
+
+  Future<void> submitForm() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         isLoader = true;
@@ -39,6 +42,7 @@ class _AddExpPageState extends State<AddExpPage> {
       var id = uid.v4();
       String monthyear = DateFormat("MMM y").format(date);
 
+//retrieve user current income
       final userDoc = await FirebaseFirestore.instance
           .collection("users")
           .doc(user!.uid)
@@ -52,22 +56,44 @@ class _AddExpPageState extends State<AddExpPage> {
       double expNeeds = userDoc["needs"].toDouble();
       double expWants = userDoc["wants"].toDouble();
       double expSavings = userDoc["savings"].toDouble();
+      double calNeeds = userDoc["cal_needs"].toDouble();
+      double calWants = userDoc["cal_wants"].toDouble();
+      double calSavings = userDoc["cal_savings"].toDouble();
+      String budgetRule = userDoc["budgetRule"].toString();
+      int currentPts = 0;
 
+      final pointsDoc = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid)
+          .collection('point_history')
+          .doc(monthyear)
+          .get();
+
+      int needspts = pointsDoc["NeedsPoints"];
+      int wantspts = pointsDoc["WantsPoints"];
+      int savingsspts = pointsDoc["SavingsPoints"];
+//cal expenses amount
       if (type == "credit") {
         remainAmount += amount;
         totalCredit += amount;
-      } else {
+      }
+      //Debit
+      else {
         remainAmount -= amount;
         totalDebit += amount;
         if (budget == "needs") {
           expNeeds += amount;
+          needspts += points.calculatePoints(budgetRule, expNeeds, calNeeds);
         } else if (budget == "wants") {
           expWants += amount;
+          wantspts += points.calculatePoints(budgetRule, expWants, calWants);
         } else {
           expSavings += amount;
+          savingsspts +=
+              points.calculatePoints(budgetRule, expSavings, calSavings);
         }
-      }
 
+        currentPts = needspts + wantspts + savingsspts;
 // // Format values to 2 decimal places
 //       remainAmount = double.parse(remainAmount.toStringAsFixed(2));
 //       totalCredit = double.parse(totalCredit.toStringAsFixed(2));
@@ -76,21 +102,36 @@ class _AddExpPageState extends State<AddExpPage> {
 //       expWants = double.parse(expWants.toStringAsFixed(2));
 //       expSavings = double.parse(expSavings.toStringAsFixed(2));
 
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user.uid)
+            .collection('monthly_income')
+            .doc(monthyear)
+            .update({
+          "needs": expNeeds,
+          "wants": expWants,
+          "savings": expSavings,
+          "remainAmount": remainAmount,
+          "totalCredit": totalCredit,
+          "totalDebit": totalDebit,
+          "updatedAt": timestamp,
+        });
+      }
+
+      //  update points
       await FirebaseFirestore.instance
           .collection("users")
           .doc(user.uid)
-          .collection('monthly_income')
+          .collection('point_history')
           .doc(monthyear)
           .update({
-        "needs": expNeeds,
-        "wants": expWants,
-        "savings": expSavings,
-        "remainAmount": remainAmount,
-        "totalCredit": totalCredit,
-        "totalDebit": totalDebit,
-        "updatedAt": timestamp,
+        "NeedsPoints": needspts,
+        "WantsPoints": wantspts,
+        "SavingsPoints": savingsspts,
+        "CurrentPoints": currentPts,
       });
 
+//save into transaction history
       var data = {
         "id": id,
         "title": titleEditController.text,
@@ -119,6 +160,46 @@ class _AddExpPageState extends State<AddExpPage> {
         const SnackBar(content: Text('Transaction added successfully!')),
       );
     }
+  }
+
+//calculate points save into  firebase
+  Future<void> calculatePoint() async {
+    final user = FirebaseAuth.instance.currentUser;
+    var amount = double.parse(amountEditController.text);
+    DateTime date = DateTime.now();
+    String monthyear = DateFormat("MMM y").format(date);
+
+//retrieve user current income
+    final userDoc = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .collection('monthly_income')
+        .doc(monthyear)
+        .get();
+
+    //use points
+    String budgetRule = userDoc["budgetRule"];
+
+    double totalCredit = userDoc["totalCredit"].toDouble();
+    double totalDebit = userDoc["totalDebit"].toDouble();
+    double expNeeds = userDoc["needs"].toDouble();
+    double expWants = userDoc["wants"].toDouble();
+    double expSavings = userDoc["savings"].toDouble();
+    double calNeeds = userDoc["cal_needs"].toDouble();
+    double totIncome = userDoc["totalIncome"].toDouble();
+
+    // int testneeds = points.calculatePoints(
+    //     budgetRule, amount, expNeeds, calNeeds, totIncome);
+
+//  update points
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .collection('point_history')
+        .doc(monthyear)
+        .update({
+      "CurrentPoints": 0,
+    });
   }
 
   @override
@@ -236,7 +317,8 @@ class _AddExpPageState extends State<AddExpPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     if (!isLoader) {
-                      _submitForm();
+                      submitForm();
+                      // calculatePoint();
                     }
                   },
                   style: ElevatedButton.styleFrom(

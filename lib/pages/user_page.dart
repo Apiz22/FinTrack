@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:ft_v2/gamification/class/badge_class.dart';
 import 'package:intl/intl.dart';
 
 class UserPage extends StatefulWidget {
@@ -16,18 +18,31 @@ class _UserPageState extends State<UserPage> {
   DateTime date = DateTime.now();
   String? selectedBudgetRule;
   int dayCount = 0;
-  int totalBadgesObtained = 0;
-  //to calculate the points
-  double income = 0;
-  double budget = 0;
-  double expenses = 0;
-  int points = 0;
+  String currentmonthyear = DateFormat("MMM y").format(DateTime.now());
+
+  // //to calculate the points
+  // double income = 2000;
+  // double budget = 0; //will calculate 20% from income
+  // double expenses = 0;
+  // int points = 0;
+  // int totalBadgesObtained = 0;
+
+  // Instance of Badges class
+  final Badges badges = Badges();
+  int _totalBadgesObtained = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadDayCount();
+    totalBadges();
+    // setBudget();
   }
+
+  // void setBudget() {
+  //   setState(() {
+  //     budget = income * 0.2;
+  //   });
+  // }
 
   logOut() async {
     setState(() {
@@ -39,63 +54,48 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
-//load day count
-  void _loadDayCount() {
-    // Load the day count from wherever you are storing it (e.g., SharedPreferences)
-    // For now, I'll set it to a random number for demonstration purposes
+  void totalBadges() async {
+    int badgesCount = await badges.retriveTotalBadge();
     setState(() {
-      dayCount = 10; // Set the day count to a random number
+      _totalBadgesObtained = badgesCount;
     });
   }
 
-  Future<void> fetchUserData() async {
-    try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-      if (userDoc.exists) {
-        setState(() {
-          income = userDoc['income'];
-          budget = userDoc['budget'];
-          expenses = userDoc['expenses'];
-          points = userDoc['points'];
-        });
-      }
-    } catch (error) {
-      print('Error fetching user data: $error');
-    }
-  }
+  // void addExpense(double amount) {
+  //   setState(() {
+  //     expenses += amount;
+  //     updatePoints();
+  //     updateUserData();
+  //   });
+  // }
 
-  void addExpense(double amount) {
-    setState(() {
-      expenses += amount;
-      updatePoints();
-    });
-    updateUserData();
-  }
+  // void updatePoints() {
+  //   double percentageSpent = (expenses / budget) * 100;
 
-  void updatePoints() {
-    double budgetLimit = (budget / 100) * income;
-    double percentageSpent = (expenses / budgetLimit) * 100;
+  //   // Normalize points based on percentage of budget spent
+  //   if (percentageSpent > 100) {
+  //     points -= 10; // Deduct points if overspend
+  //   } else {
+  //     points += (10 * (budget / (income * 0.2)))
+  //         .toInt(); // Add points proportionally to the budget
+  //   }
+  // }
 
-    if (percentageSpent > 100) {
-      points -= 10; // Deduct points if overspend
-    } else {
-      points += 10; // Add points if within budget
-    }
-  }
-
-  Future<void> updateUserData() async {
-    try {
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'expenses': expenses,
-        'points': points,
-      });
-    } catch (error) {
-      print('Error updating user data: $error');
-    }
-  }
+  // Future<void> updateUserData() async {
+  //   try {
+  //     await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(userId)
+  //         .collection('test')
+  //         .doc(currentmonthyear)
+  //         .set({
+  //       'expenses': expenses,
+  //       'points': points,
+  //     }, SetOptions(merge: true));
+  //   } catch (error) {
+  //     print('Error updating user data: $error');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -114,87 +114,110 @@ class _UserPageState extends State<UserPage> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 20),
-          StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("users")
-                .doc(userId)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              }
-              if (snapshot.hasError) {
-                return const Text("Error loading badges");
-              }
-              if (snapshot.hasData) {
-                var userDoc = snapshot.data!;
-                totalBadgesObtained = userDoc['totalBadgesObtained'] ?? 0;
-                return Column(
-                  children: [
-                    DropdownButtonFormField<String>(
-                      value: selectedBudgetRule, // Use the selected value
-                      onChanged: (totalBadgesObtained > 3)
-                          ? (String? value) {
-                              setState(() {
-                                selectedBudgetRule =
-                                    value; // Update the selected value
-                              });
-                            }
-                          : null,
-                      items: const [
-                        DropdownMenuItem<String>(
-                          value: '80/20',
-                          child: Text('80/20'),
-                        ),
-                        DropdownMenuItem<String>(
-                          value: '50/30/20',
-                          child: Text('50/30/20'),
-                        ),
-                      ],
-                      decoration: InputDecoration(
-                        labelText: 'Budget Rule',
-                        enabled: totalBadgesObtained > 3,
-                      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20),
+            //change budget rule
+            Column(
+              children: [
+                DropdownButtonFormField<String>(
+                  value: selectedBudgetRule, // Use the selected value
+                  onChanged: (_totalBadgesObtained >= 0)
+                      ? (String? value) {
+                          setState(() {
+                            selectedBudgetRule =
+                                value; // Update the selected value
+                          });
+                        }
+                      : null,
+                  items: const [
+                    DropdownMenuItem<String>(
+                      value: '80/20',
+                      child: Text('80/20'),
                     ),
-                    ElevatedButton(
-                      onPressed: (totalBadgesObtained > 3)
-                          ? () {
-                              saveBudgetRuleToFirebase(
-                                  selectedBudgetRule); // Call function to save budget rule
-                            }
-                          : null,
-                      child: const Text('Save'),
+                    DropdownMenuItem<String>(
+                      value: '50/30/20',
+                      child: Text('50/30/20'),
                     ),
-                    const SizedBox(height: 50),
-                    Text('Days App Used: $dayCount'),
-                    Text("Total user obtained badges: $totalBadgesObtained"),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Text("Budget : \$${budget.toStringAsFixed(2)}"),
-                        Text('Expenses: \$${expenses.toStringAsFixed(2)}'),
-                        Text('Points: $points'),
-                        ElevatedButton(
-                            onPressed: () {
-                              addExpense(50); //test using 50
-                            },
-                            child: const Text("Add Expense"))
-                      ],
-                    )
                   ],
+                  decoration: InputDecoration(
+                    labelText: 'Budget Rule',
+                    enabled: _totalBadgesObtained > 3,
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: (_totalBadgesObtained > 3)
+                      ? () {
+                          saveBudgetRuleToFirebase(
+                              selectedBudgetRule); // Call function to save budget rule
+                        }
+                      : null,
+                  child: const Text('Save'),
+                ),
+                const SizedBox(height: 50),
+                Text('Days App Used: $dayCount'),
+                Text("Total user obtained badges: $_totalBadgesObtained"),
+                //Test point
+                // Column(
+                //   crossAxisAlignment: CrossAxisAlignment.center,
+                //   children: [
+                //     const SizedBox(
+                //       height: 20,
+                //     ),
+                //     Text("Budget : \$${budget.toStringAsFixed(2)}"),
+                //     Text('Expenses: \$${expenses.toStringAsFixed(2)}'),
+                //     Text('Points: $points'),
+                //     ElevatedButton(
+                //         onPressed: () {
+                //           addExpense(100); //test using 10
+                //         },
+                //         child: const Text("Add Expense"))
+                //   ],
+                // ),
+                //list out the all badges obtained
+                const SizedBox(height: 20),
+                const Text("Hall of Fames"),
+                badgesList()
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  SizedBox badgesList() {
+    return SizedBox(
+      height: 200,
+      child: StreamBuilder<List<QueryDocumentSnapshot>>(
+        stream: badges.retrieveBadgesList(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Text("Error loading data");
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+
+          if (snapshot.hasData) {
+            final badgesList = snapshot.data!;
+            return ListView.builder(
+              itemCount: badgesList.length,
+              itemBuilder: (context, index) {
+                final badge = badgesList[index].data() as Map<String, dynamic>;
+                return ListTile(
+                  // leading: Image.network(badge['imageUrl']),
+                  title: Text(badge['name']),
+                  subtitle: Text(badge['description']),
                 );
-              }
-              return const Text("No data available");
-            },
-          ),
-        ],
+              },
+            );
+          } else {
+            return const Text('No badges obtained');
+          }
+        },
       ),
     );
   }

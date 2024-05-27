@@ -21,6 +21,7 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     // Call the function to create a monthly document for the current user
     _database.createMonthlyIncomeDocument(userId, context);
+    _database.createMonthlyPointHistory(userId);
   }
 
   @override

@@ -5,11 +5,11 @@ class Leaderboard extends StatefulWidget {
   const Leaderboard({super.key});
 
   @override
-  State<Leaderboard> createState() => _LeaderboardState();
+  State<Leaderboard> createState() => LeaderboardState();
 }
 
-class _LeaderboardState extends State<Leaderboard> {
-  String _selectedCategory = '50/30/20';
+class LeaderboardState extends State<Leaderboard> {
+  String selectedCategory = '50/30/20';
 
   List<Map<String, dynamic>> _users = [];
   bool _isLoading = true;
@@ -63,9 +63,10 @@ class _LeaderboardState extends State<Leaderboard> {
     await batch.commit();
   }
 
+//mask username
   String maskUsername(String username) {
     if (username.length <= 2) {
-      return username; // Not enough characters to mask
+      return username;
     }
     return username[0] +
         '*' * (username.length - 2) +
@@ -79,11 +80,11 @@ class _LeaderboardState extends State<Leaderboard> {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: DropdownButton<String>(
-            value: _selectedCategory,
+            value: selectedCategory,
             onChanged: (String? newValue) {
               if (newValue != null) {
                 setState(() {
-                  _selectedCategory = newValue;
+                  selectedCategory = newValue;
                   fetchUsers();
                 });
               }
@@ -107,16 +108,16 @@ class _LeaderboardState extends State<Leaderboard> {
                   Color color;
                   switch (index) {
                     case 0:
-                      color = const Color.fromARGB(255, 247, 207, 86);
+                      color = Colors.amber;
                       break;
                     case 1:
-                      color = Color.fromARGB(255, 195, 195, 195);
+                      color = Colors.grey;
                       break;
                     case 2:
-                      color = const Color.fromARGB(255, 237, 127, 87);
+                      color = Colors.brown;
                       break;
                     default:
-                      color = Color.fromARGB(255, 238, 238, 238);
+                      color = Colors.white;
                   }
                   return Container(
                     color: color,

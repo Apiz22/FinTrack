@@ -39,7 +39,6 @@ class RankPageState extends State<RankPage> {
         child: Column(
           children: [
             const NumberGuessingGame(),
-            const Text("leaderboard"),
             Text("User Current Badges: $totalBadgesObtained"),
             const Leaderboard(),
           ],

@@ -32,7 +32,7 @@ class _NumberGuessingGameState extends State<NumberGuessingGame> {
         isLoader = true;
         _consecutiveCorrectGuesses++; // Increment counter for correct guess
       });
-      await _badges.awardBadge("First Income", context); // Use the Badges class
+      await _badges.awardBadge("Good Guess", context); // Use the Badges class
       setState(() {
         isLoader = false;
       });

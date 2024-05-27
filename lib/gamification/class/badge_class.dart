@@ -101,4 +101,20 @@ class Badges {
     }
     return totalBadgesObtained;
   }
+
+  Stream<List<QueryDocumentSnapshot>> retrieveBadgesList() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception("User not logged in");
+    }
+
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    return firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('user_badges')
+        .snapshots()
+        .map((snapshot) => snapshot.docs);
+  }
 }
