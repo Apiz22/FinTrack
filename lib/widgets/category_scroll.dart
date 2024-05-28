@@ -50,8 +50,8 @@ class _CategoryListState extends State<CategoryList> {
             },
             child: Container(
               // width: 90,
-              margin: EdgeInsets.all(8),
-              padding: EdgeInsets.only(left: 10, right: 10),
+              margin: const EdgeInsets.all(8),
+              padding: const EdgeInsets.only(left: 10, right: 10),
               decoration: BoxDecoration(
                   color: currentCategory == data['name']
                       ? Colors.black
@@ -64,17 +64,17 @@ class _CategoryListState extends State<CategoryList> {
                     data['icon'],
                     size: 15,
                     color: currentCategory == data['name']
-                        ? Color.fromRGBO(253, 253, 253, 1)
+                        ? const Color.fromRGBO(253, 253, 253, 1)
                         : const Color.fromARGB(255, 19, 1, 0),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   Text(
                     data['name'],
                     style: TextStyle(
                       color: currentCategory == data['name']
-                          ? Color.fromRGBO(253, 253, 253, 1)
+                          ? const Color.fromRGBO(253, 253, 253, 1)
                           : const Color.fromARGB(255, 19, 1, 0),
                     ),
                   ),

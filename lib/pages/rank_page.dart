@@ -22,7 +22,7 @@ class RankPageState extends State<RankPage> {
   }
 
   void totalBadges() async {
-    int badgesCount = await badges.retriveTotalBadge();
+    int badgesCount = await badges.retrieveTotalBadge();
     setState(() {
       totalBadgesObtained = badgesCount;
     });

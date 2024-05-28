@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ft_v2/service/database.dart';
 import 'package:ft_v2/widgets/budget/budget_card.dart';
-import 'package:ft_v2/widgets/note.dart';
 import 'package:ft_v2/widgets/view_card.dart';
 import 'package:intl/intl.dart';
 

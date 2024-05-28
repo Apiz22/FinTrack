@@ -25,30 +25,27 @@ class Database {
     }
   }
 
+// //get user current budget status
+  Future<String> getUserBudgetRule(String userId) async {
+    final userDoc = await users.doc(userId).get();
+    return userDoc.exists ? userDoc["currentRule"] ?? "" : "";
+  }
+
   //create user point history
   Future<void> createMonthlyPointHistory(String userId) async {
-    bool documentExists = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('point_history')
-        .doc(currentmonthyear)
-        .get()
-        .then((doc) => doc.exists);
+    final docRef =
+        users.doc(userId).collection('point_history').doc(currentmonthyear);
+    final documentExists = await docRef.get().then((doc) => doc.exists);
 
     if (!documentExists) {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('point_history')
-          .doc(currentmonthyear)
-          .set({
+      final budgetRule = await getUserBudgetRule(userId);
+      await docRef.set({
+        "budgetRule": budgetRule,
         "TotalLimitPoints": 100,
         "CurrentPoints": 0,
         "NeedsPoints": 0,
         "WantsPoints": 0,
         "SavingsPoints": 0,
-
-        // "date": currentmonthyear,
       });
     }
   }

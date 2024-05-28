@@ -5,7 +5,7 @@ import 'package:ft_v2/utils/appvalidator.dart';
 import 'sign_up.dart';
 
 class SignInPage extends StatefulWidget {
-  SignInPage({super.key});
+  const SignInPage({super.key});
 
   // final _emailController = TextEditingController();
   // final _passwordController = TextEditingController();
@@ -151,7 +151,7 @@ class _SignInPageState extends State<SignInPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SignUpPage()),
+                          MaterialPageRoute(builder: (context) => const SignUpPage()),
                         );
                       },
                       child: const Text(

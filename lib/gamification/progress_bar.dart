@@ -10,7 +10,7 @@ class ProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String per100 = (percent * 100).toStringAsFixed(0);
+    String per100 = (percent * 100).toStringAsFixed(1);
 
     if (percent >= 1.0) {
       // If percent is 100%, call the onComplete callback
@@ -21,7 +21,7 @@ class ProgressBar extends StatelessWidget {
       radius: 30,
       lineWidth: 10,
       percent: percent.clamp(0.0, 1.0), // Ensures percent is between 0 and 1,
-      progressColor: Colors.green,
+      progressColor: percent > 1.0 ? Colors.red : Colors.green,
       backgroundColor: Colors.green.shade200,
       circularStrokeCap: CircularStrokeCap.round,
       center: Text(

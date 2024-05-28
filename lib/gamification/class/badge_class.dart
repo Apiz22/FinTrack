@@ -43,6 +43,8 @@ class Badges {
               'imageUrl': badgeData['imageUrl'],
             });
 
+            await updateTotalBadges(user.uid); // Update total badges
+
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                   content:
@@ -53,11 +55,6 @@ class Badges {
               const SnackBar(content: Text('Badge not found.')),
             );
           }
-          // } else {
-          //   ScaffoldMessenger.of(context).showSnackBar(
-          //     const SnackBar(
-          //         content: Text('You have already been awarded this badge.')),
-          //   );
         }
       } else {
         throw Exception("User document not found");
@@ -69,9 +66,27 @@ class Badges {
     }
   }
 
+  Future<void> updateTotalBadges(String userId) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Get the total number of badges
+    QuerySnapshot userBadges = await firestore
+        .collection('users')
+        .doc(userId)
+        .collection('user_badges')
+        .get();
+
+    int totalBadgesObtained = userBadges.docs.length;
+
+    // Update the total badges count in the user document
+    await firestore.collection('users').doc(userId).update({
+      'totalBadgesObtained': totalBadgesObtained,
+    });
+  }
+
   // Retrieve user_badges and update the total badge count
-  Future<int> retriveTotalBadge() async {
-    int totalBadgesObtained = 0; // Initialize totalBadgesObtained
+  Future<int> retrieveTotalBadge() async {
+    int totalBadgesObtained = 0;
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
@@ -80,22 +95,20 @@ class Badges {
 
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      // Check user badges
-      DocumentSnapshot userBadgeDoc =
-          await firestore.collection('users').doc(user.uid).get();
+      // Get the total number of badges
+      QuerySnapshot userBadges = await firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('user_badges')
+          .get();
 
-      if (userBadgeDoc.exists) {
-        QuerySnapshot userBadges = await firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection('user_badges')
-            .get();
+      // Calculate total badges
+      totalBadgesObtained = userBadges.docs.length;
 
-        // Calculate total badges
-        totalBadgesObtained = userBadges.docs.length;
-      } else {
-        throw Exception("User document not found");
-      }
+      // Update the total badges count in the user document
+      await firestore.collection('users').doc(user.uid).update({
+        'totalBadgesObtained': totalBadgesObtained,
+      });
     } catch (e) {
       print("Error retrieving total badges: $e");
     }

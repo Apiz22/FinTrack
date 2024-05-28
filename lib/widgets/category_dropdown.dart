@@ -13,7 +13,7 @@ class CategoryDropDown extends StatelessWidget {
     return DropdownButton<String>(
         value: cattype,
         isExpanded: true,
-        hint: Text("Select Category"),
+        hint: const Text("Select Category"),
         items: appIcons.homeExpensesCategories
             .map((e) => DropdownMenuItem<String>(
                 value: e["name"],
@@ -23,12 +23,12 @@ class CategoryDropDown extends StatelessWidget {
                       e["icon"],
                       color: Colors.black45,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     Text(
                       e["name"],
-                      style: TextStyle(color: Colors.black45),
+                      style: const TextStyle(color: Colors.black45),
                     ),
                   ],
                 )))

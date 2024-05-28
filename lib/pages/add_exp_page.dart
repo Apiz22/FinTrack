@@ -50,6 +50,7 @@ class _AddExpPageState extends State<AddExpPage> {
           .doc(monthyear)
           .get();
 
+      double income = userDoc["totalIncome"].toDouble();
       double remainAmount = userDoc["remainAmount"].toDouble();
       double totalCredit = userDoc["totalCredit"].toDouble();
       double totalDebit = userDoc["totalDebit"].toDouble();
@@ -59,7 +60,6 @@ class _AddExpPageState extends State<AddExpPage> {
       double calNeeds = userDoc["cal_needs"].toDouble();
       double calWants = userDoc["cal_wants"].toDouble();
       double calSavings = userDoc["cal_savings"].toDouble();
-      String budgetRule = userDoc["budgetRule"].toString();
       int currentPts = 0;
 
       final pointsDoc = await FirebaseFirestore.instance
@@ -72,6 +72,9 @@ class _AddExpPageState extends State<AddExpPage> {
       int needspts = pointsDoc["NeedsPoints"];
       int wantspts = pointsDoc["WantsPoints"];
       int savingsspts = pointsDoc["SavingsPoints"];
+      String budgetRule = pointsDoc["budgetRule"].toString();
+      double com = 0;
+
 //cal expenses amount
       if (type == "credit") {
         remainAmount += amount;
@@ -83,17 +86,31 @@ class _AddExpPageState extends State<AddExpPage> {
         totalDebit += amount;
         if (budget == "needs") {
           expNeeds += amount;
-          needspts += points.calculatePoints(budgetRule, expNeeds, calNeeds);
+          com = expNeeds + expWants;
+          needspts += points.calculatePoints(
+              budgetRule, amount, expNeeds, calNeeds, income, budget, com);
         } else if (budget == "wants") {
           expWants += amount;
-          wantspts += points.calculatePoints(budgetRule, expWants, calWants);
+          com = expNeeds + expWants;
+
+          wantspts += points.calculatePoints(
+              budgetRule, amount, expWants, calWants, income, budget, com);
         } else {
           expSavings += amount;
-          savingsspts +=
-              points.calculatePoints(budgetRule, expSavings, calSavings);
+          savingsspts += points.calculatePoints(
+              budgetRule, amount, expSavings, calSavings, income, budget, com);
         }
 
         currentPts = needspts + wantspts + savingsspts;
+
+        if (budgetRule == "50/30/20") {
+          int pointsLimit = 1000;
+          currentPts = (currentPts > pointsLimit) ? pointsLimit : currentPts;
+        } else {
+          int pointsLimit = 500;
+          currentPts = (currentPts > pointsLimit) ? pointsLimit : currentPts;
+        }
+
 // // Format values to 2 decimal places
 //       remainAmount = double.parse(remainAmount.toStringAsFixed(2));
 //       totalCredit = double.parse(totalCredit.toStringAsFixed(2));
@@ -160,46 +177,6 @@ class _AddExpPageState extends State<AddExpPage> {
         const SnackBar(content: Text('Transaction added successfully!')),
       );
     }
-  }
-
-//calculate points save into  firebase
-  Future<void> calculatePoint() async {
-    final user = FirebaseAuth.instance.currentUser;
-    var amount = double.parse(amountEditController.text);
-    DateTime date = DateTime.now();
-    String monthyear = DateFormat("MMM y").format(date);
-
-//retrieve user current income
-    final userDoc = await FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .collection('monthly_income')
-        .doc(monthyear)
-        .get();
-
-    //use points
-    String budgetRule = userDoc["budgetRule"];
-
-    double totalCredit = userDoc["totalCredit"].toDouble();
-    double totalDebit = userDoc["totalDebit"].toDouble();
-    double expNeeds = userDoc["needs"].toDouble();
-    double expWants = userDoc["wants"].toDouble();
-    double expSavings = userDoc["savings"].toDouble();
-    double calNeeds = userDoc["cal_needs"].toDouble();
-    double totIncome = userDoc["totalIncome"].toDouble();
-
-    // int testneeds = points.calculatePoints(
-    //     budgetRule, amount, expNeeds, calNeeds, totIncome);
-
-//  update points
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(user.uid)
-        .collection('point_history')
-        .doc(monthyear)
-        .update({
-      "CurrentPoints": 0,
-    });
   }
 
   @override

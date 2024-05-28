@@ -5,7 +5,7 @@ class note extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return const Text(
       "**NOTE \n saving** can determine the group of calculation into not achived or not, 80/20 or 50/30/20",
       style: TextStyle(
         fontSize: 18,

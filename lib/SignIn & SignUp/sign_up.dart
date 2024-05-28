@@ -44,6 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
         "password": _passwordController.text,
         "phone": _phoneController.text,
         "totalBadgesObtained": 0,
+        "currentRule": "80/20",
       };
 
       //     await authService.createUser(data, context);
@@ -60,7 +61,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
         // Show success message as a SnackBar
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("User registered successfully")),
+          const SnackBar(content: Text("User registered successfully")),
         );
       } catch (e) {
         // Show error message as a SnackBar
@@ -208,7 +209,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SignInPage()),
+                          MaterialPageRoute(builder: (context) => const SignInPage()),
                         );
                       },
                       child: const Text(

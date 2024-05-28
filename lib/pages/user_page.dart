@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:ft_v2/gamification/class/badge_class.dart';
 import 'package:intl/intl.dart';
 
@@ -55,7 +54,7 @@ class _UserPageState extends State<UserPage> {
   }
 
   void totalBadges() async {
-    int badgesCount = await badges.retriveTotalBadge();
+    int badgesCount = await badges.retrieveTotalBadge();
     setState(() {
       _totalBadgesObtained = badgesCount;
     });
@@ -144,11 +143,11 @@ class _UserPageState extends State<UserPage> {
                   ],
                   decoration: InputDecoration(
                     labelText: 'Budget Rule',
-                    enabled: _totalBadgesObtained > 3,
+                    enabled: _totalBadgesObtained > 1,
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: (_totalBadgesObtained > 3)
+                  onPressed: (_totalBadgesObtained > 1)
                       ? () {
                           saveBudgetRuleToFirebase(
                               selectedBudgetRule); // Call function to save budget rule
@@ -225,14 +224,8 @@ class _UserPageState extends State<UserPage> {
   // Function to save the selected budget rule to Firebase
   void saveBudgetRuleToFirebase(String? budgetRule) {
     if (budgetRule != null) {
-      String monthYear = DateFormat("MMM y").format(date);
-      FirebaseFirestore.instance
-          .collection("users")
-          .doc(userId)
-          .collection('monthly_income')
-          .doc(monthYear)
-          .update({
-        'budgetRule': budgetRule,
+      FirebaseFirestore.instance.collection("users").doc(userId).update({
+        'currentRule': budgetRule,
       }).then((value) {
         print('Budget rule saved successfully!');
       }).catchError((error) {
