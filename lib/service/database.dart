@@ -12,6 +12,9 @@ class Database {
     try {
       // Set the user document
       await users.doc(userId).set(data);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("User registered successfully")),
+      );
     } catch (error) {
       showDialog(
         context: context,
@@ -61,6 +64,8 @@ class Database {
         .then((doc) => doc.exists);
 
     if (!documentExists) {
+      final budgetRule = await getUserBudgetRule(userId);
+
       // Show dialog to get total income from the user
       showDialog(
         context: context,
@@ -105,7 +110,7 @@ class Database {
                     'cal_needs': calneeds,
                     'cal_wants': calwants,
                     'cal_savings': calsavings,
-                    'budgetRule': "50/30/20",
+                    'budgetRule': budgetRule,
                   }).then((_) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

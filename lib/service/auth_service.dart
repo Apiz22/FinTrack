@@ -10,6 +10,7 @@ class AuthService {
         email: data['email'],
         password: data['password'],
       );
+      //add user into firestore
       await database.addUser(data, context);
     } catch (e) {
       showDialog(

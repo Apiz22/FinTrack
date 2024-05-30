@@ -19,13 +19,6 @@ class _UserPageState extends State<UserPage> {
   int dayCount = 0;
   String currentmonthyear = DateFormat("MMM y").format(DateTime.now());
 
-  // //to calculate the points
-  // double income = 2000;
-  // double budget = 0; //will calculate 20% from income
-  // double expenses = 0;
-  // int points = 0;
-  // int totalBadgesObtained = 0;
-
   // Instance of Badges class
   final Badges badges = Badges();
   int _totalBadgesObtained = 0;
@@ -34,14 +27,7 @@ class _UserPageState extends State<UserPage> {
   void initState() {
     super.initState();
     totalBadges();
-    // setBudget();
   }
-
-  // void setBudget() {
-  //   setState(() {
-  //     budget = income * 0.2;
-  //   });
-  // }
 
   logOut() async {
     setState(() {
@@ -60,122 +46,26 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
-  // void addExpense(double amount) {
-  //   setState(() {
-  //     expenses += amount;
-  //     updatePoints();
-  //     updateUserData();
-  //   });
-  // }
-
-  // void updatePoints() {
-  //   double percentageSpent = (expenses / budget) * 100;
-
-  //   // Normalize points based on percentage of budget spent
-  //   if (percentageSpent > 100) {
-  //     points -= 10; // Deduct points if overspend
-  //   } else {
-  //     points += (10 * (budget / (income * 0.2)))
-  //         .toInt(); // Add points proportionally to the budget
-  //   }
-  // }
-
-  // Future<void> updateUserData() async {
-  //   try {
-  //     await FirebaseFirestore.instance
-  //         .collection('users')
-  //         .doc(userId)
-  //         .collection('test')
-  //         .doc(currentmonthyear)
-  //         .set({
-  //       'expenses': expenses,
-  //       'points': points,
-  //     }, SetOptions(merge: true));
-  //   } catch (error) {
-  //     print('Error updating user data: $error');
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("User Page"),
         backgroundColor: Colors.green,
-        actions: [
-          IconButton(
-            onPressed: () {
-              logOut();
-            },
-            icon: isLogOut
-                ? const CircularProgressIndicator()
-                : const Icon(Icons.exit_to_app),
-          ),
-        ],
+      ),
+      endDrawer: Drawer(
+        child: userDrawer(context),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 20),
-            //change budget rule
+            // const SizedBox(height: 20),
             Column(
               children: [
-                DropdownButtonFormField<String>(
-                  value: selectedBudgetRule, // Use the selected value
-                  onChanged: (_totalBadgesObtained >= 0)
-                      ? (String? value) {
-                          setState(() {
-                            selectedBudgetRule =
-                                value; // Update the selected value
-                          });
-                        }
-                      : null,
-                  items: const [
-                    DropdownMenuItem<String>(
-                      value: '80/20',
-                      child: Text('80/20'),
-                    ),
-                    DropdownMenuItem<String>(
-                      value: '50/30/20',
-                      child: Text('50/30/20'),
-                    ),
-                  ],
-                  decoration: InputDecoration(
-                    labelText: 'Budget Rule',
-                    enabled: _totalBadgesObtained > 1,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: (_totalBadgesObtained > 1)
-                      ? () {
-                          saveBudgetRuleToFirebase(
-                              selectedBudgetRule); // Call function to save budget rule
-                        }
-                      : null,
-                  child: const Text('Save'),
-                ),
                 const SizedBox(height: 50),
                 Text('Days App Used: $dayCount'),
                 Text("Total user obtained badges: $_totalBadgesObtained"),
-                //Test point
-                // Column(
-                //   crossAxisAlignment: CrossAxisAlignment.center,
-                //   children: [
-                //     const SizedBox(
-                //       height: 20,
-                //     ),
-                //     Text("Budget : \$${budget.toStringAsFixed(2)}"),
-                //     Text('Expenses: \$${expenses.toStringAsFixed(2)}'),
-                //     Text('Points: $points'),
-                //     ElevatedButton(
-                //         onPressed: () {
-                //           addExpense(100); //test using 10
-                //         },
-                //         child: const Text("Add Expense"))
-                //   ],
-                // ),
-                //list out the all badges obtained
                 const SizedBox(height: 20),
                 const Text("Hall of Fames"),
                 badgesList()
@@ -184,6 +74,90 @@ class _UserPageState extends State<UserPage> {
           ],
         ),
       ),
+    );
+  }
+
+//user drawer
+  ListView userDrawer(BuildContext context) {
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        const DrawerHeader(
+          decoration: BoxDecoration(
+            color: Colors.green,
+          ),
+          child: Text(
+            'Menu',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+            ),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.edit),
+          title: const Text('Edit Budget Rule'),
+          onTap: () {
+            Navigator.pop(context);
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Edit Budget Rule'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DropdownButtonFormField<String>(
+                        value: selectedBudgetRule,
+                        onChanged: (_totalBadgesObtained >= 0)
+                            ? (String? value) {
+                                setState(() {
+                                  selectedBudgetRule = value;
+                                });
+                              }
+                            : null,
+                        items: const [
+                          DropdownMenuItem<String>(
+                            value: '80/20',
+                            child: Text('80/20'),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: '50/30/20',
+                            child: Text('50/30/20'),
+                          ),
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'Budget Rule',
+                          enabled: _totalBadgesObtained > 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: (_totalBadgesObtained > 1)
+                          ? () {
+                              saveBudgetRuleToFirebase(selectedBudgetRule);
+                              Navigator.pop(context);
+                            }
+                          : null,
+                      child: const Text('Save'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.exit_to_app),
+          title: const Text('Log Out'),
+          onTap: () {
+            Navigator.pop(context);
+            logOut();
+          },
+        ),
+      ],
     );
   }
 
@@ -202,16 +176,47 @@ class _UserPageState extends State<UserPage> {
 
           if (snapshot.hasData) {
             final badgesList = snapshot.data!;
-            return ListView.builder(
-              itemCount: badgesList.length,
-              itemBuilder: (context, index) {
-                final badge = badgesList[index].data() as Map<String, dynamic>;
-                return ListTile(
-                  // leading: Image.network(badge['imageUrl']),
-                  title: Text(badge['name']),
-                  subtitle: Text(badge['description']),
-                );
-              },
+            return Container(
+              color: Colors.grey[200], // Set ListView background color to grey
+              child: ListView.builder(
+                itemCount: badgesList.length,
+                itemBuilder: (context, index) {
+                  final badge =
+                      badgesList[index].data() as Map<String, dynamic>;
+                  final imageUrl = badge['imageUrl'] ?? '';
+
+                  return Container(
+                    color: (index % 2 == 0)
+                        ? Color.fromARGB(255, 40, 180, 22)
+                        : Color.fromARGB(255, 181, 179, 182),
+                    child: ListTile(
+                      leading: ClipOval(
+                        child: Container(
+                          color: const Color.fromARGB(255, 175, 174, 175),
+                          padding: const EdgeInsets.all(
+                              1), // Add padding for round shape
+                          child: imageUrl.isNotEmpty
+                              ? Image.network(
+                                  imageUrl,
+                                  width: 50,
+                                  height: 50,
+                                )
+                              : const Icon(Icons.image_not_supported,
+                                  size: 50, color: Colors.white),
+                        ),
+                      ),
+                      title: Text(badge['name']),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(badge['description']),
+                          const Text("test"),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             );
           } else {
             return const Text('No badges obtained');

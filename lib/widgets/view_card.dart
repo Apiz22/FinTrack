@@ -35,6 +35,28 @@ class TopSplit extends StatelessWidget {
         }
 
         var data = snapshot.data!.data() as Map<String, dynamic>;
+        // Show dialog if remainAmount is less than 0
+        if (data["remainAmount"] < 0) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Overspent Alert"),
+                  content: const Text("You have overspent your budget!"),
+                  actions: [
+                    TextButton(
+                      child: const Text("OK"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          });
+        }
 
         return TotalCard(
           data: data,
@@ -44,6 +66,7 @@ class TopSplit extends StatelessWidget {
   }
 }
 
+//Display the Total Balance , Credit, Debit
 class TotalCard extends StatelessWidget {
   const TotalCard({
     super.key,
@@ -52,17 +75,18 @@ class TotalCard extends StatelessWidget {
 
   final Map data;
 
+//Display the Total Balance
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
               "Total Balance",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 22,
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
               ),
@@ -72,21 +96,17 @@ class TotalCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 18,
                 color: Colors.white,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w500,
               ),
             )
           ],
         ),
+        //Display Credit and Debit
         Container(
           padding: const EdgeInsets.all(5),
-          // EdgeInsets.only(top: 30, bottom: 10, left: 10, right: 10),
           decoration: const BoxDecoration(
-            color: Colors.white,
-            // borderRadius: BorderRadius.only(
-            //   topLeft: Radius.circular(30),
-            //   topRight: Radius.circular(30),
-            // ),
-            borderRadius: BorderRadius.all(Radius.circular(30)),
+            color: Color.fromARGB(255, 242, 234, 234),
+            borderRadius: BorderRadius.all(Radius.circular(15)),
           ),
           child: Row(
             children: [
@@ -95,9 +115,9 @@ class TotalCard extends StatelessWidget {
                 header: 'Credit',
                 amount: '${data["totalCredit"].toStringAsFixed(2)}',
               ),
-              // const SizedBox(
-              //   width: 10,
-              // ),
+              const SizedBox(
+                width: 5,
+              ),
               OneCard(
                 color: Colors.amber,
                 header: 'Debit',
@@ -128,8 +148,8 @@ class OneCard extends StatelessWidget {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(10),
+          color: color.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(15),
         ),
         child: Padding(
           padding: const EdgeInsets.all(10.0),

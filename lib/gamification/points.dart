@@ -1,4 +1,3 @@
-
 class Points {
   static const int pointsLimit502030 = 2000;
   static const int pointsLimit8020 = 1000;
@@ -20,7 +19,7 @@ class Points {
           );
           break;
         } else if (category == "wants") {
-          weight = 20;
+          weight = 30;
           points = calculatePointsForBudget(
             amount,
             expenses,
@@ -49,8 +48,10 @@ class Points {
           points =
               calculatePointsForBudget(amount, expenses, calbudget, weight);
           break;
+        } else {
+          print("other");
+          break;
         }
-
       default:
         // Handle other cases or throw an error
         break;

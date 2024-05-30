@@ -104,10 +104,10 @@ class _AddExpPageState extends State<AddExpPage> {
         currentPts = needspts + wantspts + savingsspts;
 
         if (budgetRule == "50/30/20") {
-          int pointsLimit = 1000;
+          int pointsLimit = 2000;
           currentPts = (currentPts > pointsLimit) ? pointsLimit : currentPts;
         } else {
-          int pointsLimit = 500;
+          int pointsLimit = 1000;
           currentPts = (currentPts > pointsLimit) ? pointsLimit : currentPts;
         }
 
@@ -252,7 +252,7 @@ class _AddExpPageState extends State<AddExpPage> {
                   if (value != null) {
                     setState(
                       () {
-                        budget = value;
+                        budget = value as String;
                       },
                     );
                   }
@@ -279,7 +279,7 @@ class _AddExpPageState extends State<AddExpPage> {
                   if (value != null) {
                     setState(
                       () {
-                        type = value;
+                        type = value as String;
                       },
                     );
                   }

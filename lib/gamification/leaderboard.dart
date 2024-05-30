@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Leaderboard extends StatefulWidget {
   const Leaderboard({super.key});
@@ -7,6 +8,9 @@ class Leaderboard extends StatefulWidget {
   @override
   State<Leaderboard> createState() => LeaderboardState();
 }
+
+DateTime date = DateTime.now();
+String monthyear = DateFormat("MMM y").format(date);
 
 class LeaderboardState extends State<Leaderboard> {
   String selectedCategory = '50/30/20';
@@ -28,17 +32,34 @@ class LeaderboardState extends State<Leaderboard> {
 
       final querySnapshot =
           await FirebaseFirestore.instance.collection('users').get();
+      final List<Map<String, dynamic>> users = [];
 
-      final List<Map<String, dynamic>> users = querySnapshot.docs.map((doc) {
+      for (var doc in querySnapshot.docs) {
         final data = doc.data();
-        return {
-          'id': doc.id,
-          'name': data['username'] ?? 'Unknown',
-          'totalBadges': data['totalBadgesObtained'] ?? 0,
-        };
-      }).toList();
+        final userId = doc.id;
 
-      users.sort((a, b) => b['totalBadges'].compareTo(a['totalBadges']));
+        final pointsSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('point_history')
+            .doc(monthyear)
+            .get();
+
+        if (pointsSnapshot.exists) {
+          final pointsData = pointsSnapshot.data()!;
+          final currentPoints = pointsData['CurrentPoints'] ?? 0;
+          if (currentPoints > 0) {
+            users.add({
+              'id': userId,
+              'name': data['username'] ?? 'Unknown',
+              'currentPoints': currentPoints,
+            });
+          }
+        }
+      }
+
+      users.sort((a, b) => b['currentPoints'].compareTo(a['currentPoints']));
+
       setState(() {
         _users = users;
         _isLoading = false;
@@ -51,26 +72,6 @@ class LeaderboardState extends State<Leaderboard> {
         _isLoading = false;
       });
     }
-  }
-
-  Future<void> updateUserRankings(List<Map<String, dynamic>> users) async {
-    final batch = FirebaseFirestore.instance.batch();
-    for (int i = 0; i < users.length; i++) {
-      final userRef =
-          FirebaseFirestore.instance.collection('users').doc(users[i]['id']);
-      batch.update(userRef, {'currentRanking': i + 1});
-    }
-    await batch.commit();
-  }
-
-//mask username
-  String maskUsername(String username) {
-    if (username.length <= 2) {
-      return username;
-    }
-    return username[0] +
-        '*' * (username.length - 2) +
-        username[username.length - 1];
   }
 
   @override
@@ -128,11 +129,11 @@ class LeaderboardState extends State<Leaderboard> {
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       title: Text(
-                        maskUsername(_users[index]['name']),
+                        _users[index]['name'],
                         style: const TextStyle(fontSize: 20),
                       ),
                       trailing: Text(
-                        '${_users[index]['totalBadges']} badges',
+                        '${_users[index]['currentPoints']} points',
                         style: const TextStyle(fontSize: 20),
                       ),
                     ),
@@ -142,4 +143,26 @@ class LeaderboardState extends State<Leaderboard> {
       ],
     );
   }
+}
+
+Future<void> updateUserRankings(List<Map<String, dynamic>> users) async {
+  final batch = FirebaseFirestore.instance.batch();
+  for (int i = 0; i < users.length; i++) {
+    final userRef =
+        FirebaseFirestore.instance.collection('users').doc(users[i]['id']);
+    final pointHistoryRef = userRef.collection('point_history').doc(monthyear);
+
+    batch.update(userRef, {'currentRanking': i + 1});
+    batch.update(pointHistoryRef, {'currentRanking': i + 1});
+  }
+  await batch.commit();
+}
+
+String maskUsername(String username) {
+  if (username.length <= 2) {
+    return username;
+  }
+  return username[0] +
+      '*' * (username.length - 2) +
+      username[username.length - 1];
 }

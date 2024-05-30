@@ -38,6 +38,7 @@ class _SignUpPageState extends State<SignUpPage> {
         isLoader = true;
       });
 
+      //initial data setup first time
       var data = {
         "username": _userNameController.text,
         "email": _emailController.text,
@@ -47,22 +48,13 @@ class _SignUpPageState extends State<SignUpPage> {
         "currentRule": "80/20",
       };
 
-      //     await authService.createUser(data, context);
-
-      //     setState(() {
-      //       isLoader = false;
-      //     });
-      //     // ScaffoldMessenger.of(_formKey.currentContext!).showSnackBar(
-      //     //     const SnackBar(content: Text("Form Submitted succesfully")));
-      //   }
-      // }
       try {
         await authService.createUser(data, context);
 
         // Show success message as a SnackBar
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("User registered successfully")),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text("User registered successfully")),
+        // );
       } catch (e) {
         // Show error message as a SnackBar
         ScaffoldMessenger.of(context).showSnackBar(
@@ -180,7 +172,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      isLoader ? print("loading") : _submitForm();
+                      isLoader ? print("Loading") : _submitForm();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -209,7 +201,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const SignInPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const SignInPage()),
                         );
                       },
                       child: const Text(

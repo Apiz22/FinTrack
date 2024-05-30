@@ -4,10 +4,11 @@ import 'package:ft_v2/gamification/class/badge_class.dart';
 import 'package:ft_v2/gamification/progress_bar.dart';
 
 class BudgetCard extends StatelessWidget {
-  const BudgetCard({super.key, required this.userId, this.currentMonthYear});
+  const BudgetCard(
+      {super.key, required this.userId, required this.currentIncome});
 
   final String userId;
-  final currentMonthYear;
+  final String currentIncome;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class BudgetCard extends StatelessWidget {
         .collection('users')
         .doc(userId)
         .collection('monthly_income')
-        .doc(currentMonthYear)
+        .doc(currentIncome)
         .snapshots();
 
     return Column(
@@ -41,6 +42,7 @@ class BudgetCard extends StatelessWidget {
             double needs = data["needs"];
             double wants = data["wants"];
             double savings = data["savings"];
+            String budgetRule = data["budgetRule"];
 
             // Instance of Badges class
             final Badges badges = Badges();
@@ -55,19 +57,18 @@ class BudgetCard extends StatelessWidget {
             double wantsPercent = wants / calWants;
             double savingsPercent = savings / calSavings;
 
-            // Check if all categories are at 100%
-            if (needsPercent >= 1.0 &&
-                wantsPercent >= 1.0 &&
-                savingsPercent >= 1.0) {
-              badges.awardBadge("Reach Goal", context);
-            }
             // Determine the budget rows based on the budget rule
             List<Widget> budgetRows;
-
-            if (data["budgetRule"] == '80/20') {
+            if (budgetRule == '80/20') {
               // Calculate the combined amounts for Needs and wants
               double combinedWantsNeeds = wants + needs;
               double combinedCalWantsNeeds = calWants + calNeeds;
+              double combinedWantsNeedsPercentage =
+                  combinedWantsNeeds / combinedCalWantsNeeds;
+              if (combinedWantsNeedsPercentage == 1.0 &&
+                  savingsPercent == 1.0) {
+                badges.awardBadge("Reach Goal 80/20", context);
+              }
 
               budgetRows = [
                 buildRow(
@@ -87,7 +88,12 @@ class BudgetCard extends StatelessWidget {
                   awardSavingsBadge,
                 ),
               ];
-            } else if (data["budgetRule"] == '50/30/20') {
+            } else if (budgetRule == '50/30/20') {
+              if (needsPercent == 1.0 &&
+                  wantsPercent == 1.0 &&
+                  savingsPercent == 1.0) {
+                badges.awardBadge("Reach Goal 50/30/20", context);
+              }
               budgetRows = [
                 buildRow(
                   context,
@@ -181,7 +187,7 @@ class BudgetCard extends StatelessWidget {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 138, 138, 138),
+          color: Color.fromARGB(255, 234, 234, 234),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
