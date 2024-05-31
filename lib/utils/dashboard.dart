@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ft_v2/pages/add_exp_page.dart';
-import 'package:ft_v2/pages/expenses_page.dart';
-import 'package:ft_v2/pages/home_screen.dart';
-import 'package:ft_v2/pages/rank_page.dart';
-import 'package:ft_v2/pages/user_page.dart';
-import 'package:ft_v2/widgets/nav_bar.dart';
+
+import '../pages/add_exp_page.dart';
+import '../pages/expenses_page.dart';
+import '../pages/home_screen.dart';
+import '../pages/rank_page.dart';
+import '../pages/user_page.dart';
+import '../widgets/nav_bar.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ft_v2/gamification/class/badge_class.dart';
-import 'package:ft_v2/gamification/leaderboard.dart';
-import 'package:ft_v2/gamification/test_badges.dart';
+
+import '../gamification/class/badge_class.dart';
+import '../gamification/leaderboard.dart';
+import '../gamification/test_badges.dart';
 
 class RankPage extends StatefulWidget {
   const RankPage({super.key});

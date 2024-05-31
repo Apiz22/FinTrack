@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:ft_v2/gamification/class/badge_class.dart';
-import 'package:ft_v2/gamification/progress_bar.dart';
+
+import '../../gamification/class/badge_class.dart';
+import '../../gamification/progress_bar.dart';
 
 class BudgetCard extends StatelessWidget {
   const BudgetCard(

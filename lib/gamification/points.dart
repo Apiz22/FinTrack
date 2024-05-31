@@ -153,8 +153,8 @@ class Points {
 
   //if user got achieve the points it will get streak
   Future<void> userPointStreak(String userId) async {
-    DateTime date = DateTime.now();
-    String monthYear = DateFormat("MMM y").format(date);
+    // DateTime date = DateTime.now();
+    // String monthYear = DateFormat("MMM y").format(date);
 
     try {
       int currentPts = await retrieveCurrentPts(userId);

@@ -1,5 +1,5 @@
+import 'package:FinTrack/gamification/class/badge_class.dart';
 import 'package:flutter/material.dart';
-import 'package:ft_v2/gamification/class/badge_class.dart';
 
 class NumberGuessingGame extends StatefulWidget {
   const NumberGuessingGame({super.key});

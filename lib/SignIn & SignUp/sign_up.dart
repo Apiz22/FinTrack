@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ft_v2/service/auth_service.dart';
-import 'package:ft_v2/SignIn%20&%20SignUp/sign_in.dart';
-import 'package:ft_v2/utils/appvalidator.dart';
+import '../service/auth_service.dart';
+import '../utils/appvalidator.dart';
+import 'sign_in.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -20,6 +20,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   var authService = AuthService();
   var isLoader = false;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
@@ -37,7 +39,6 @@ class _SignUpPageState extends State<SignUpPage> {
         isLoader = true;
       });
 
-      // Initial data setup first time
       var data = {
         "username": _userNameController.text,
         "email": _emailController.text,
@@ -51,7 +52,6 @@ class _SignUpPageState extends State<SignUpPage> {
       try {
         await authService.createUser(data, context);
       } catch (e) {
-        // Show error message as a SnackBar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error occurred: $e")),
         );
@@ -65,12 +65,39 @@ class _SignUpPageState extends State<SignUpPage> {
 
   var appValidator = AppValidator();
 
-  // Function to build input decoration
-  InputDecoration _buildInputDecoration(String label, IconData suffixIcon) {
+  InputDecoration _buildInputDecoration(String label, IconData suffixIcon,
+      {bool isPassword = false, bool isConfirmPassword = false}) {
     return InputDecoration(
       labelText: label,
-      suffixIcon: Icon(suffixIcon),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      suffixIcon: isPassword
+          ? IconButton(
+              icon: Icon(
+                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+              onPressed: () {
+                setState(() {
+                  _isPasswordVisible = !_isPasswordVisible;
+                });
+              },
+            )
+          : isConfirmPassword
+              ? IconButton(
+                  icon: Icon(_isConfirmPasswordVisible
+                      ? Icons.visibility
+                      : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                    });
+                  },
+                )
+              : Icon(suffixIcon),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.teal, width: 2.0),
+        borderRadius: BorderRadius.circular(12),
+      ),
     );
   }
 
@@ -79,34 +106,52 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sign Up'),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.teal,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 50, width: 250),
-                const SizedBox(
+                const SizedBox(height: 50),
+                const Center(
                   child: Text(
-                    "Create new Account",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    "Create New Account",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 40),
-                // Username
+                Text(
+                  "Username",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: _userNameController,
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.name,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: appValidator.validateUserName,
-                  decoration: _buildInputDecoration("User", Icons.person),
+                  decoration: _buildInputDecoration("Username", Icons.person),
                 ),
-                const SizedBox(height: 10),
-                // Email
+                const SizedBox(height: 20),
+                Text(
+                  "Email",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -114,28 +159,57 @@ class _SignUpPageState extends State<SignUpPage> {
                   validator: appValidator.validateEmail,
                   decoration: _buildInputDecoration("Email", Icons.email),
                 ),
-                const SizedBox(height: 10),
-                // Phone number
+                const SizedBox(height: 20),
+                Text(
+                  "Phone Number",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
-                  maxLength: 10,
+                  maxLength: 11,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: appValidator.validatePhoneNumber,
+                  validator: (value) {
+                    if (value != null &&
+                        (value.length == 10 || value.length == 11)) {
+                      return null;
+                    } else {
+                      return 'Phone number must be 10 or 11 digits';
+                    }
+                  },
                   decoration:
                       _buildInputDecoration("Phone Number", Icons.phone),
                 ),
-                const SizedBox(height: 10),
-                // Password
+                const SizedBox(height: 20),
+                Text(
+                  "Password",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: _passwordController,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: appValidator.validatePassword,
-                  obscureText: true,
-                  decoration: _buildInputDecoration("Password", Icons.lock),
+                  obscureText: !_isPasswordVisible,
+                  decoration: _buildInputDecoration("Password", Icons.lock,
+                      isPassword: true),
                 ),
-                const SizedBox(height: 10),
-                // Confirm Password
+                const SizedBox(height: 20),
+                Text(
+                  "Confirm Password",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: _reConfirmpasswordController,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -145,26 +219,31 @@ class _SignUpPageState extends State<SignUpPage> {
                     }
                     return null;
                   },
-                  obscureText: true,
-                  decoration:
-                      _buildInputDecoration("Confirm Password", Icons.lock),
+                  obscureText: !_isConfirmPasswordVisible,
+                  decoration: _buildInputDecoration(
+                      "Confirm Password", Icons.lock,
+                      isConfirmPassword: true),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 30),
                 SizedBox(
                   height: 50,
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      isLoader ? print("Loading") : _submitForm();
-                    },
+                    onPressed: isLoader ? null : _submitForm,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: Colors.teal,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: isLoader
                         ? const Center(child: CircularProgressIndicator())
                         : const Text(
                             "Submit",
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
                           ),
                   ),
                 ),
@@ -172,8 +251,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Already have Account?"),
-                    const SizedBox(width: 10),
+                    const Text("Already have an account?"),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -184,9 +262,12 @@ class _SignUpPageState extends State<SignUpPage> {
                       },
                       child: const Text(
                         "Sign In",
-                        style: TextStyle(color: Colors.blue),
+                        style: TextStyle(
+                          color: Colors.teal,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],

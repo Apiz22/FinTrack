@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ft_v2/widgets/category_scroll.dart';
-import 'package:ft_v2/widgets/tabbar_view.dart';
-import 'package:ft_v2/widgets/timeline_month.dart';
-import 'package:ft_v2/widgets/transaction_card.dart';
 import 'package:intl/intl.dart';
+import '../widgets/category_scroll.dart';
+import '../widgets/tabbar_view.dart';
+import '../widgets/timeline_month.dart';
+import '../widgets/transaction_card.dart';
 
 class ExpensesPage extends StatefulWidget {
   const ExpensesPage({super.key});

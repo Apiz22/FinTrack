@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ft_v2/pages/loading_screen.dart';
-import 'package:ft_v2/service/database.dart';
-import 'package:ft_v2/utils/dashboard.dart'; // Assuming this is your dashboard screen
+
+import '../pages/loading_screen.dart';
+import '../utils/dashboard.dart';
+import 'database.dart'; // Assuming this is your dashboard screen
 
 class AuthService {
   var database = Database();

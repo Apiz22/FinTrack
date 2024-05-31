@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ft_v2/utils/icons.dart';
+
+import '../utils/icons.dart';
 
 class CategoryList extends StatefulWidget {
   const CategoryList({super.key, required this.onChanged});

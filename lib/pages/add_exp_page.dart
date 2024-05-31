@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ft_v2/gamification/points.dart';
-import 'package:ft_v2/utils/appvalidator.dart';
-import 'package:ft_v2/widgets/category_dropdown.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
+
+import '../gamification/points.dart';
+import '../utils/appvalidator.dart';
+import '../widgets/category_dropdown.dart';
 
 class AddExpPage extends StatefulWidget {
   const AddExpPage({super.key});

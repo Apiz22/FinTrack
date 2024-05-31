@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ft_v2/utils/icons.dart';
+
+import '../utils/icons.dart';
 
 class CategoryDropDown extends StatelessWidget {
   CategoryDropDown({super.key, this.cattype, required this.onChanged});

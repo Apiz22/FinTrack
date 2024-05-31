@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ft_v2/pages/income_input.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../pages/income_input.dart';
 
 class Database {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
@@ -62,8 +63,8 @@ class Database {
         .get()
         .then((doc) => doc.exists);
 
-    final prefs = await SharedPreferences.getInstance();
-    final alertShownKey = 'alert_shown_$currentMonthYear';
+    // final prefs = await SharedPreferences.getInstance();
+    // final alertShownKey = 'alert_shown_$currentMonthYear';
 
     if (!documentExists) {
       // prefs.setBool(alertShownKey, true); // Set flag to true

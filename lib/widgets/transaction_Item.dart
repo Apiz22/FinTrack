@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ft_v2/utils/icons.dart';
 import 'package:intl/intl.dart';
+
+import '../utils/icons.dart';
 
 class TransactionItem extends StatelessWidget {
   TransactionItem({

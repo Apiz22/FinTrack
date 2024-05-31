@@ -1,12 +1,12 @@
+import 'package:FinTrack/gamification/points.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ft_v2/gamification/leaderboard.dart';
-import 'package:ft_v2/service/database.dart';
-import 'package:ft_v2/widgets/budget/budget_card.dart';
-import 'package:ft_v2/widgets/note.dart';
-import 'package:ft_v2/widgets/view_card.dart';
 import 'package:intl/intl.dart';
+import '../service/database.dart';
+import '../widgets/budget/budget_card.dart';
+import '../widgets/note.dart';
+import '../widgets/view_card.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -22,6 +22,7 @@ String currentIncomeDate = DateFormat("MMM y").format(date);
 class _MainPageState extends State<MainPage> {
   final userId = FirebaseAuth.instance.currentUser!.uid;
   final Database database = Database();
+  final Points pts = Points();
 
   @override
   void initState() {
@@ -33,7 +34,7 @@ class _MainPageState extends State<MainPage> {
     try {
       await database.createMonthlyIncomeDocument(userId, context);
       await database.createMonthlyPointHistory(userId);
-      await database.determineUserBudgetRuleChange(userId, currentIncomeDate);
+      await pts.userPointStreak(userId);
     } catch (error) {
       print("Initialization error: $error");
     }
@@ -49,7 +50,7 @@ class _MainPageState extends State<MainPage> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.green[400],
+        backgroundColor: Colors.teal,
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -68,7 +69,7 @@ class _MainPageState extends State<MainPage> {
           children: [
             Container(
               width: double.infinity,
-              color: Colors.blue,
+              color: Colors.teal.shade300,
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 //view top 3 (total balance, credit and debit)

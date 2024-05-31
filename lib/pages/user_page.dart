@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ft_v2/gamification/class/badge_class.dart';
-import 'package:ft_v2/gamification/points.dart';
 import 'package:intl/intl.dart';
+
+import '../gamification/class/badge_class.dart';
+import '../gamification/points.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -79,32 +80,46 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("User Page"),
-        backgroundColor: Colors.green,
+        title: const Text(
+          "User Page",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.teal,
       ),
       endDrawer: Drawer(
         child: userDrawer(context),
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // const SizedBox(height: 20),
+            const SizedBox(height: 20),
             Column(
               children: [
-                const SizedBox(height: 50),
-                Text(" test current points: $currentPts"),
+                const SizedBox(height: 20),
+                Text("Current Points: $currentPts"),
                 ElevatedButton(
-                    onPressed: changeCurrentRule,
-                    child: const Text("Update Rule based on Points")),
+                  onPressed: changeCurrentRule,
+                  child: const Text("Update Rule based on Points"),
+                ),
                 Text('Days App Used: $dayCount'),
                 ElevatedButton(
-                    onPressed: test,
-                    child: const Text("Test update win streak")),
-                Text("Total user obtained badges: $_totalBadgesObtained"),
+                  onPressed: test,
+                  child: const Text("Test update win streak"),
+                ),
+                Text("Total Badges Obtained: $_totalBadgesObtained"),
                 const SizedBox(height: 20),
-                const Text("Hall of Fames"),
-                badgesList()
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text("Hall of Fame"),
+                      badgesList(),
+                    ],
+                  ),
+                ),
               ],
             ),
           ],
@@ -113,16 +128,15 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-//user drawer
   ListView userDrawer(BuildContext context) {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        const DrawerHeader(
+        DrawerHeader(
           decoration: BoxDecoration(
-            color: Colors.green,
+            color: Colors.teal,
           ),
-          child: Text(
+          child: const Text(
             'Menu',
             style: TextStyle(
               color: Colors.white,
@@ -201,7 +215,6 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-//list badges
   SizedBox badgesList() {
     return SizedBox(
       height: 500,
@@ -219,8 +232,7 @@ class _UserPageState extends State<UserPage> {
             final badgesList = snapshot.data!;
             return Container(
               padding: const EdgeInsets.all(10),
-              color: const Color.fromARGB(
-                  255, 115, 115, 115), // Set ListView background color to grey
+              color: Colors.grey.shade200,
               child: ListView.builder(
                 itemCount: badgesList.length,
                 itemBuilder: (context, index) {
@@ -229,19 +241,20 @@ class _UserPageState extends State<UserPage> {
                   final imageUrl = badge['imageUrl'] ?? '';
 
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    padding: const EdgeInsets.symmetric(vertical: 5.0),
                     child: Container(
                       decoration: BoxDecoration(
-                          color: (index % 2 == 0)
-                              ? const Color.fromARGB(255, 40, 180, 22)
-                              : const Color.fromARGB(255, 181, 179, 182),
-                          borderRadius: BorderRadius.circular(10)),
+                        color: (index % 2 == 0)
+                            ? Colors.teal.shade100
+                            : Colors.teal.shade50,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.black),
+                      ),
                       child: ListTile(
                         leading: ClipOval(
                           child: Container(
-                            color: const Color.fromARGB(255, 175, 174, 175),
-                            padding: const EdgeInsets.all(
-                                1), // Add padding for round shape
+                            color: Colors.grey.shade300,
+                            padding: const EdgeInsets.all(1),
                             child: imageUrl.isNotEmpty
                                 ? Image.network(
                                     imageUrl,
@@ -257,7 +270,6 @@ class _UserPageState extends State<UserPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(badge['description']),
-                            const Text("test"),
                           ],
                         ),
                       ),
@@ -274,7 +286,6 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  // Function to save the selected budget rule to Firebase
   void saveBudgetRuleToFirebase(String? budgetRule) {
     if (budgetRule != null) {
       FirebaseFirestore.instance.collection("users").doc(userId).update({

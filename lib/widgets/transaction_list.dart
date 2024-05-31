@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ft_v2/widgets/transaction_item.dart';
+
+import 'transaction_item.dart';
 
 class TransactionList extends StatelessWidget {
   TransactionList(

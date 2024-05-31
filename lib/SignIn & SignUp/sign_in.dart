@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:ft_v2/service/auth_service.dart';
-import 'package:ft_v2/utils/appvalidator.dart';
+import '../service/auth_service.dart';
+import '../utils/appvalidator.dart';
 import 'sign_up.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
-
-  // final _emailController = TextEditingController();
-  // final _passwordController = TextEditingController();
-  // if define here need to add widget
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -16,14 +12,16 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
+  bool _isPasswordVisible = false;
+  var isLoader = false;
+  var authService = AuthService();
+  var appValidator = AppValidator();
 
   @override
   void initState() {
     super.initState();
-    //sign in controller
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
   }
@@ -34,9 +32,6 @@ class _SignInPageState extends State<SignInPage> {
     _passwordController.dispose();
     super.dispose();
   }
-
-  var isLoader = false;
-  var authService = AuthService();
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -56,47 +51,71 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  var appValidator = AppValidator();
-
-  // function
-  InputDecoration _buildInputDecoration(String label, IconData suffixIcon) {
+  InputDecoration _buildInputDecoration(String label, IconData suffixIcon,
+      {bool isPassword = false}) {
     return InputDecoration(
-        labelText: label,
-        suffixIcon: Icon(suffixIcon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)));
+      labelText: label,
+      suffixIcon: isPassword
+          ? IconButton(
+              icon: Icon(
+                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+              onPressed: () {
+                setState(() {
+                  _isPasswordVisible = !_isPasswordVisible;
+                });
+              },
+            )
+          : Icon(suffixIcon),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Colors.teal, width: 2.0),
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign In'),
-        backgroundColor: Colors.green,
+        title: const Text(
+          'Sign In',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.teal,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(
-                  height: 50,
-                  width: 250,
+                Container(
+                  alignment: Alignment.center,
+                  child: Image.asset(
+                    'assets/img/Logo.png',
+                    height: 100,
+                    width: 100,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-                const SizedBox(
+                const SizedBox(height: 10),
+                const Center(
                   child: Text(
-                    "Welcome",
-                    textAlign: TextAlign.center,
+                    "FinTrack",
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 32,
                       fontWeight: FontWeight.bold,
+                      color: Colors.teal,
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 40,
-                ),
+                const SizedBox(height: 40),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -104,27 +123,27 @@ class _SignInPageState extends State<SignInPage> {
                   validator: appValidator.validateEmail,
                   decoration: _buildInputDecoration("Email", Icons.email),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 20),
+                const SizedBox(height: 8),
                 TextFormField(
-                    controller: _passwordController,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: appValidator.validatePassword,
-                    obscureText: true,
-                    decoration: _buildInputDecoration("Password", Icons.lock)),
-                const SizedBox(
-                  height: 10,
+                  controller: _passwordController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: appValidator.validatePassword,
+                  obscureText: !_isPasswordVisible,
+                  decoration: _buildInputDecoration("Password", Icons.lock,
+                      isPassword: true),
                 ),
+                const SizedBox(height: 30),
                 SizedBox(
                   height: 50,
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      isLoader ? print("loading") : _submitForm();
-                    },
+                    onPressed: isLoader ? null : _submitForm,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: Colors.teal,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: isLoader
                         ? const Center(child: CircularProgressIndicator())
@@ -132,20 +151,16 @@ class _SignInPageState extends State<SignInPage> {
                             "Login",
                             style: TextStyle(
                               color: Colors.white,
+                              fontSize: 18,
                             ),
                           ),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Dont have an account?"),
-                    const SizedBox(
-                      width: 10,
-                    ),
+                    const Text("Don't have an account?"),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -157,10 +172,11 @@ class _SignInPageState extends State<SignInPage> {
                       child: const Text(
                         "Sign Up",
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: Colors.teal,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],
