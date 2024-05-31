@@ -187,7 +187,7 @@ class BudgetCard extends StatelessWidget {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 234, 234, 234),
+          color: const Color.fromARGB(255, 234, 234, 234),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(

@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ft_v2/gamification/leaderboard.dart';
 import 'package:ft_v2/service/database.dart';
 import 'package:ft_v2/widgets/budget/budget_card.dart';
 import 'package:ft_v2/widgets/note.dart';
@@ -13,23 +15,32 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
+DateTime date = DateTime.now();
+String currentDate = DateFormat("dd MMMM").format(date);
+String currentIncomeDate = DateFormat("MMM y").format(date);
+
 class _MainPageState extends State<MainPage> {
   final userId = FirebaseAuth.instance.currentUser!.uid;
   final Database database = Database();
+
   @override
   void initState() {
     super.initState();
-    // Call the function to create a monthly document for the current user
-    database.createMonthlyIncomeDocument(userId, context);
-    database.createMonthlyPointHistory(userId);
+    initializeData();
+  }
+
+  Future<void> initializeData() async {
+    try {
+      await database.createMonthlyIncomeDocument(userId, context);
+      await database.createMonthlyPointHistory(userId);
+      await database.determineUserBudgetRuleChange(userId, currentIncomeDate);
+    } catch (error) {
+      print("Initialization error: $error");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    DateTime date = DateTime.now();
-    String currentDate = DateFormat("dd MMMM").format(date);
-    String currentIncome = DateFormat("MMM y").format(date);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -60,29 +71,24 @@ class _MainPageState extends State<MainPage> {
               color: Colors.blue,
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
-                //TopSplit display total balance, credit and debit
+                //view top 3 (total balance, credit and debit)
                 child: TopSplit(
                   userId: userId,
-                  monthYear: currentIncome,
+                  monthYear: currentIncomeDate,
                 ),
               ),
             ),
-            // const SizedBox(
-            //   height: 10,
-            // ),
-
-            //Expenses breakdown
             Container(
               color: const Color.fromARGB(255, 162, 186, 207),
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
+                //display the progress bar
                 child: BudgetCard(
                   userId: userId,
-                  currentIncome: currentIncome,
+                  currentIncome: currentIncomeDate,
                 ),
               ),
             ),
-            //note
             Container(
               padding: const EdgeInsets.all(10),
               color: const Color.fromARGB(255, 199, 124, 124),
@@ -99,5 +105,18 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
+  }
+
+// Function to save the selected budget rule to Firebase
+  void saveBudgetRuleToFirebase(String? budgetRule) {
+    if (budgetRule != null) {
+      FirebaseFirestore.instance.collection("users").doc(userId).update({
+        'currentRule': budgetRule,
+      }).then((value) {
+        print('Budget rule saved successfully!');
+      }).catchError((error) {
+        print('Failed to save budget rule: $error');
+      });
+    }
   }
 }

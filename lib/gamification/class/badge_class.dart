@@ -84,7 +84,7 @@ class Badges {
     });
   }
 
-  // Retrieve user_badges and update the total badge count
+  // Retrieve user obtained badges and update the total badge count
   Future<int> retrieveTotalBadge() async {
     int totalBadgesObtained = 0;
     try {

@@ -48,7 +48,8 @@ class LeaderboardState extends State<Leaderboard> {
         if (pointsSnapshot.exists) {
           final pointsData = pointsSnapshot.data()!;
           final currentPoints = pointsData['CurrentPoints'] ?? 0;
-          if (currentPoints > 0) {
+          final budgetRule = pointsData['budgetRule'];
+          if (currentPoints > 0 && budgetRule == selectedCategory) {
             users.add({
               'id': userId,
               'name': data['username'] ?? 'Unknown',

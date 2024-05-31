@@ -35,28 +35,6 @@ class TopSplit extends StatelessWidget {
         }
 
         var data = snapshot.data!.data() as Map<String, dynamic>;
-        // Show dialog if remainAmount is less than 0
-        if (data["remainAmount"] < 0) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text("Overspent Alert"),
-                  content: const Text("You have overspent your budget!"),
-                  actions: [
-                    TextButton(
-                      child: const Text("OK"),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                );
-              },
-            );
-          });
-        }
 
         return TotalCard(
           data: data,

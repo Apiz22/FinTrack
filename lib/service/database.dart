@@ -1,16 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ft_v2/pages/income_input.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Database {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  String currentmonthyear = DateFormat("MMM y").format(DateTime.now());
+  String currentMonthYear = DateFormat("MMM y").format(DateTime.now());
 
   Future<void> addUser(data, context) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     try {
-      // Set the user document
       await users.doc(userId).set(data);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("User registered successfully")),
@@ -28,16 +29,14 @@ class Database {
     }
   }
 
-// //get user current budget status
   Future<String> getUserBudgetRule(String userId) async {
     final userDoc = await users.doc(userId).get();
     return userDoc.exists ? userDoc["currentRule"] ?? "" : "";
   }
 
-  //create user point history
   Future<void> createMonthlyPointHistory(String userId) async {
     final docRef =
-        users.doc(userId).collection('point_history').doc(currentmonthyear);
+        users.doc(userId).collection('point_history').doc(currentMonthYear);
     final documentExists = await docRef.get().then((doc) => doc.exists);
 
     if (!documentExists) {
@@ -53,92 +52,67 @@ class Database {
     }
   }
 
-  // Check and create new monthyear file if does not exist
-  Future<void> createMonthlyIncomeDocument(String userId, context) async {
+  Future<void> createMonthlyIncomeDocument(
+      String userId, BuildContext context) async {
     bool documentExists = await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('monthly_income')
-        .doc(currentmonthyear)
+        .doc(currentMonthYear)
         .get()
         .then((doc) => doc.exists);
 
+    final prefs = await SharedPreferences.getInstance();
+    final alertShownKey = 'alert_shown_$currentMonthYear';
+
     if (!documentExists) {
-      final budgetRule = await getUserBudgetRule(userId);
-
-      // Show dialog to get total income from the user
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          TextEditingController incomeController = TextEditingController();
-          return AlertDialog(
-            title: const Text('Enter Total Income'),
-            content: TextField(
-              controller: incomeController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Total Income'),
-            ),
-            actions: <Widget>[
-              ElevatedButton(
-                onPressed: () {
-                  // Get the entered total income value
-                  String totalIncomeStr = incomeController.text;
-                  double totalIncome = double.parse(totalIncomeStr);
-
-                  // Format values to 2 decimal places
-                  double remainAmount =
-                      double.parse((totalIncome).toStringAsFixed(2));
-                  double calneeds =
-                      double.parse((totalIncome * 0.5).toStringAsFixed(2));
-                  double calwants =
-                      double.parse((totalIncome * 0.3).toStringAsFixed(2));
-                  double calsavings =
-                      double.parse((totalIncome * 0.2).toStringAsFixed(2));
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(userId)
-                      .collection('monthly_income')
-                      .doc(currentmonthyear)
-                      .set({
-                    'totalIncome': totalIncome,
-                    'remainAmount': remainAmount,
-                    'totalCredit': 0.0,
-                    'totalDebit': 0.0,
-                    'needs': 0.0,
-                    'wants': 0.0,
-                    'savings': 0.0,
-                    'cal_needs': calneeds,
-                    'cal_wants': calwants,
-                    'cal_savings': calsavings,
-                    'budgetRule': budgetRule,
-                  }).then((_) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Income saved successfully!')),
-                    );
-                  }).catchError((error) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to data: $error')),
-                    );
-                  });
-
-                  Navigator.of(context).pop(); // Close the dialog
-                },
-                child: const Text('Save'),
-              ),
-            ],
-          );
-        },
+      // prefs.setBool(alertShownKey, true); // Set flag to true
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => IncomeInputPage(userId: userId),
+        ),
       );
     }
   }
 
-  Stream<DocumentSnapshot> getPointsStream(String userId, String monthyear) {
+  Stream<DocumentSnapshot> getPointsStream(String userId, String monthYear) {
     return FirebaseFirestore.instance
         .collection("users")
         .doc(userId)
         .collection('point_history')
-        .doc(monthyear)
+        .doc(monthYear)
         .snapshots();
+  }
+
+  Future<void> determineUserBudgetRuleChange(String userId, monthYear) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    DocumentSnapshot userDoc =
+        await firestore.collection('users').doc(userId).get();
+    DocumentSnapshot ptsDoc = await firestore
+        .collection('users')
+        .doc(userId)
+        .collection('point_history')
+        .doc(monthYear)
+        .get();
+    final documentSnapshot = ptsDoc;
+    final documentExists = documentSnapshot.exists;
+
+    if (documentExists) {
+      double currentPts = ptsDoc["CurrentPoints"];
+      String budgetRule = ptsDoc["budgetRule"];
+      int ruleStreak = userDoc["ruleStreak"] ?? 0; // Default to 0 if null
+
+      if ((budgetRule == "80/20" && currentPts == 1000) ||
+          (budgetRule == "50/30/20" && currentPts == 2000)) {
+        ruleStreak = 1;
+      } else {
+        ruleStreak = 0; // Reset streak if conditions are not met
+      }
+
+      await FirebaseFirestore.instance.collection("users").doc(userId).update({
+        "ruleStreak": 10,
+      });
+    }
   }
 }
