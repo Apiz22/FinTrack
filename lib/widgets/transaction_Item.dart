@@ -4,26 +4,33 @@ import 'package:intl/intl.dart';
 
 import '../utils/icons.dart';
 
-class TransactionItem extends StatelessWidget {
+class TransactionItem extends StatefulWidget {
   TransactionItem({
-    super.key,
+    Key? key,
     this.data,
-  });
+  }) : super(key: key);
 
   final dynamic data;
 
+  @override
+  State<TransactionItem> createState() => _TransactionItemState();
+}
+
+class _TransactionItemState extends State<TransactionItem> {
   var appIcons = AppIcons();
 
   @override
   Widget build(BuildContext context) {
-    DateTime date = DateTime.fromMicrosecondsSinceEpoch(data['timestamp']);
+    DateTime date =
+        DateTime.fromMicrosecondsSinceEpoch(widget.data['timestamp']);
     String formatDate = DateFormat('d MMM hh:mm').format(date);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(1),
+          color: const Color.fromARGB(255, 251, 251, 251),
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.grey.shade400),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -41,28 +48,44 @@ class TransactionItem extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0),
             leading: SizedBox(
               width: 70,
-              height: 100,
+              height: 70,
               child: Container(
                 width: 30,
                 height: 30,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
-                  color: data['type'] == 'credit'
+                  color: widget.data['type'] == 'credit'
                       ? Colors.green.withOpacity(0.3)
                       : Colors.red.withOpacity(0.3),
                 ),
                 child: Center(
-                    child: FaIcon(appIcons
-                        .getExpenseCategoryIcons('${data['category']}'))),
+                  child: FaIcon(
+                    appIcons
+                        .getExpenseCategoryIcons('${widget.data['category']}'),
+                    color: Colors.black87,
+                    // color: data['type'] == 'credit' ? Colors.green : Colors.red,
+                  ),
+                ),
               ),
             ),
             title: Row(
               children: [
-                Expanded(child: Text("${data['title']}")),
+                Expanded(
+                  child: Text(
+                    "${widget.data['title']}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 48, 48, 48),
+                    ),
+                  ),
+                ),
                 Text(
-                  " ${data['type'] == 'credit' ? '+' : '-'} RM ${data['amount']}",
+                  " ${widget.data['type'] == 'credit' ? '+' : '-'} RM ${widget.data['amount'].toStringAsFixed(2)}",
                   style: TextStyle(
-                    color: data['type'] == 'credit' ? Colors.green : Colors.red,
+                    color: widget.data['type'] == 'credit'
+                        ? Colors.green
+                        : Colors.red,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
@@ -73,20 +96,30 @@ class TransactionItem extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Text("balance"),
+                    const Text(
+                      "Balance",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Color.fromARGB(255, 77, 77, 77),
+                      ),
+                    ),
                     const Spacer(),
                     Text(
-                      "RM ${data['remainAmount']}",
+                      "RM ${widget.data['remainAmount'].toStringAsFixed(2)}",
                       style: const TextStyle(
                         color: Colors.black45,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
                 Text(
                   formatDate,
-                  style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                )
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 105, 105, 105),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
               ],
             ),
           ),

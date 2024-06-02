@@ -27,12 +27,25 @@ class _UserPageState extends State<UserPage> {
   int _totalBadgesObtained = 0;
   int currentPts = 0;
   String currentBudget = "";
+  String username = "";
+  String profilePicturePath =
+      'assets/img/default.png'; // Default profile picture path
+
+  final List<String> profilePictures = [
+    'assets/img/default.png',
+    'assets/img/pedro.jpeg',
+    'assets/img/default.png',
+    'assets/img/default.png',
+    'assets/img/default.png',
+    'assets/img/default.png'
+  ];
 
   @override
   void initState() {
     super.initState();
     totalBadges();
     getCurrenPtsAndCurrentBudget();
+    getUsername();
   }
 
   logOut() async {
@@ -66,6 +79,16 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
+  void getUsername() async {
+    final userDoc =
+        await FirebaseFirestore.instance.collection("users").doc(userId).get();
+
+    setState(() {
+      username = userDoc["username"];
+      profilePicturePath = userDoc["profilePicture"] ?? profilePicturePath;
+    });
+  }
+
   void changeCurrentRule() async {
     if (currentPts >= 2000 && currentBudget == "50/30/20") {
       saveBudgetRuleToFirebase("50/30/20");
@@ -73,6 +96,56 @@ class _UserPageState extends State<UserPage> {
       saveBudgetRuleToFirebase("80/20");
     } else {
       ;
+    }
+  }
+
+  void saveProfilePicture(String picturePath) async {
+    await FirebaseFirestore.instance.collection("users").doc(userId).update({
+      'profilePicture': picturePath,
+    }).then((value) {
+      setState(() {
+        profilePicturePath = picturePath;
+      });
+      print('Profile picture updated successfully!');
+    }).catchError((error) {
+      print('Failed to update profile picture: $error');
+    });
+  }
+
+  void saveBudgetRuleToFirebase(String? budgetRule) {
+    if (budgetRule != null) {
+      FirebaseFirestore.instance.collection("users").doc(userId).update({
+        'currentRule': budgetRule,
+      }).then((value) {
+        print('Budget rule saved successfully!');
+      }).catchError((error) {
+        print('Failed to save budget rule: $error');
+      });
+    }
+  }
+
+  Future<void> changePhoneNumber(String newPhoneNumber) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    try {
+      await user?.updatePhoneNumber(PhoneAuthProvider.credential(
+        verificationId: '', // you need to provide verificationId and smsCode
+        smsCode: '', // from the phone verification process
+      ));
+      print('Phone number updated successfully!');
+    } catch (e) {
+      print('Failed to update phone number: $e');
+    }
+  }
+
+  Future<void> changePassword(String newPassword) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    try {
+      await user?.updatePassword(newPassword);
+      print('Password updated successfully!');
+    } catch (e) {
+      print('Failed to update password: $e');
     }
   }
 
@@ -136,12 +209,22 @@ class _UserPageState extends State<UserPage> {
           decoration: BoxDecoration(
             color: Colors.teal,
           ),
-          child: const Text(
-            'Menu',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 40,
+                backgroundImage: AssetImage(profilePicturePath),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                username,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ],
           ),
         ),
         ListTile(
@@ -150,6 +233,30 @@ class _UserPageState extends State<UserPage> {
           onTap: () {
             Navigator.pop(context);
             editBudgetRule(context);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.phone),
+          title: const Text('Edit Phone Number'),
+          onTap: () {
+            Navigator.pop(context);
+            editPhoneNumber(context);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.lock),
+          title: const Text('Edit Password'),
+          onTap: () {
+            Navigator.pop(context);
+            editPassword(context);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.image),
+          title: const Text('Change Profile Picture'),
+          onTap: () {
+            Navigator.pop(context);
+            changeProfilePicture(context);
           },
         ),
         ListTile(
@@ -210,6 +317,91 @@ class _UserPageState extends State<UserPage> {
               child: const Text('Save'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  Future<dynamic> editPhoneNumber(BuildContext context) {
+    final TextEditingController phoneController = TextEditingController();
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Phone Number'),
+          content: TextField(
+            controller: phoneController,
+            decoration: const InputDecoration(
+              labelText: 'New Phone Number',
+            ),
+            keyboardType: TextInputType.phone,
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                changePhoneNumber(phoneController.text);
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<dynamic> editPassword(BuildContext context) {
+    final TextEditingController passwordController = TextEditingController();
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Password'),
+          content: TextField(
+            controller: passwordController,
+            decoration: const InputDecoration(
+              labelText: 'New Password',
+            ),
+            obscureText: true,
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                changePassword(passwordController.text);
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<dynamic> changeProfilePicture(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Change Profile Picture'),
+          content: Container(
+            width: double.minPositive,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: profilePictures.map((picturePath) {
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: AssetImage(picturePath),
+                  ),
+                  title: Text(picturePath.split('/').last),
+                  onTap: () {
+                    saveProfilePicture(picturePath);
+                    Navigator.pop(context);
+                  },
+                );
+              }).toList(),
+            ),
+          ),
         );
       },
     );
@@ -284,17 +476,5 @@ class _UserPageState extends State<UserPage> {
         },
       ),
     );
-  }
-
-  void saveBudgetRuleToFirebase(String? budgetRule) {
-    if (budgetRule != null) {
-      FirebaseFirestore.instance.collection("users").doc(userId).update({
-        'currentRule': budgetRule,
-      }).then((value) {
-        print('Budget rule saved successfully!');
-      }).catchError((error) {
-        print('Failed to save budget rule: $error');
-      });
-    }
   }
 }

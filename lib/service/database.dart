@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pages/income_input.dart';
 
@@ -86,34 +85,34 @@ class Database {
         .snapshots();
   }
 
-  Future<void> determineUserBudgetRuleChange(String userId, monthYear) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    DocumentSnapshot userDoc =
-        await firestore.collection('users').doc(userId).get();
-    DocumentSnapshot ptsDoc = await firestore
-        .collection('users')
-        .doc(userId)
-        .collection('point_history')
-        .doc(monthYear)
-        .get();
-    final documentSnapshot = ptsDoc;
-    final documentExists = documentSnapshot.exists;
+  // Future<void> determineUserBudgetRuleChange(String userId, monthYear) async {
+  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //   DocumentSnapshot userDoc =
+  //       await firestore.collection('users').doc(userId).get();
+  //   DocumentSnapshot ptsDoc = await firestore
+  //       .collection('users')
+  //       .doc(userId)
+  //       .collection('point_history')
+  //       .doc(monthYear)
+  //       .get();
+  //   final documentSnapshot = ptsDoc;
+  //   final documentExists = documentSnapshot.exists;
 
-    if (documentExists) {
-      double currentPts = ptsDoc["CurrentPoints"];
-      String budgetRule = ptsDoc["budgetRule"];
-      int ruleStreak = userDoc["ruleStreak"] ?? 0; // Default to 0 if null
+  //   if (documentExists) {
+  //     double currentPts = ptsDoc["CurrentPoints"];
+  //     String budgetRule = ptsDoc["budgetRule"];
+  //     int ruleStreak = userDoc["ruleStreak"] ?? 0; // Default to 0 if null
 
-      if ((budgetRule == "80/20" && currentPts == 1000) ||
-          (budgetRule == "50/30/20" && currentPts == 2000)) {
-        ruleStreak = 1;
-      } else {
-        ruleStreak = 0; // Reset streak if conditions are not met
-      }
+  //     if ((budgetRule == "80/20" && currentPts == 1000) ||
+  //         (budgetRule == "50/30/20" && currentPts == 2000)) {
+  //       ruleStreak += 1;
+  //     } else {
+  //       ruleStreak = 0; // Reset streak if conditions are not met
+  //     }
 
-      await FirebaseFirestore.instance.collection("users").doc(userId).update({
-        "ruleStreak": 10,
-      });
-    }
-  }
+  //     await FirebaseFirestore.instance.collection("users").doc(userId).update({
+  //       "ruleStreak": ruleStreak,
+  //     });
+  //   }
+  // }
 }

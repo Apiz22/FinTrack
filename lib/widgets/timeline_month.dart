@@ -61,8 +61,8 @@ class _TimeLineMonthState extends State<TimeLineMonth> {
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                   color: currentMonth == months[index]
-                      ? Colors.black
-                      : Colors.red.withOpacity(0.1),
+                      ? Colors.teal.shade500
+                      : Colors.teal.shade100,
                   borderRadius: BorderRadius.circular(20)),
               child: Center(
                   child: Text(

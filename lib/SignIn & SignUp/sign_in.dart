@@ -94,6 +94,7 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 20),
                 Container(
                   alignment: Alignment.center,
                   child: Image.asset(
@@ -103,7 +104,7 @@ class _SignInPageState extends State<SignInPage> {
                     fit: BoxFit.contain,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 const Center(
                   child: Text(
                     "FinTrack",
@@ -114,8 +115,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
-                const SizedBox(height: 8),
+                const SizedBox(height: 30),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,

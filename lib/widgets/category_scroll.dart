@@ -12,7 +12,7 @@ class CategoryList extends StatefulWidget {
 }
 
 class _CategoryListState extends State<CategoryList> {
-  String currentCategory = "";
+  String currentCategory = "All";
   List<Map<String, dynamic>> categoryList = [];
 
   final scrollController = ScrollController();
@@ -55,7 +55,7 @@ class _CategoryListState extends State<CategoryList> {
               padding: const EdgeInsets.only(left: 10, right: 10),
               decoration: BoxDecoration(
                   color: currentCategory == data['name']
-                      ? Colors.black
+                      ? Colors.teal.shade500
                       : Colors.blue.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20)),
               child: Center(

@@ -97,7 +97,7 @@ class TotalCard extends StatelessWidget {
                 width: 5,
               ),
               OneCard(
-                color: Colors.amber,
+                color: Color.fromARGB(255, 233, 178, 13),
                 header: 'Debit',
                 amount: '${data["totalDebit"].toStringAsFixed(2)}',
               ),
@@ -126,9 +126,9 @@ class OneCard extends StatelessWidget {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
-          color: color.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(15),
-        ),
+            color: color.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.grey.shade400)),
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Row(

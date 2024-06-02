@@ -70,6 +70,12 @@ class _MainPageState extends State<MainPage> {
             Container(
               width: double.infinity,
               color: Colors.teal.shade300,
+              // decoration: BoxDecoration(
+              //   gradient: LinearGradient(
+              //       begin: Alignment.bottomRight,
+              //       end: Alignment.bottomLeft,
+              //       colors: [Colors.blue, Colors.red]),
+              // ),
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 //view top 3 (total balance, credit and debit)

@@ -10,35 +10,38 @@ class TransactionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: const Text(
             "Recent Transaction",
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 10), // Add SizedBox for spacing
-          SizedBox(
-            height: 500, // Set a fixed height for the ListView
-            child: RecentTransactionList(),
-          ),
-        ],
-      ),
+        ),
+        // const SizedBox(height: 10), // Add SizedBox for spacing
+        RecentTransactionList(),
+      ],
     );
   }
 }
 
-class RecentTransactionList extends StatelessWidget {
+class RecentTransactionList extends StatefulWidget {
   RecentTransactionList({
     super.key,
   });
 
+  @override
+  State<RecentTransactionList> createState() => _RecentTransactionListState();
+}
+
+class _RecentTransactionListState extends State<RecentTransactionList> {
   final userId = FirebaseAuth.instance.currentUser!.uid;
+
   String monthYear = DateFormat("MMM y").format(DateTime.now());
 
   @override
@@ -48,7 +51,8 @@ class RecentTransactionList extends StatelessWidget {
             .collection('users')
             .doc(userId)
             .collection("transactions")
-            .orderBy('timestamp', descending: false)
+            .orderBy('timestamp', descending: true)
+            .limit(5) // Limit the query to the latest 5 transactions
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
@@ -65,8 +69,7 @@ class RecentTransactionList extends StatelessWidget {
           return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount:
-                data.length, // Set the number of items you want to display
+            itemCount: data.length,
             itemBuilder: (context, index) {
               var cardInt = data[index];
               return TransactionItem(
