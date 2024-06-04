@@ -1,5 +1,5 @@
 class AppValidator {
-  //validate username
+  // Validate username
   String? validateUserName(String? value) {
     if (value == null || value.isEmpty) {
       return "Please enter a username";
@@ -7,7 +7,7 @@ class AppValidator {
     return null;
   }
 
-  //validate email
+  // Validate email
   String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return "Please enter an email";
@@ -38,7 +38,7 @@ class AppValidator {
     return null;
   }
 
-  //validate password
+  // Validate password
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return "Please enter a password";
@@ -46,7 +46,7 @@ class AppValidator {
     return null;
   }
 
-  //validate password
+  // Validate reconfirm password
   String? validateReconfirmPassword(String? value) {
     if (value == null || value.isEmpty) {
       return "Please reconfirm password";
@@ -54,10 +54,18 @@ class AppValidator {
     return null;
   }
 
-//validate checkbox empty
+  // Validate checkbox empty
   String? isEmptyCheck(value) {
     if (value!.isEmpty) {
       return "Please fill details";
+    }
+    return null;
+  }
+
+  // Validate category selection
+  String? validateCategory(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Please select a category";
     }
     return null;
   }

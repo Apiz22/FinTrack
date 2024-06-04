@@ -33,16 +33,27 @@ class RankPageState extends State<RankPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Ranking page"),
-        backgroundColor: Colors.green,
+        title: const Text(
+          "Ranking page",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.teal.shade500,
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const NumberGuessingGame(),
-            Text("User Current Badges: $totalBadgesObtained"),
-            const Leaderboard(),
-          ],
+        child: Container(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Text(
+                  "User Current Badges: $totalBadgesObtained",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                ),
+                const Leaderboard(),
+                const NumberGuessingGame(),
+              ],
+            ),
+          ),
         ),
       ),
     );

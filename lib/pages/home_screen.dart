@@ -1,11 +1,11 @@
 import 'package:FinTrack/gamification/points.dart';
+import 'package:FinTrack/widgets/debt_reminder.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../service/database.dart';
 import '../widgets/budget/budget_card.dart';
-import '../widgets/note.dart';
 import '../widgets/view_card.dart';
 
 class MainPage extends StatefulWidget {
@@ -34,7 +34,7 @@ class _MainPageState extends State<MainPage> {
     try {
       await database.createMonthlyIncomeDocument(userId, context);
       await database.createMonthlyPointHistory(userId);
-      await pts.userPointStreak(userId);
+      // await pts.userPointStreak(userId);
     } catch (error) {
       print("Initialization error: $error");
     }
@@ -86,7 +86,6 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
             Container(
-              color: const Color.fromARGB(255, 162, 186, 207),
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 //display the progress bar
@@ -96,18 +95,27 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              color: const Color.fromARGB(255, 199, 124, 124),
-              child: const Column(
-                children: [
-                  Note(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                ],
-              ),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.all(10),
+            //   color: const Color.fromARGB(255, 199, 124, 124),
+            //   child: const Column(
+            //     children: [
+            //       Note(),
+            //       SizedBox(
+            //         height: 10,
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            //   Container(
+            //     padding: const EdgeInsets.all(10),
+            //     color: Color.fromARGB(255, 115, 114, 114),
+            //     child: const Column(
+            //       children: [
+            //         DebtReminder(),
+            //       ],
+            //     ),
+            //   ),
           ],
         ),
       ),

@@ -24,7 +24,7 @@ class TypeTabBar extends StatelessWidget {
             ),
           ]),
           SizedBox(
-            height: 500,
+            height: 400,
             child: TabBarView(children: [
               TransactionList(
                 category: category,

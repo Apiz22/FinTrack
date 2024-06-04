@@ -17,8 +17,9 @@ class AddExpPage extends StatefulWidget {
 
 class _AddExpPageState extends State<AddExpPage> {
   var type = "debit";
-  var category = "Others";
+  var category = ""; // Initialize to an empty string
   var budget = "needs";
+  String userLevel = "";
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -32,6 +33,14 @@ class _AddExpPageState extends State<AddExpPage> {
 
   Future<void> submitForm() async {
     if (_formKey.currentState!.validate()) {
+      // Validate category selection
+      if (appValidator.validateCategory(category) != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(appValidator.validateCategory(category)!)),
+        );
+        return;
+      }
+
       setState(() {
         isLoader = true;
       });
@@ -43,7 +52,7 @@ class _AddExpPageState extends State<AddExpPage> {
       var id = uid.v4();
       String monthyear = DateFormat("MMM y").format(date);
 
-//retrieve user current income
+      // Retrieve user current income
       final userDoc = await FirebaseFirestore.instance
           .collection("users")
           .doc(user!.uid)
@@ -63,6 +72,7 @@ class _AddExpPageState extends State<AddExpPage> {
       double calSavings = userDoc["cal_savings"].toDouble();
       int currentPts = 0;
 
+//Retrieve user current points
       final pointsDoc = await FirebaseFirestore.instance
           .collection("users")
           .doc(user.uid)
@@ -76,50 +86,63 @@ class _AddExpPageState extends State<AddExpPage> {
       String budgetRule = pointsDoc["budgetRule"].toString();
       double com = 0;
 
-//cal expenses amount
+      DocumentSnapshot userFile = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      int winStreak = userFile["ruleWinStreak"] ?? 0;
+
+      // Calculate expenses amount + pts
       if (type == "credit") {
         remainAmount += amount;
         totalCredit += amount;
-      }
-      //Debit
-      else {
+      } else {
         remainAmount -= amount;
         totalDebit += amount;
         if (budget == "needs") {
           expNeeds += amount;
           com = expNeeds + expWants;
-          needspts += points.calculatePoints(
+          needspts = points.calculatePoints(
               budgetRule, amount, expNeeds, calNeeds, income, budget, com);
         } else if (budget == "wants") {
-          expWants += amount;
+          expWants = amount;
           com = expNeeds + expWants;
-
-          wantspts += points.calculatePoints(
+          wantspts = points.calculatePoints(
               budgetRule, amount, expWants, calWants, income, budget, com);
         } else {
           expSavings += amount;
-          savingsspts += points.calculatePoints(
+          savingsspts = points.calculatePoints(
               budgetRule, amount, expSavings, calSavings, income, budget, com);
         }
 
         currentPts = needspts + wantspts + savingsspts;
 
-        if (budgetRule == "50/30/20") {
-          int pointsLimit = 2000;
-          currentPts = (currentPts > pointsLimit) ? pointsLimit : currentPts;
+        if ((currentPts == 1000 && budgetRule == "80/20") ||
+            (currentPts == 2000 && budgetRule == "50/30/20")) {
+          winStreak += 1;
         } else {
-          int pointsLimit = 1000;
-          currentPts = (currentPts > pointsLimit) ? pointsLimit : currentPts;
+          winStreak = 0;
         }
 
-// // Format values to 2 decimal places
-//       remainAmount = double.parse(remainAmount.toStringAsFixed(2));
-//       totalCredit = double.parse(totalCredit.toStringAsFixed(2));
-//       totalDebit = double.parse(totalDebit.toStringAsFixed(2));
-//       expNeeds = double.parse(expNeeds.toStringAsFixed(2));
-//       expWants = double.parse(expWants.toStringAsFixed(2));
-//       expSavings = double.parse(expSavings.toStringAsFixed(2));
+//Set user Level (Begineer, Intermediate , Expert)
+        if (budgetRule == "50/30/20" && currentPts == 2000) {
+          userLevel = "Expert";
+        } else if ((budgetRule == "80/20" && currentPts == 1000) ||
+            (budgetRule == "50/30/20" && currentPts <= 2000)) {
+          userLevel = "Intermediate";
+        } else {
+          userLevel = "Beginner";
+        }
 
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({
+          "ruleWinStreak": winStreak,
+          "currentLevel": userLevel,
+        });
+
+//Update Income
         await FirebaseFirestore.instance
             .collection("users")
             .doc(user.uid)
@@ -136,7 +159,7 @@ class _AddExpPageState extends State<AddExpPage> {
         });
       }
 
-      //  update points
+      // Update points
       await FirebaseFirestore.instance
           .collection("users")
           .doc(user.uid)
@@ -149,7 +172,7 @@ class _AddExpPageState extends State<AddExpPage> {
         "CurrentPoints": currentPts,
       });
 
-//save into transaction history
+      // Save into transaction history
       var data = {
         "id": id,
         "title": titleEditController.text,
@@ -184,8 +207,11 @@ class _AddExpPageState extends State<AddExpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Expense"),
-        backgroundColor: Colors.green,
+        title: const Text(
+          "Add Expense",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.teal,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -203,10 +229,14 @@ class _AddExpPageState extends State<AddExpPage> {
                 controller: titleEditController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: appValidator.isEmptyCheck,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Title",
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                   hintText: "Enter transaction title",
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
               ),
               const SizedBox(height: 20),
@@ -215,10 +245,14 @@ class _AddExpPageState extends State<AddExpPage> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: appValidator.isEmptyCheck,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Amount",
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                   hintText: "Enter transaction amount",
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
               ),
               const SizedBox(height: 20),
@@ -258,9 +292,13 @@ class _AddExpPageState extends State<AddExpPage> {
                     );
                   }
                 },
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Budget Type",
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
               ),
               const SizedBox(height: 20),
@@ -285,9 +323,13 @@ class _AddExpPageState extends State<AddExpPage> {
                     );
                   }
                 },
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Transaction Type",
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
               ),
               const SizedBox(height: 30),
@@ -296,12 +338,19 @@ class _AddExpPageState extends State<AddExpPage> {
                   onPressed: () {
                     if (!isLoader) {
                       submitForm();
-                      // calculatePoint();
                     }
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 50, vertical: 15),
+                    backgroundColor: Colors.teal.shade100,
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                   ),
                   child: isLoader
                       ? const CircularProgressIndicator(

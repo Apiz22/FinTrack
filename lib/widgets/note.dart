@@ -14,7 +14,13 @@ class Note extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        Text("\nCheck point calculation logic+ refine the user page \n fix UI")
+        Text(
+          "\nCheck point calculation logic+ refine the user page \n fix UI",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        )
       ],
     );
   }

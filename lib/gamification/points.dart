@@ -67,17 +67,14 @@ class Points {
 
   int calculatePointsForBudget(
       double amount, double expenses, double calbudget, int weight) {
-    double percentageSpent = (expenses / calbudget) * 100;
     int calPoints = 0;
-
-    if (percentageSpent > 100) {
-      calPoints -= amount.toInt(); // Deduct points if overspend
+    double over = 0;
+    if (expenses > calbudget) {
+      over = expenses - calbudget;
+      calPoints = ((10 * weight) - over).toInt(); // Deduct points if overspend
+      // calPoints = amount.toInt();
     } else {
-      // calPoints += (amount).toInt();
-
-      calPoints = (10 * ((amount / calbudget) * weight)).toInt();
-
-      // calPoints = (calPoints > pointsLimit) ? pointsLimit : calPoints;
+      calPoints = (10 * ((expenses / calbudget) * weight)).toInt();
     }
 
     return calPoints;
@@ -151,34 +148,34 @@ class Points {
     return curBudgetRule;
   }
 
-  //if user got achieve the points it will get streak
-  Future<void> userPointStreak(String userId) async {
-    // DateTime date = DateTime.now();
-    // String monthYear = DateFormat("MMM y").format(date);
+  // //if user got achieve the points it will get streak
+  // Future<void> userPointStreak(String userId) async {
+  //   // DateTime date = DateTime.now();
+  //   // String monthYear = DateFormat("MMM y").format(date);
 
-    try {
-      int currentPts = await retrieveCurrentPts(userId);
-      String currentBudget = await retrieveCurrentBudgetRule(userId);
+  //   try {
+  //     int currentPts = await retrieveCurrentPts(userId);
+  //     String currentBudget = await retrieveCurrentBudgetRule(userId);
 
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      DocumentSnapshot userDoc =
-          await firestore.collection('users').doc(userId).get();
+  //     DocumentSnapshot userDoc =
+  //         await firestore.collection('users').doc(userId).get();
 
-      int winStreak = userDoc["ruleStreak"] ?? 0;
+  //     int winStreak = userDoc["ruleWinStreak"] ?? 0;
 
-      if ((currentPts == 1000 && currentBudget == "80/20") ||
-          (currentPts == 2000 && currentBudget == "50/30/20")) {
-        winStreak += 1;
-      } else {
-        winStreak = 0;
-      }
+  //     if ((currentPts == 1000 && currentBudget == "80/20") ||
+  //         (currentPts == 2000 && currentBudget == "50/30/20")) {
+  //       winStreak += 1;
+  //     } else {
+  //       winStreak = 0;
+  //     }
 
-      await firestore.collection("users").doc(userId).update({
-        "ruleStreak": winStreak,
-      });
-    } catch (e) {
-      print("Error updating win streak: $e");
-    }
-  }
+  //     await firestore.collection("users").doc(userId).update({
+  //       "ruleWinStreak": winStreak,
+  //     });
+  //   } catch (e) {
+  //     print("Error updating win streak: $e");
+  //   }
+  // }
 }

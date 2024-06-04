@@ -74,7 +74,7 @@ class BudgetCard extends StatelessWidget {
               budgetRows = [
                 buildRow(
                   context,
-                  "Wants + Needs",
+                  "Wants & Needs",
                   combinedWantsNeeds,
                   combinedCalWantsNeeds,
                   "Wants and Needs combined.",
@@ -135,7 +135,8 @@ class BudgetCard extends StatelessWidget {
                 ),
                 Text(
                   '${data["budgetRule"]}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 ...budgetRows,
               ],
@@ -188,7 +189,8 @@ class BudgetCard extends StatelessWidget {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 234, 234, 234),
+          color: Colors.teal.shade100,
+          border: Border.all(),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(

@@ -122,6 +122,7 @@ class LeaderboardState extends State<Leaderboard> {
                       color = Colors.white;
                   }
                   return Container(
+                    padding: EdgeInsets.all(3),
                     color: color,
                     child: ListTile(
                       leading: Text(

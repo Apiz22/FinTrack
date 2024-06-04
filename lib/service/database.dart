@@ -8,6 +8,7 @@ import '../pages/income_input.dart';
 class Database {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   String currentMonthYear = DateFormat("MMM y").format(DateTime.now());
+  final userId = FirebaseAuth.instance.currentUser!.uid;
 
   Future<void> addUser(data, context) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
@@ -83,6 +84,18 @@ class Database {
         .collection('point_history')
         .doc(monthYear)
         .snapshots();
+  }
+
+  void saveBudgetRuleToFirebase(String? budgetRule) {
+    if (budgetRule != null) {
+      FirebaseFirestore.instance.collection("users").doc(userId).update({
+        'currentRule': budgetRule,
+      }).then((value) {
+        print('Budget rule saved successfully!');
+      }).catchError((error) {
+        print('Failed to save budget rule: $error');
+      });
+    }
   }
 
   // Future<void> determineUserBudgetRuleChange(String userId, monthYear) async {

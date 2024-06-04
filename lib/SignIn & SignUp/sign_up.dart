@@ -46,7 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
         "phone": _phoneController.text,
         "totalBadgesObtained": 0,
         "currentRule": "80/20",
-        "ruleStreak": 0,
+        "ruleWinStreak": 0,
       };
 
       try {
