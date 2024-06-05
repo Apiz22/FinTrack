@@ -155,6 +155,7 @@ class _AddExpPageState extends State<AddExpPage> {
           "remainAmount": remainAmount,
           "totalCredit": totalCredit,
           "totalDebit": totalDebit,
+          "currentLevel": userLevel,
           "updatedAt": timestamp,
         });
       }
@@ -243,10 +244,10 @@ class _AddExpPageState extends State<AddExpPage> {
               TextFormField(
                 controller: amountEditController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: appValidator.isEmptyCheck,
+                validator: appValidator.amountValidator,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: "Amount",
+                  labelText: "(RM) Amount",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),

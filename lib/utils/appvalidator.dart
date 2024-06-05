@@ -26,6 +26,23 @@ class AppValidator {
     return null;
   }
 
+  String? amountValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Please enter an amount";
+    }
+
+    final parsedValue = double.tryParse(value);
+    if (parsedValue == null) {
+      return "Please enter a valid number";
+    }
+
+    if (parsedValue <= 0) {
+      return "Amount must be greater than zero";
+    }
+
+    return null;
+  }
+
   // Number phone verification
   String? validatePhoneNumber(String? value) {
     if (value!.isEmpty) {

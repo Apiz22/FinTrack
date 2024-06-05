@@ -47,6 +47,8 @@ class _SignUpPageState extends State<SignUpPage> {
         "totalBadgesObtained": 0,
         "currentRule": "80/20",
         "ruleWinStreak": 0,
+        "currentLevel": "Beginner",
+        "profilePicture": "assets/img/Pfps.jpg",
       };
 
       try {

@@ -134,7 +134,7 @@ class BudgetCard extends StatelessWidget {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '${data["budgetRule"]}',
+                  '${data["budgetRule"]} (${data['currentLevel']})',
                   style: const TextStyle(
                       fontSize: 20, fontWeight: FontWeight.bold),
                 ),

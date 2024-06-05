@@ -29,14 +29,14 @@ class _UserPageState extends State<UserPage> {
   int currentPts = 0;
   String currentBudget = "";
   String username = "";
-  String profilePicturePath =
-      'assets/img/default.png'; // Default profile picture path
+  String profilePicturePath = 'assets/img/Pfps.jpg';
 
   final List<String> profilePictures = [
+    'assets/img/Pfps.jpg',
     'assets/img/default.png',
     'assets/img/pedro.jpeg',
-    'assets/img/default.png',
-    'assets/img/default.png',
+    'assets/img/male1.jpg',
+    'assets/img/male.jpg',
     'assets/img/default.png',
     'assets/img/default.png'
   ];
@@ -170,36 +170,51 @@ class _UserPageState extends State<UserPage> {
         child: userDrawer(context),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 20),
-            Column(
-              children: [
-                const SizedBox(height: 20),
-                Text("Current Points: $currentPts"),
-                ElevatedButton(
-                  onPressed: changeCurrentRule,
-                  child: const Text("Update Rule based on Points"),
-                ),
-                Text("Total Badges Obtained: $_totalBadgesObtained"),
-                const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Badges Collections",
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.w500),
-                      ),
-                      badgesList(),
-                    ],
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.teal.shade50,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.teal),
+              ),
+              child: Text(
+                "Current Points: $currentPts",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: changeCurrentRule,
+              child: const Text("Update Rule based on Points"),
+            ),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.teal.shade50,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.teal),
+              ),
+              child: Text(
+                "Total Badges Obtained: $_totalBadgesObtained",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Container(
+              color: Colors.amber,
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Badges Collections",
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                   ),
-                ),
-              ],
+                  badgesList(),
+                ],
+              ),
             ),
           ],
         ),
@@ -215,23 +230,36 @@ class _UserPageState extends State<UserPage> {
           decoration: BoxDecoration(
             color: Colors.teal,
           ),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
                 radius: 40,
                 backgroundImage: AssetImage(profilePicturePath),
               ),
-              const SizedBox(height: 10),
-              Text(
-                username,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+              const SizedBox(width: 20),
+              Column(
+                children: [
+                  SizedBox(height: 10),
+                  Text(
+                    username,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.edit),
+          title: const Text('Edit Budget Rule'),
+          onTap: () {
+            Navigator.pop(context);
+            editBudgetRule(context);
+          },
         ),
         ListTile(
           leading: const Icon(Icons.edit),
@@ -425,59 +453,65 @@ class _UserPageState extends State<UserPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
           }
-          if (snapshot.hasData) {
-            final badgesList = snapshot.data!;
-            return Container(
-              padding: const EdgeInsets.all(10),
-              color: Colors.grey.shade200,
-              child: ListView.builder(
-                itemCount: badgesList.length,
-                itemBuilder: (context, index) {
-                  final badge =
-                      badgesList[index].data() as Map<String, dynamic>;
-                  final imageUrl = badge['imageUrl'] ?? '';
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Column(
+              children: [
+                Center(child: const Text('No badges obtained')),
+              ],
+            );
+          }
+          final badgesList = snapshot.data!;
+          return Container(
+            padding: const EdgeInsets.all(10),
+            color: Colors.teal.shade200,
+            child: ListView.builder(
+              itemCount: badgesList.length,
+              itemBuilder: (context, index) {
+                final badge = badgesList[index].data() as Map<String, dynamic>;
+                final imageUrl = badge['imageUrl'] ?? '';
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: (index % 2 == 0)
-                            ? Colors.teal.shade100
-                            : Colors.teal.shade50,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.black),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: (index % 2 == 0)
+                          ? Colors.teal.shade100
+                          : Colors.teal.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black),
+                    ),
+                    child: ListTile(
+                      leading: ClipOval(
+                        child: Container(
+                          color: Colors.grey.shade300,
+                          padding: const EdgeInsets.all(1),
+                          child: imageUrl.isNotEmpty
+                              ? Image.network(
+                                  imageUrl,
+                                  width: 50,
+                                  height: 50,
+                                )
+                              : Image.asset(
+                                  'assets/img/default.png',
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
                       ),
-                      child: ListTile(
-                        leading: ClipOval(
-                          child: Container(
-                            color: Colors.grey.shade300,
-                            padding: const EdgeInsets.all(1),
-                            child: imageUrl.isNotEmpty
-                                ? Image.network(
-                                    imageUrl,
-                                    width: 50,
-                                    height: 50,
-                                  )
-                                : const Icon(Icons.image_not_supported,
-                                    size: 50, color: Colors.white),
-                          ),
-                        ),
-                        title: Text(badge['name']),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(badge['description']),
-                          ],
-                        ),
+                      title: Text(badge['name']),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(badge['description']),
+                        ],
                       ),
                     ),
-                  );
-                },
-              ),
-            );
-          } else {
-            return const Text('No badges obtained');
-          }
+                  ),
+                );
+              },
+            ),
+          );
         },
       ),
     );

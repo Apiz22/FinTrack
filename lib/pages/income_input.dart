@@ -2,11 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class IncomeInputPage extends StatelessWidget {
-  final TextEditingController incomeController = TextEditingController();
+class IncomeInputPage extends StatefulWidget {
   final String userId;
 
   IncomeInputPage({super.key, required this.userId});
+
+  @override
+  State<IncomeInputPage> createState() => _IncomeInputPageState();
+}
+
+class _IncomeInputPageState extends State<IncomeInputPage> {
+  final TextEditingController incomeController = TextEditingController();
+
+  String currentMonthYear = DateFormat("MMM y").format(DateTime.now());
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +22,10 @@ class IncomeInputPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Enter Total Income'),
+        title: const Text(
+          'Enter Total Income',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.teal.shade500,
       ),
       body: Padding(
@@ -30,8 +41,42 @@ class IncomeInputPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  FutureBuilder<Map<String, dynamic>?>(
+                    future: _fetchPreviousIncomeData(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Text('No previous income data available.');
+                      } else {
+                        final data = snapshot.data!;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Previous Month Income',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.teal.shade700,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text('Total Income: ${data['totalIncome']}'),
+                            Text('Remain Amount: ${data['remainAmount']}'),
+                            Text('Needs: ${data['needs']}'),
+                            Text('Wants: ${data['wants']}'),
+                            Text('Savings: ${data['savings']}'),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
                   Text(
-                    'Enter Your Monthly Income',
+                    'Enter Your Monthly Income ${currentMonthYear}',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -70,7 +115,7 @@ class IncomeInputPage extends StatelessWidget {
 
                       FirebaseFirestore.instance
                           .collection('users')
-                          .doc(userId)
+                          .doc(widget.userId)
                           .collection('monthly_income')
                           .doc(currentMonthYear)
                           .set({
@@ -84,7 +129,8 @@ class IncomeInputPage extends StatelessWidget {
                         'cal_needs': calNeeds,
                         'cal_wants': calWants,
                         'cal_savings': calSavings,
-                        'budgetRule': await _getUserBudgetRule(userId),
+                        'budgetRule': await _getUserBudgetRule(widget.userId),
+                        'currentLevel': await getUserCurrentLvl(widget.userId),
                       }).then((_) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -102,7 +148,7 @@ class IncomeInputPage extends StatelessWidget {
                     icon: Icon(Icons.save),
                     label: const Text('Save'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal.shade500,
+                      backgroundColor: Colors.teal.shade100,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -151,5 +197,26 @@ class IncomeInputPage extends StatelessWidget {
     final userDoc =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
     return userDoc.exists ? userDoc["currentRule"] ?? "" : "";
+  }
+
+  Future<String> getUserCurrentLvl(String userId) async {
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    return userDoc.exists ? userDoc["currentLevel"] ?? "" : "";
+  }
+
+  Future<Map<String, dynamic>?> _fetchPreviousIncomeData() async {
+    DateTime date = DateTime.now();
+    DateTime previousDate = DateTime(date.year, date.month - 1, date.day);
+    String previousIncomeDate = DateFormat("MMM y").format(previousDate);
+
+    final docSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('monthly_income')
+        .doc(previousIncomeDate)
+        .get();
+
+    return docSnapshot.exists ? docSnapshot.data() : null;
   }
 }

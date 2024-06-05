@@ -8,7 +8,6 @@ import '../pages/income_input.dart';
 class Database {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   String currentMonthYear = DateFormat("MMM y").format(DateTime.now());
-  final userId = FirebaseAuth.instance.currentUser!.uid;
 
   Future<void> addUser(data, context) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
@@ -44,7 +43,6 @@ class Database {
       final budgetRule = await getUserBudgetRule(userId);
       await docRef.set({
         "budgetRule": budgetRule,
-        "TotalLimitPoints": 100,
         "CurrentPoints": 0,
         "NeedsPoints": 0,
         "WantsPoints": 0,
@@ -87,6 +85,8 @@ class Database {
   }
 
   void saveBudgetRuleToFirebase(String? budgetRule) {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
     if (budgetRule != null) {
       FirebaseFirestore.instance.collection("users").doc(userId).update({
         'currentRule': budgetRule,

@@ -45,12 +45,12 @@ class RankPageState extends State<RankPage> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Text(
-                  "User Current Badges: $totalBadgesObtained",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                ),
+                // Text(
+                //   "User Current Badges: $totalBadgesObtained",
+                //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                // ),
                 const Leaderboard(),
-                const NumberGuessingGame(),
+                // const NumberGuessingGame(),
               ],
             ),
           ),
