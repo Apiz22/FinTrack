@@ -15,6 +15,8 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+  bool isDeleting = false;
+
   var isLogOut = false;
   final userId = FirebaseAuth.instance.currentUser!.uid;
   DateTime date = DateTime.now();
@@ -256,14 +258,6 @@ class _UserPageState extends State<UserPage> {
             ],
           ),
         ),
-        // ListTile(
-        //   leading: const Icon(Icons.edit),
-        //   title: const Text('Edit Username'),
-        //   onTap: () {
-        //     // Navigator.pop(context);
-        //     // editBudgetRule(context);
-        //   },
-        // ),
         ListTile(
           leading: const Icon(Icons.edit),
           title: const Text('Edit Budget Rule'),
@@ -309,10 +303,68 @@ class _UserPageState extends State<UserPage> {
           title: const Text('Delete Account'),
           onTap: () {
             Navigator.pop(context);
+            deleteAccount();
           },
         ),
       ],
     );
+  }
+
+  Future<void> deleteAccount() async {
+    // Show confirmation dialog
+    bool confirmDelete = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Account Deletion'),
+          content: Text(
+              'Are you sure you want to delete your account? This action cannot be undone.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: Text('Delete'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmDelete != null && confirmDelete) {
+      final userId = FirebaseAuth.instance.currentUser!.uid;
+
+      setState(() {
+        isDeleting = true;
+      });
+
+      try {
+        // Delete user from Firebase Authentication
+        await FirebaseAuth.instance.currentUser?.delete();
+
+        // Optionally, delete user data from Firestore or other databases
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(userId)
+            .delete();
+        // Navigate to login page after successful deletion
+        Navigator.of(context).pushNamed(
+            'lib/service/auth_gate.dart'); // Replace with your login route
+      } catch (e) {
+        print('Failed to delete account: $e');
+        // Handle errors here
+      } finally {
+        setState(() {
+          isDeleting = false;
+        });
+      }
+    }
   }
 
   Future<dynamic> editBudgetRule(BuildContext context) {

@@ -2,17 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class Leaderboard extends StatefulWidget {
-  const Leaderboard({super.key});
+class SavingLeaderboard extends StatefulWidget {
+  const SavingLeaderboard({super.key});
 
   @override
-  State<Leaderboard> createState() => LeaderboardState();
+  State<SavingLeaderboard> createState() => _SavingLeaderboardState();
 }
 
 DateTime date = DateTime.now();
 String monthyear = DateFormat("MMM y").format(date);
 
-class LeaderboardState extends State<Leaderboard> {
+class _SavingLeaderboardState extends State<SavingLeaderboard> {
   String selectedCategory = '80/20';
 
   List<Map<String, dynamic>> _users = [];
@@ -48,10 +48,9 @@ class LeaderboardState extends State<Leaderboard> {
         if (pointsSnapshot.exists) {
           final pointsData = pointsSnapshot.data()!;
           final currentPoints = pointsData['CurrentPoints'] ?? 0;
-          final budgetRule = pointsData['budgetRule'];
           final profilePicture = data['profilePicture'] ?? '';
 
-          if (currentPoints > 0 && budgetRule == selectedCategory) {
+          if (currentPoints > 0) {
             users.add({
               'id': userId,
               'name': data['username'] ?? 'Unknown',
@@ -103,63 +102,12 @@ class LeaderboardState extends State<Leaderboard> {
             ),
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Leaderboard",
+              "Saving Leaderboard",
               style: TextStyle(fontSize: 25, color: Colors.white),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              child: Text(
-                "Current Rank Date : $monthyear",
-                style: TextStyle(
-                  color: Colors.teal.shade500,
-                  fontSize: 23,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-          Text(
-            "Days until next reset: ${calculateDaysRemaining()} days",
-            style: TextStyle(
-              fontSize: 18,
-              fontStyle: FontStyle.italic,
-              color: Colors.teal.shade600,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.black),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              margin: EdgeInsets.symmetric(vertical: 8.0),
-              child: DropdownButton<String>(
-                value: selectedCategory,
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    ;
-                    setState(() {
-                      selectedCategory = newValue;
-                      fetchUsers();
-                    });
-                  }
-                },
-                items: <String>['50/30/20', '80/20']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                isExpanded: true,
-                underline: SizedBox(),
-                icon: Icon(Icons.arrow_drop_down),
-              ),
-            ),
+          SizedBox(
+            height: 10,
           ),
           Container(
             padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -313,8 +261,8 @@ Future<void> updateUserRankings(List<Map<String, dynamic>> users) async {
         FirebaseFirestore.instance.collection('users').doc(users[i]['id']);
     final pointHistoryRef = userRef.collection('point_history').doc(monthyear);
 
-    batch.update(userRef, {'currentRanking': i + 1});
-    batch.update(pointHistoryRef, {'currentRanking': i + 1});
+    batch.update(userRef, {'currentRankingSaving': i + 1});
+    batch.update(pointHistoryRef, {'currentRankingSaving': i + 1});
   }
   await batch.commit();
 }

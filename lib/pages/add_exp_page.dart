@@ -117,7 +117,8 @@ class _AddExpPageState extends State<AddExpPage> {
               points.calculatePointsForBudget(expSavings, calSavings, 40);
 
           currentPts = needspts + wantspts + savingsspts;
-        } else {
+        } //rule == 80/20
+        else {
           double combineExp = expNeeds + expWants;
           if (combineExp > (income * 0.8)) {
             double over = combineExp - (income * 0.8);

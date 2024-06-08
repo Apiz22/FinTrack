@@ -83,35 +83,4 @@ class Points {
 
     return curBudgetRule;
   }
-
-  // //if user got achieve the points it will get streak
-  // Future<void> userPointStreak(String userId) async {
-  //   // DateTime date = DateTime.now();
-  //   // String monthYear = DateFormat("MMM y").format(date);
-
-  //   try {
-  //     int currentPts = await retrieveCurrentPts(userId);
-  //     String currentBudget = await retrieveCurrentBudgetRule(userId);
-
-  //     FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  //     DocumentSnapshot userDoc =
-  //         await firestore.collection('users').doc(userId).get();
-
-  //     int winStreak = userDoc["ruleWinStreak"] ?? 0;
-
-  //     if ((currentPts == 1000 && currentBudget == "80/20") ||
-  //         (currentPts == 2000 && currentBudget == "50/30/20")) {
-  //       winStreak += 1;
-  //     } else {
-  //       winStreak = 0;
-  //     }
-
-  //     await firestore.collection("users").doc(userId).update({
-  //       "ruleWinStreak": winStreak,
-  //     });
-  //   } catch (e) {
-  //     print("Error updating win streak: $e");
-  //   }
-  // }
 }

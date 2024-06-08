@@ -1,4 +1,5 @@
 import 'package:FinTrack/gamification/points.dart';
+import 'package:FinTrack/gamification/view_history.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -106,6 +107,9 @@ class _MainPageState extends State<MainPage> {
             //     ],
             //   ),
             // ),
+            ViewHistory(
+              userId: userId,
+            ),
             //   Container(
             //     padding: const EdgeInsets.all(10),
             //     color: Color.fromARGB(255, 115, 114, 114),
