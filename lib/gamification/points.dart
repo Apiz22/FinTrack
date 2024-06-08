@@ -3,69 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class Points {
-  static const int pointsLimit502030 = 2000;
-  static const int pointsLimit8020 = 1000;
-
-  int calculatePoints(String budgetRule, String budget, double expenses,
-      double calbudget, double income, double combine) {
-    int points = 0;
-    double combineNeedsWants = income * 0.8;
-    int weight = 0;
-
-    switch (budgetRule) {
-      case '50/30/20':
-        if (budget == "needs") {
-          int weight = 100;
-          points = calculatePointsForBudget(
-            expenses,
-            calbudget,
-            weight,
-          );
-          break;
-        } else if (budget == "wants") {
-          weight = 60;
-          points = calculatePointsForBudget(
-            expenses,
-            calbudget,
-            weight,
-          );
-          break;
-        } else {
-          weight = 40;
-          points = calculatePointsForBudget(
-            expenses,
-            calbudget,
-            weight,
-          );
-          break;
-        }
-      case '80/20':
-        if (budget == "needs" || budget == "wants") {
-          weight = 80;
-          points = calculatePointsForBudget(combine, combineNeedsWants, weight);
-          break;
-        } else if (budget == "savings") {
-          weight = 20;
-          points = calculatePointsForBudget(expenses, calbudget, weight);
-          break;
-        } else {
-          print("other");
-          break;
-        }
-      default:
-        // Handle other cases or throw an error
-        break;
-    }
-
-    return points;
-  }
-
   int calculatePointsForBudget(double expenses, double calbudget, int weight) {
     int calPoints = 0;
     double over = 0;
     if (expenses > calbudget) {
       over = expenses - calbudget;
-      calPoints = ((10 * weight) - over).toInt(); // Deduct points if overspend
+      calPoints = ((10 * weight) - over).toInt();
     } else {
       calPoints = (10 * ((expenses / calbudget) * weight)).toInt();
     }

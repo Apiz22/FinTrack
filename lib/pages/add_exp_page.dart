@@ -85,9 +85,7 @@ class _AddExpPageState extends State<AddExpPage> {
       int needspts = pointsDoc["NeedsPoints"];
       int wantspts = pointsDoc["WantsPoints"];
       int savingsspts = pointsDoc["SavingsPoints"];
-      String budgetRule = pointsDoc["budgetRule"].toString();
-      double combine = 0;
-
+      String budgetRule = pointsDoc["budgetRule"];
       DocumentSnapshot userFile = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
@@ -105,28 +103,18 @@ class _AddExpPageState extends State<AddExpPage> {
         totalDebit += amount;
         if (budget == "needs") {
           expNeeds += amount;
-          // combine = expNeeds + expWants;
-          // needspts = points.calculatePoints(
-          //     budgetRule, budget, expNeeds, calNeeds, income, combine);
         } else if (budget == "wants") {
           expWants += amount;
-          // combine = expNeeds + expWants;
-          // wantspts = points.calculatePoints(
-          //     budgetRule, budget, expWants, calWants, income, combine);
         } else {
           expSavings += amount;
-          // savingsspts = points.calculatePoints(
-          //     budgetRule, budget, expSavings, calSavings, income, combine);
         }
 
 // calculate points
         if (budgetRule == "50/30/20") {
-          needspts = points.calculatePoints(
-              budgetRule, budget, expNeeds, calNeeds, income, combine);
-          wantspts = points.calculatePoints(
-              budgetRule, budget, expWants, calWants, income, combine);
-          savingsspts = points.calculatePoints(
-              budgetRule, budget, expSavings, calSavings, income, combine);
+          needspts = points.calculatePointsForBudget(expNeeds, calNeeds, 100);
+          wantspts = points.calculatePointsForBudget(expWants, calWants, 60);
+          savingsspts =
+              points.calculatePointsForBudget(expSavings, calSavings, 40);
 
           currentPts = needspts + wantspts + savingsspts;
         } else {
@@ -137,8 +125,8 @@ class _AddExpPageState extends State<AddExpPage> {
           } else {
             combinePts = (10 * ((combineExp / (income * 0.8)) * 80)).toInt();
           }
-          savingsspts = points.calculatePoints(
-              budgetRule, budget, expSavings, calSavings, income, combine);
+          savingsspts =
+              points.calculatePointsForBudget(expSavings, calSavings, 20);
 
           currentPts = combinePts + savingsspts;
         }
