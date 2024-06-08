@@ -41,39 +41,39 @@ class _IncomeInputPageState extends State<IncomeInputPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  FutureBuilder<Map<String, dynamic>?>(
-                    future: _fetchPreviousIncomeData(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Text('No previous income data available.');
-                      } else {
-                        final data = snapshot.data!;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Previous Month Income',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.teal.shade700,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text('Total Income: ${data['totalIncome']}'),
-                            Text('Remain Amount: ${data['remainAmount']}'),
-                            Text('Needs: ${data['needs']}'),
-                            Text('Wants: ${data['wants']}'),
-                            Text('Savings: ${data['savings']}'),
-                          ],
-                        );
-                      }
-                    },
-                  ),
+                  // FutureBuilder<Map<String, dynamic>?>(
+                  //   future: _fetchPreviousIncomeData(),
+                  //   builder: (context, snapshot) {
+                  //     if (snapshot.connectionState == ConnectionState.waiting) {
+                  //       return CircularProgressIndicator();
+                  //     } else if (snapshot.hasError) {
+                  //       return Text('Error: ${snapshot.error}');
+                  //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  //       return Text('No previous income data available.');
+                  //     } else {
+                  //       final data = snapshot.data!;
+                  //       return Column(
+                  //         crossAxisAlignment: CrossAxisAlignment.start,
+                  //         children: [
+                  //           Text(
+                  //             'Previous Month Income',
+                  //             style: TextStyle(
+                  //               fontSize: 18,
+                  //               fontWeight: FontWeight.w600,
+                  //               color: Colors.teal.shade700,
+                  //             ),
+                  //           ),
+                  //           SizedBox(height: 8),
+                  //           Text('Total Income: ${data['totalIncome']}'),
+                  //           Text('Remain Amount: ${data['remainAmount']}'),
+                  //           Text('Needs: ${data['needs']}'),
+                  //           Text('Wants: ${data['wants']}'),
+                  //           Text('Savings: ${data['savings']}'),
+                  //         ],
+                  //       );
+                  //     }
+                  //   },
+                  // ),
                   const SizedBox(height: 20),
                   Text(
                     'Enter Your Monthly Income ${currentMonthYear}',
@@ -88,9 +88,7 @@ class _IncomeInputPageState extends State<IncomeInputPage> {
                     controller: incomeController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      labelText: 'Total Income',
-                      prefixIcon:
-                          Icon(Icons.attach_money, color: Colors.teal.shade500),
+                      labelText: '(RM) Total Income',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

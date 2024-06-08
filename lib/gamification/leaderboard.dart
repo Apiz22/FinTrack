@@ -92,41 +92,47 @@ class LeaderboardState extends State<Leaderboard> {
         borderRadius: BorderRadius.circular(10),
         color: Colors.teal.shade100,
       ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
-        child: Column(
-          children: [
-            Container(
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
               color: Colors.teal.shade400,
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "Leaderboard",
-                style: TextStyle(fontSize: 25, color: Colors.white),
-              ),
+              border: Border(bottom: BorderSide(color: Colors.black)),
+              borderRadius: BorderRadius.circular(10),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                child: Text(
-                  "Current Rank Date : $monthyear",
-                  style: TextStyle(
-                    color: Colors.teal.shade500,
-                    fontSize: 23,
-                    fontWeight: FontWeight.w500,
-                  ),
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Leaderboard",
+              style: TextStyle(fontSize: 25, color: Colors.white),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              child: Text(
+                "Current Rank Date : $monthyear",
+                style: TextStyle(
+                  color: Colors.teal.shade500,
+                  fontSize: 23,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
-            Text(
-              "Days until next reset: ${calculateDaysRemaining()} days",
-              style: TextStyle(
-                fontSize: 18,
-                fontStyle: FontStyle.italic,
-                color: Colors.teal.shade600,
-              ),
+          ),
+          Text(
+            "Days until next reset: ${calculateDaysRemaining()} days",
+            style: TextStyle(
+              fontSize: 18,
+              fontStyle: FontStyle.italic,
+              color: Colors.teal.shade600,
             ),
-            Container(
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
               decoration: BoxDecoration(
+                color: Colors.white,
                 border: Border.all(color: Colors.black),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -135,6 +141,7 @@ class LeaderboardState extends State<Leaderboard> {
                 value: selectedCategory,
                 onChanged: (String? newValue) {
                   if (newValue != null) {
+                    ;
                     setState(() {
                       selectedCategory = newValue;
                       fetchUsers();
@@ -153,96 +160,96 @@ class LeaderboardState extends State<Leaderboard> {
                 icon: Icon(Icons.arrow_drop_down),
               ),
             ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              decoration: BoxDecoration(
-                color: Colors.teal.shade400,
-                border: Border(
-                  bottom: BorderSide(width: 1.0, color: Colors.teal.shade400),
-                ),
-              ),
-              child: Row(
-                children: const [
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      "Ranking",
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 5,
-                    child: Text(
-                      "User",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      "Points",
-                      textAlign: TextAlign.end,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        // color: Colors.teal.shade500,
-                      ),
-                    ),
-                  ),
-                ],
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            decoration: BoxDecoration(
+              color: Colors.teal.shade400,
+              border: Border(
+                bottom: BorderSide(width: 1.0, color: Colors.teal.shade400),
               ),
             ),
-            _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _users.length > 10 ? 10 : _users.length,
-                    itemBuilder: (context, index) {
-                      Color color;
-                      switch (index) {
-                        case 0:
-                          color = Color.fromARGB(255, 255, 223, 0);
-                          break;
-                        case 1:
-                          color = Color.fromARGB(255, 192, 192, 192);
-                          break;
-                        case 2:
-                          color = Color.fromARGB(255, 203, 109, 81);
-                          break;
-                        default:
-                          color = Colors.white;
-                      }
-                      return Container(
-                        color: Colors.teal.shade200,
-                        child: Padding(
-                          padding: const EdgeInsets.all(3.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              color: color,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: EdgeInsets.all(5),
-                            child: UserTile(
-                              rank: index + 1,
-                              user: _users[index],
-                            ),
+            child: Row(
+              children: const [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    "Ranking",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 5,
+                  child: Text(
+                    "User",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    "Points",
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      // color: Colors.teal.shade500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _users.length > 10 ? 10 : _users.length,
+                  itemBuilder: (context, index) {
+                    Color color;
+                    switch (index) {
+                      case 0:
+                        color = Color.fromARGB(255, 255, 223, 0);
+                        break;
+                      case 1:
+                        color = Color.fromARGB(255, 192, 192, 192);
+                        break;
+                      case 2:
+                        color = Color.fromARGB(255, 203, 109, 81);
+                        break;
+                      default:
+                        color = Colors.white;
+                    }
+                    return Container(
+                      color: Colors.teal.shade200,
+                      child: Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                            color: color,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: EdgeInsets.all(5),
+                          child: UserTile(
+                            rank: index + 1,
+                            user: _users[index],
                           ),
                         ),
-                      );
-                    },
-                  ),
-          ],
-        ),
+                      ),
+                    );
+                  },
+                ),
+        ],
       ),
     );
   }
@@ -278,7 +285,7 @@ class UserTile extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 20),
               Text(
                 '${user['name']}',
                 style: const TextStyle(fontSize: 20),

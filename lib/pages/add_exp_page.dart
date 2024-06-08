@@ -70,7 +70,9 @@ class _AddExpPageState extends State<AddExpPage> {
       double calNeeds = userDoc["cal_needs"].toDouble();
       double calWants = userDoc["cal_wants"].toDouble();
       double calSavings = userDoc["cal_savings"].toDouble();
+
       int currentPts = 0;
+      int combinePts = 0;
 
 //Retrieve user current points
       final pointsDoc = await FirebaseFirestore.instance
@@ -84,7 +86,7 @@ class _AddExpPageState extends State<AddExpPage> {
       int wantspts = pointsDoc["WantsPoints"];
       int savingsspts = pointsDoc["SavingsPoints"];
       String budgetRule = pointsDoc["budgetRule"].toString();
-      double com = 0;
+      double combine = 0;
 
       DocumentSnapshot userFile = await FirebaseFirestore.instance
           .collection('users')
@@ -96,26 +98,50 @@ class _AddExpPageState extends State<AddExpPage> {
       if (type == "credit") {
         remainAmount += amount;
         totalCredit += amount;
-      } else {
+      }
+      //Debit
+      else {
         remainAmount -= amount;
         totalDebit += amount;
         if (budget == "needs") {
           expNeeds += amount;
-          com = expNeeds + expWants;
-          needspts = points.calculatePoints(
-              budgetRule, amount, expNeeds, calNeeds, income, budget, com);
+          // combine = expNeeds + expWants;
+          // needspts = points.calculatePoints(
+          //     budgetRule, budget, expNeeds, calNeeds, income, combine);
         } else if (budget == "wants") {
-          expWants = amount;
-          com = expNeeds + expWants;
-          wantspts = points.calculatePoints(
-              budgetRule, amount, expWants, calWants, income, budget, com);
+          expWants += amount;
+          // combine = expNeeds + expWants;
+          // wantspts = points.calculatePoints(
+          //     budgetRule, budget, expWants, calWants, income, combine);
         } else {
           expSavings += amount;
-          savingsspts = points.calculatePoints(
-              budgetRule, amount, expSavings, calSavings, income, budget, com);
+          // savingsspts = points.calculatePoints(
+          //     budgetRule, budget, expSavings, calSavings, income, combine);
         }
 
-        currentPts = needspts + wantspts + savingsspts;
+// calculate points
+        if (budgetRule == "50/30/20") {
+          needspts = points.calculatePoints(
+              budgetRule, budget, expNeeds, calNeeds, income, combine);
+          wantspts = points.calculatePoints(
+              budgetRule, budget, expWants, calWants, income, combine);
+          savingsspts = points.calculatePoints(
+              budgetRule, budget, expSavings, calSavings, income, combine);
+
+          currentPts = needspts + wantspts + savingsspts;
+        } else {
+          double combineExp = expNeeds + expWants;
+          if (combineExp > (income * 0.8)) {
+            double over = combineExp - (income * 0.8);
+            combinePts = ((10 * 80) - over).toInt();
+          } else {
+            combinePts = (10 * ((combineExp / (income * 0.8)) * 80)).toInt();
+          }
+          savingsspts = points.calculatePoints(
+              budgetRule, budget, expSavings, calSavings, income, combine);
+
+          currentPts = combinePts + savingsspts;
+        }
 
         if ((currentPts == 1000 && budgetRule == "80/20") ||
             (currentPts == 2000 && budgetRule == "50/30/20")) {
@@ -171,6 +197,7 @@ class _AddExpPageState extends State<AddExpPage> {
         "WantsPoints": wantspts,
         "SavingsPoints": savingsspts,
         "CurrentPoints": currentPts,
+        "CombinePoints": combinePts,
       });
 
       // Save into transaction history

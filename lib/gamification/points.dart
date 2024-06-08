@@ -6,27 +6,25 @@ class Points {
   static const int pointsLimit502030 = 2000;
   static const int pointsLimit8020 = 1000;
 
-  int calculatePoints(String budgetRule, double amount, double expenses,
-      double calbudget, double income, String category, double combine) {
+  int calculatePoints(String budgetRule, String budget, double expenses,
+      double calbudget, double income, double combine) {
     int points = 0;
-    double combineNeedsSavings = income * 0.8;
+    double combineNeedsWants = income * 0.8;
     int weight = 0;
 
     switch (budgetRule) {
       case '50/30/20':
-        if (category == "needs") {
+        if (budget == "needs") {
           int weight = 100;
           points = calculatePointsForBudget(
-            amount,
             expenses,
             calbudget,
             weight,
           );
           break;
-        } else if (category == "wants") {
+        } else if (budget == "wants") {
           weight = 60;
           points = calculatePointsForBudget(
-            amount,
             expenses,
             calbudget,
             weight,
@@ -35,7 +33,6 @@ class Points {
         } else {
           weight = 40;
           points = calculatePointsForBudget(
-            amount,
             expenses,
             calbudget,
             weight,
@@ -43,15 +40,13 @@ class Points {
           break;
         }
       case '80/20':
-        if (category == "needs" || category == "wants") {
+        if (budget == "needs" || budget == "wants") {
           weight = 80;
-          points = calculatePointsForBudget(
-              amount, combine, combineNeedsSavings, weight);
+          points = calculatePointsForBudget(combine, combineNeedsWants, weight);
           break;
-        } else if (category == "savings") {
+        } else if (budget == "savings") {
           weight = 20;
-          points =
-              calculatePointsForBudget(amount, expenses, calbudget, weight);
+          points = calculatePointsForBudget(expenses, calbudget, weight);
           break;
         } else {
           print("other");
@@ -65,14 +60,12 @@ class Points {
     return points;
   }
 
-  int calculatePointsForBudget(
-      double amount, double expenses, double calbudget, int weight) {
+  int calculatePointsForBudget(double expenses, double calbudget, int weight) {
     int calPoints = 0;
     double over = 0;
     if (expenses > calbudget) {
       over = expenses - calbudget;
       calPoints = ((10 * weight) - over).toInt(); // Deduct points if overspend
-      // calPoints = amount.toInt();
     } else {
       calPoints = (10 * ((expenses / calbudget) * weight)).toInt();
     }

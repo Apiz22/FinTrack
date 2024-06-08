@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../service/auth_service.dart';
 import '../utils/appvalidator.dart';
-import 'sign_in.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -20,8 +19,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   var authService = AuthService();
   var isLoader = false;
-  bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  bool isPasswordVisible = false;
+  bool isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
@@ -74,21 +73,21 @@ class _SignUpPageState extends State<SignUpPage> {
       suffixIcon: isPassword
           ? IconButton(
               icon: Icon(
-                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                  isPasswordVisible ? Icons.visibility : Icons.visibility_off),
               onPressed: () {
                 setState(() {
-                  _isPasswordVisible = !_isPasswordVisible;
+                  isPasswordVisible = !isPasswordVisible;
                 });
               },
             )
           : isConfirmPassword
               ? IconButton(
-                  icon: Icon(_isConfirmPasswordVisible
+                  icon: Icon(isConfirmPasswordVisible
                       ? Icons.visibility
                       : Icons.visibility_off),
                   onPressed: () {
                     setState(() {
-                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                      isConfirmPasswordVisible = !isConfirmPasswordVisible;
                     });
                   },
                 )
@@ -107,7 +106,10 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: const Text(
+          'Sign Up',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.teal,
       ),
       body: Padding(
@@ -199,7 +201,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: _passwordController,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: appValidator.validatePassword,
-                  obscureText: !_isPasswordVisible,
+                  obscureText: !isPasswordVisible,
                   decoration: _buildInputDecoration("Password", Icons.lock,
                       isPassword: true),
                 ),
@@ -221,7 +223,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     }
                     return null;
                   },
-                  obscureText: !_isConfirmPasswordVisible,
+                  obscureText: !isConfirmPasswordVisible,
                   decoration: _buildInputDecoration(
                       "Confirm Password", Icons.lock,
                       isConfirmPassword: true),
@@ -256,10 +258,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     const Text("Already have an account?"),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
+                        Navigator.pop(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => const SignInPage()),
                         );
                       },
                       child: const Text(

@@ -13,6 +13,7 @@ class Database {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     try {
       await users.doc(userId).set(data);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("User registered successfully")),
       );

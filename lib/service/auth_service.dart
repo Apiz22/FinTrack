@@ -1,21 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import '../pages/loading_screen.dart';
-import '../utils/dashboard.dart';
-import 'database.dart'; // Assuming this is your dashboard screen
+import 'database.dart';
 
 class AuthService {
   var database = Database();
 
   createUser(data, context) async {
     try {
-      // Navigate to the loading screen
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const LoadingScreen()),
-      );
-
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: data['email'],
         password: data['password'],
@@ -23,21 +14,17 @@ class AuthService {
       // Add user into Firestore
       await database.addUser(data, context);
 
-      // Replace loading screen with dashboard
-      Navigator.pushReplacement(
+      // Navigate to Dashboard after successful registration
+      Navigator.pop(
         context,
-        MaterialPageRoute(
-            builder: (context) =>
-                const Dashboard()), // Replace with your dashboard widget
       );
     } catch (e) {
-      Navigator.pop(context); // Close the loading screen
       showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: const Text("Sign Up Failed"),
-            content: Text(e.toString()),
+            content: Text("Sorry !! This email account already exist"),
           );
         },
       );
