@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../service/auth_service.dart';
 import '../utils/appvalidator.dart';
+import 'forgot_pass.dart';
 import 'sign_up.dart';
 
 class SignInPage extends StatefulWidget {
@@ -79,107 +80,128 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Sign In',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.teal,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                Container(
-                  alignment: Alignment.center,
-                  child: Image.asset(
-                    'assets/img/Logo.png',
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Center(
-                  child: Text(
-                    "FinTrack",
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.teal,
+      // appBar: AppBar(
+      //   title: const Text(
+      //     'Sign In',
+      //     style: TextStyle(color: Colors.white),
+      //   ),
+      //   backgroundColor: Colors.teal,
+      // ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Image.asset(
+                      'assets/img/Logo.png',
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.contain,
                     ),
                   ),
-                ),
-                const SizedBox(height: 30),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: appValidator.validateEmail,
-                  decoration: _buildInputDecoration("Email", Icons.email),
-                ),
-                const SizedBox(height: 20),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _passwordController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: appValidator.validatePassword,
-                  obscureText: !_isPasswordVisible,
-                  decoration: _buildInputDecoration("Password", Icons.lock,
-                      isPassword: true),
-                ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  height: 50,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: isLoader ? null : _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  const SizedBox(height: 20),
+                  const Center(
+                    child: Text(
+                      "FinTrack",
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
                       ),
                     ),
-                    child: isLoader
-                        ? const Center(child: CircularProgressIndicator())
-                        : const Text(
-                            "Login",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                          ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Don't have an account?"),
-                    TextButton(
+                  const SizedBox(height: 30),
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: appValidator.validateEmail,
+                    decoration: _buildInputDecoration("Email", Icons.email),
+                  ),
+                  const SizedBox(height: 20),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _passwordController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: appValidator.validatePassword,
+                    obscureText: !_isPasswordVisible,
+                    decoration: _buildInputDecoration("Password", Icons.lock,
+                        isPassword: true),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const SignUpPage()),
+                              builder: (context) => const ForgotPasswordPage()),
                         );
                       },
                       child: const Text(
-                        "Sign Up",
+                        "Forgot Password?",
                         style: TextStyle(
                           color: Colors.teal,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    height: 50,
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: isLoader ? null : _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: isLoader
+                          ? const Center(child: CircularProgressIndicator())
+                          : const Text(
+                              "Login",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Don't have an account?"),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignUpPage()),
+                          );
+                        },
+                        child: const Text(
+                          "Sign Up",
+                          style: TextStyle(
+                            color: Colors.teal,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

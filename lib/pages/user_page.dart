@@ -29,15 +29,15 @@ class _UserPageState extends State<UserPage> {
   int currentPts = 0;
   String currentBudget = "";
   String username = "";
-  String profilePicturePath =
-      'assets/img/default.png'; // Default profile picture path
+  String profilePicturePath = 'assets/img/Pfps.jpg';
 
   final List<String> profilePictures = [
+    'assets/img/Pfps.jpg',
     'assets/img/default.png',
     'assets/img/pedro.jpeg',
-    'assets/img/default.png',
-    'assets/img/default.png',
-    'assets/img/default.png',
+    'assets/img/male1.jpg',
+    'assets/img/male2.jpg',
+    'assets/img/female1.jpg',
     'assets/img/default.png'
   ];
 
@@ -132,29 +132,18 @@ class _UserPageState extends State<UserPage> {
   }
 
   Future<void> changePhoneNumber(String newPhoneNumber) async {
-    final user = FirebaseAuth.instance.currentUser;
-
-    try {
-      await user?.updatePhoneNumber(PhoneAuthProvider.credential(
-        verificationId: '', // you need to provide verificationId and smsCode
-        smsCode: '', // from the phone verification process
-      ));
-      print('Phone number updated successfully!');
-    } catch (e) {
-      print('Failed to update phone number: $e');
-    }
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(userId)
+        .update({'phone': newPhoneNumber});
   }
 
-  Future<void> changePassword(String newPassword) async {
-    final user = FirebaseAuth.instance.currentUser;
-
-    try {
-      await user?.updatePassword(newPassword);
-      print('Password updated successfully!');
-    } catch (e) {
-      print('Failed to update password: $e');
-    }
-  }
+  // Future<void> changePassword(String newPassword) async {
+  //   await FirebaseFirestore.instance
+  //       .collection("users")
+  //       .doc(userId)
+  //       .update({'password': newPassword});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -170,36 +159,51 @@ class _UserPageState extends State<UserPage> {
         child: userDrawer(context),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 20),
-            Column(
-              children: [
-                const SizedBox(height: 20),
-                Text("Current Points: $currentPts"),
-                ElevatedButton(
-                  onPressed: changeCurrentRule,
-                  child: const Text("Update Rule based on Points"),
-                ),
-                Text("Total Badges Obtained: $_totalBadgesObtained"),
-                const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Badges Collections",
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.w500),
-                      ),
-                      badgesList(),
-                    ],
+            // Container(
+            //   padding: const EdgeInsets.all(8.0),
+            //   margin: const EdgeInsets.symmetric(vertical: 10),
+            //   decoration: BoxDecoration(
+            //     color: Colors.teal.shade50,
+            //     borderRadius: BorderRadius.circular(10),
+            //     border: Border.all(color: Colors.teal),
+            //   ),
+            //   child: Text(
+            //     "Current Points: $currentPts",
+            //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            //   ),
+            // ),
+            // ElevatedButton(
+            //   onPressed: changeCurrentRule,
+            //   child: const Text("Update Rule based on Points"),
+            // ),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.teal.shade50,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.teal),
+              ),
+              child: Text(
+                "Total Badges Obtained: $_totalBadgesObtained",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Container(
+              // color: Colors.amber,
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Badges Collections",
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                   ),
-                ),
-              ],
+                  badgesList(),
+                ],
+              ),
             ),
           ],
         ),
@@ -215,24 +219,51 @@ class _UserPageState extends State<UserPage> {
           decoration: BoxDecoration(
             color: Colors.teal,
           ),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
                 radius: 40,
                 backgroundImage: AssetImage(profilePicturePath),
               ),
-              const SizedBox(height: 10),
-              Text(
-                username,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+              const SizedBox(width: 20),
+              Column(
+                children: [
+                  SizedBox(height: 10),
+                  Text(
+                    username,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.teal.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.teal),
+                    ),
+                    child: Text(
+                      "Current Points: $currentPts",
+                      style:
+                          TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
+        // ListTile(
+        //   leading: const Icon(Icons.edit),
+        //   title: const Text('Edit Username'),
+        //   onTap: () {
+        //     // Navigator.pop(context);
+        //     // editBudgetRule(context);
+        //   },
+        // ),
         ListTile(
           leading: const Icon(Icons.edit),
           title: const Text('Edit Budget Rule'),
@@ -271,6 +302,13 @@ class _UserPageState extends State<UserPage> {
           onTap: () {
             Navigator.pop(context);
             logOut();
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.edit),
+          title: const Text('Delete Account'),
+          onTap: () {
+            Navigator.pop(context);
           },
         ),
       ],
@@ -357,31 +395,123 @@ class _UserPageState extends State<UserPage> {
   }
 
   Future<dynamic> editPassword(BuildContext context) {
-    final TextEditingController passwordController = TextEditingController();
+    final TextEditingController currentPasswordController =
+        TextEditingController();
+    final TextEditingController newPasswordController = TextEditingController();
+
+    bool _isCurrentPasswordVisible = false;
+    bool _isNewPasswordVisible = false;
+
     return showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Edit Password'),
-          content: TextField(
-            controller: passwordController,
-            decoration: const InputDecoration(
-              labelText: 'New Password',
-            ),
-            obscureText: true,
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                changePassword(passwordController.text);
-                Navigator.pop(context);
-              },
-              child: const Text('Save'),
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Edit Password'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: currentPasswordController,
+                    decoration: InputDecoration(
+                      labelText: 'Current Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isCurrentPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isCurrentPasswordVisible =
+                                !_isCurrentPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                    obscureText: !_isCurrentPasswordVisible,
+                  ),
+                  TextField(
+                    controller: newPasswordController,
+                    decoration: InputDecoration(
+                      labelText: 'New Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isNewPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isNewPasswordVisible = !_isNewPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                    obscureText: !_isNewPasswordVisible,
+                  ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () async {
+                    bool success = await changePassword(
+                      currentPasswordController.text,
+                      newPasswordController.text,
+                    );
+                    if (success) {
+                      Navigator.pop(context);
+                    } else {
+                      // Show error message if reauthentication fails
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Current password is incorrect')),
+                      );
+                    }
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
+  }
+
+  Future<bool> changePassword(
+      String currentPassword, String newPassword) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    if (user == null) {
+      return false; // User is not logged in
+    }
+
+    final credential = EmailAuthProvider.credential(
+      email: user.email!,
+      password: currentPassword,
+    );
+
+    try {
+      // Reauthenticate user with the current password
+      await user.reauthenticateWithCredential(credential);
+
+      // Update password after successful reauthentication
+      await user.updatePassword(newPassword);
+
+      // Update password in Firestore
+      await FirebaseFirestore.instance.collection("users").doc(userId).update({
+        'password': newPassword,
+      });
+
+      print('Password updated successfully!');
+      return true;
+    } catch (e) {
+      print('Failed to update password: $e');
+      return false;
+    }
   }
 
   Future<dynamic> changeProfilePicture(BuildContext context) {
@@ -394,18 +524,55 @@ class _UserPageState extends State<UserPage> {
             width: double.minPositive,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: profilePictures.map((picturePath) {
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: AssetImage(picturePath),
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: profilePictures.map((picturePath) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context); // Close the current dialog
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Change Profile Picture'),
+                                content: const Text(
+                                    'Are you sure you want to change the profile picture?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(
+                                          context); // Close the confirmation dialog
+                                    },
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      saveProfilePicture(picturePath);
+                                      Navigator.pop(
+                                          context); // Close the confirmation dialog
+                                    },
+                                    child: const Text('Yes'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundImage: AssetImage(picturePath),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
-                  title: Text(picturePath.split('/').last),
-                  onTap: () {
-                    saveProfilePicture(picturePath);
-                    Navigator.pop(context);
-                  },
-                );
-              }).toList(),
+                ),
+              ],
             ),
           ),
         );
@@ -423,61 +590,67 @@ class _UserPageState extends State<UserPage> {
             return const Text("Error loading data");
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return Center(child: const CircularProgressIndicator());
           }
-          if (snapshot.hasData) {
-            final badgesList = snapshot.data!;
-            return Container(
-              padding: const EdgeInsets.all(10),
-              color: Colors.grey.shade200,
-              child: ListView.builder(
-                itemCount: badgesList.length,
-                itemBuilder: (context, index) {
-                  final badge =
-                      badgesList[index].data() as Map<String, dynamic>;
-                  final imageUrl = badge['imageUrl'] ?? '';
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Column(
+              children: [
+                Center(child: const Text('No badges obtained')),
+              ],
+            );
+          }
+          final badgesList = snapshot.data!;
+          return Container(
+            padding: const EdgeInsets.all(10),
+            color: Colors.grey.shade100,
+            child: ListView.builder(
+              itemCount: badgesList.length,
+              itemBuilder: (context, index) {
+                final badge = badgesList[index].data() as Map<String, dynamic>;
+                final imageUrl = badge['imageUrl'] ?? '';
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: (index % 2 == 0)
-                            ? Colors.teal.shade100
-                            : Colors.teal.shade50,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.black),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: (index % 2 == 0)
+                          ? Colors.teal.shade200
+                          : Colors.teal.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black),
+                    ),
+                    child: ListTile(
+                      leading: ClipOval(
+                        child: Container(
+                          color: Colors.grey.shade300,
+                          padding: const EdgeInsets.all(1),
+                          child: imageUrl.isNotEmpty
+                              ? Image.network(
+                                  imageUrl,
+                                  width: 50,
+                                  height: 50,
+                                )
+                              : Image.asset(
+                                  'assets/img/default.png',
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
                       ),
-                      child: ListTile(
-                        leading: ClipOval(
-                          child: Container(
-                            color: Colors.grey.shade300,
-                            padding: const EdgeInsets.all(1),
-                            child: imageUrl.isNotEmpty
-                                ? Image.network(
-                                    imageUrl,
-                                    width: 50,
-                                    height: 50,
-                                  )
-                                : const Icon(Icons.image_not_supported,
-                                    size: 50, color: Colors.white),
-                          ),
-                        ),
-                        title: Text(badge['name']),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(badge['description']),
-                          ],
-                        ),
+                      title: Text(badge['name']),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(badge['description']),
+                        ],
                       ),
                     ),
-                  );
-                },
-              ),
-            );
-          } else {
-            return const Text('No badges obtained');
-          }
+                  ),
+                );
+              },
+            ),
+          );
         },
       ),
     );

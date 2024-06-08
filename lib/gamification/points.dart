@@ -3,76 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class Points {
-  static const int pointsLimit502030 = 2000;
-  static const int pointsLimit8020 = 1000;
-
-  int calculatePoints(String budgetRule, double amount, double expenses,
-      double calbudget, double income, String category, double combine) {
-    int points = 0;
-    double combineNeedsSavings = income * 0.8;
-    int weight = 0;
-
-    switch (budgetRule) {
-      case '50/30/20':
-        if (category == "needs") {
-          int weight = 100;
-          points = calculatePointsForBudget(
-            amount,
-            expenses,
-            calbudget,
-            weight,
-          );
-          break;
-        } else if (category == "wants") {
-          weight = 60;
-          points = calculatePointsForBudget(
-            amount,
-            expenses,
-            calbudget,
-            weight,
-          );
-          break;
-        } else {
-          weight = 40;
-          points = calculatePointsForBudget(
-            amount,
-            expenses,
-            calbudget,
-            weight,
-          );
-          break;
-        }
-      case '80/20':
-        if (category == "needs" || category == "wants") {
-          weight = 80;
-          points = calculatePointsForBudget(
-              amount, combine, combineNeedsSavings, weight);
-          break;
-        } else if (category == "savings") {
-          weight = 20;
-          points =
-              calculatePointsForBudget(amount, expenses, calbudget, weight);
-          break;
-        } else {
-          print("other");
-          break;
-        }
-      default:
-        // Handle other cases or throw an error
-        break;
-    }
-
-    return points;
-  }
-
-  int calculatePointsForBudget(
-      double amount, double expenses, double calbudget, int weight) {
+  int calculatePointsForBudget(double expenses, double calbudget, int weight) {
     int calPoints = 0;
     double over = 0;
     if (expenses > calbudget) {
       over = expenses - calbudget;
-      calPoints = ((10 * weight) - over).toInt(); // Deduct points if overspend
-      // calPoints = amount.toInt();
+      calPoints = ((10 * weight) - over).toInt();
     } else {
       calPoints = (10 * ((expenses / calbudget) * weight)).toInt();
     }

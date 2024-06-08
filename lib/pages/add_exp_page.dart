@@ -70,7 +70,9 @@ class _AddExpPageState extends State<AddExpPage> {
       double calNeeds = userDoc["cal_needs"].toDouble();
       double calWants = userDoc["cal_wants"].toDouble();
       double calSavings = userDoc["cal_savings"].toDouble();
+
       int currentPts = 0;
+      int combinePts = 0;
 
 //Retrieve user current points
       final pointsDoc = await FirebaseFirestore.instance
@@ -83,9 +85,7 @@ class _AddExpPageState extends State<AddExpPage> {
       int needspts = pointsDoc["NeedsPoints"];
       int wantspts = pointsDoc["WantsPoints"];
       int savingsspts = pointsDoc["SavingsPoints"];
-      String budgetRule = pointsDoc["budgetRule"].toString();
-      double com = 0;
-
+      String budgetRule = pointsDoc["budgetRule"];
       DocumentSnapshot userFile = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
@@ -96,26 +96,40 @@ class _AddExpPageState extends State<AddExpPage> {
       if (type == "credit") {
         remainAmount += amount;
         totalCredit += amount;
-      } else {
+      }
+      //Debit
+      else {
         remainAmount -= amount;
         totalDebit += amount;
         if (budget == "needs") {
           expNeeds += amount;
-          com = expNeeds + expWants;
-          needspts = points.calculatePoints(
-              budgetRule, amount, expNeeds, calNeeds, income, budget, com);
         } else if (budget == "wants") {
-          expWants = amount;
-          com = expNeeds + expWants;
-          wantspts = points.calculatePoints(
-              budgetRule, amount, expWants, calWants, income, budget, com);
+          expWants += amount;
         } else {
           expSavings += amount;
-          savingsspts = points.calculatePoints(
-              budgetRule, amount, expSavings, calSavings, income, budget, com);
         }
 
-        currentPts = needspts + wantspts + savingsspts;
+// calculate points
+        if (budgetRule == "50/30/20") {
+          needspts = points.calculatePointsForBudget(expNeeds, calNeeds, 100);
+          wantspts = points.calculatePointsForBudget(expWants, calWants, 60);
+          savingsspts =
+              points.calculatePointsForBudget(expSavings, calSavings, 40);
+
+          currentPts = needspts + wantspts + savingsspts;
+        } else {
+          double combineExp = expNeeds + expWants;
+          if (combineExp > (income * 0.8)) {
+            double over = combineExp - (income * 0.8);
+            combinePts = ((10 * 80) - over).toInt();
+          } else {
+            combinePts = (10 * ((combineExp / (income * 0.8)) * 80)).toInt();
+          }
+          savingsspts =
+              points.calculatePointsForBudget(expSavings, calSavings, 20);
+
+          currentPts = combinePts + savingsspts;
+        }
 
         if ((currentPts == 1000 && budgetRule == "80/20") ||
             (currentPts == 2000 && budgetRule == "50/30/20")) {
@@ -155,6 +169,7 @@ class _AddExpPageState extends State<AddExpPage> {
           "remainAmount": remainAmount,
           "totalCredit": totalCredit,
           "totalDebit": totalDebit,
+          "currentLevel": userLevel,
           "updatedAt": timestamp,
         });
       }
@@ -170,6 +185,7 @@ class _AddExpPageState extends State<AddExpPage> {
         "WantsPoints": wantspts,
         "SavingsPoints": savingsspts,
         "CurrentPoints": currentPts,
+        "CombinePoints": combinePts,
       });
 
       // Save into transaction history
@@ -243,10 +259,10 @@ class _AddExpPageState extends State<AddExpPage> {
               TextFormField(
                 controller: amountEditController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: appValidator.isEmptyCheck,
+                validator: appValidator.amountValidator,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: "Amount",
+                  labelText: "(RM) Amount",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
