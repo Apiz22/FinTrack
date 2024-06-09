@@ -1,3 +1,4 @@
+import 'package:FinTrack/gamification/points.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -129,14 +130,40 @@ class BudgetCard extends StatelessWidget {
 
             return Column(
               children: [
-                const Text(
-                  "Your current Budget: ",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Container(
+                  child: const Text(
+                    "Your current Budget: ",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
-                Text(
-                  '${data["budgetRule"]} (${data['currentLevel']})',
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${data["budgetRule"]} (${data['currentLevel']})',
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: ((context) {
+                                return AlertDialog(
+                                  title: Text("About Level"),
+                                  content: Text("Level can be into 3 category"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text("close"))
+                                  ],
+                                );
+                              }));
+                        },
+                        icon: Icon(Icons.info))
+                  ],
                 ),
                 ...budgetRows,
               ],
@@ -153,39 +180,40 @@ class BudgetCard extends StatelessWidget {
       padding: const EdgeInsets.all(2.0),
       child: Row(
         children: [
-          budgetCategory(header, amount, calAmount, onComplete),
-          IconButton(
-            //info budget
-            icon: const Icon(Icons.info),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text(header),
-                    content: SingleChildScrollView(
-                      child: Text(description),
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Close'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
+          budgetCategory(
+              context, header, amount, calAmount, description, onComplete),
+          // IconButton(
+          //   //info budget
+          //   icon: const Icon(Icons.info),
+          //   onPressed: () {
+          //     showDialog(
+          //       context: context,
+          //       builder: (BuildContext context) {
+          //         return AlertDialog(
+          //           title: Text(header),
+          //           content: SingleChildScrollView(
+          //             child: Text(description),
+          //           ),
+          //           actions: <Widget>[
+          //             TextButton(
+          //               onPressed: () {
+          //                 Navigator.of(context).pop();
+          //               },
+          //               child: const Text('Close'),
+          //             ),
+          //           ],
+          //         );
+          //       },
+          //     );
+          //   },
+          // ),
         ],
       ),
     );
   }
 
-  Expanded budgetCategory(
-      String header, double amount, double calAmount, VoidCallback onComplete) {
+  Expanded budgetCategory(BuildContext context, String header, double amount,
+      double calAmount, String description, VoidCallback onComplete) {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
@@ -201,12 +229,48 @@ class BudgetCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      header,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          header,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
+                        ),
+                        IconButton(
+                          //info budget
+                          icon: const Icon(Icons.info),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text(header),
+                                  content: SingleChildScrollView(
+                                    child: Text(description),
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Close'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        // const SizedBox(width: 8), // Adjust width as needed
+                        // Icon(
+                        //   amount > calAmount
+                        //       ? Icons.warning_rounded
+                        //       : Icons.check_circle,
+                        //   color: amount > calAmount ? Colors.red : Colors.green,
+                        // ),
+                      ],
                     ),
                     Text(
                       "RM ${amount.toStringAsFixed(2)} / ${calAmount.toStringAsFixed(2)}",

@@ -26,13 +26,22 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     });
 
     try {
-      await FirebaseAuth.instance
-          .sendPasswordResetEmail(email: _emailController.text);
-      await saveEmailToDatabase(
-          _emailController.text); // Save email to the database
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password reset email sent')),
-      );
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: _emailController.text)
+          .get();
+
+      if (userSnapshot.docs.isNotEmpty) {
+        await FirebaseAuth.instance
+            .sendPasswordResetEmail(email: _emailController.text);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password reset email sent')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User email does not exist ')),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to send password reset email: $e')),
@@ -41,36 +50,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       setState(() {
         isLoading = false;
       });
-    }
-  }
-
-  Future<void> saveEmailToDatabase(String email) async {
-    try {
-      final userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: email)
-          .get();
-
-      if (userSnapshot.docs.isNotEmpty) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userSnapshot.docs[0].id)
-            .update({
-          'resetRequested': true,
-          'resetTimestamp': FieldValue.serverTimestamp()
-        });
-      } else {
-        // Optionally handle the case where the email does not exist in your database
-        await FirebaseFirestore.instance.collection('users').add({
-          'email': email,
-          'resetRequested': true,
-          'resetTimestamp': FieldValue.serverTimestamp(),
-        });
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update database: $e')),
-      );
     }
   }
 
@@ -84,7 +63,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Forgot Password'),
+        title: const Text(
+          'Forgot Password',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.teal,
       ),
       body: Padding(

@@ -47,21 +47,21 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
 
         if (pointsSnapshot.exists) {
           final pointsData = pointsSnapshot.data()!;
-          final currentPoints = pointsData['CurrentPoints'] ?? 0;
+          final PtsSavings = pointsData['PtsSavings'] ?? 0;
           final profilePicture = data['profilePicture'] ?? '';
 
-          if (currentPoints > 0) {
+          if (PtsSavings > 0) {
             users.add({
               'id': userId,
               'name': data['username'] ?? 'Unknown',
               'profilePicture': profilePicture,
-              'currentPoints': currentPoints,
+              'PtsSavings': PtsSavings,
             });
           }
         }
       }
 
-      users.sort((a, b) => b['currentPoints'].compareTo(a['currentPoints']));
+      users.sort((a, b) => b['PtsSavings'].compareTo(a['PtsSavings']));
 
       setState(() {
         _users = users;
@@ -244,7 +244,7 @@ class UserTile extends StatelessWidget {
         Expanded(
           flex: 3,
           child: Text(
-            '${user['currentPoints']} points',
+            '${user['PtsSavings']} points',
             textAlign: TextAlign.end,
             style: const TextStyle(fontSize: 20),
           ),

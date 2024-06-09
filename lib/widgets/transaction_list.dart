@@ -61,4 +61,19 @@ class TransactionList extends StatelessWidget {
           );
         });
   }
+
+  // Function to calculate dynamic height based on number of transactions
+  double calculateHeight(int itemCount) {
+    const double itemHeight = 80.0; // Height of each transaction item
+    const double minHeight = 100.0; // Minimum height when no transactions
+    const double maxContainerHeight = 400.0; // Maximum container height
+
+    // Calculate height based on number of items
+    double calculatedHeight = minHeight + (itemHeight * itemCount);
+
+    // Return calculated height, capped at maxContainerHeight
+    return calculatedHeight > maxContainerHeight
+        ? maxContainerHeight
+        : calculatedHeight;
+  }
 }

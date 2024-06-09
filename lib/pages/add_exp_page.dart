@@ -20,6 +20,7 @@ class _AddExpPageState extends State<AddExpPage> {
   var category = ""; // Initialize to an empty string
   var budget = "needs";
   String userLevel = "";
+  int savePts = 0;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -139,6 +140,8 @@ class _AddExpPageState extends State<AddExpPage> {
           winStreak = 0;
         }
 
+        savePts = points.calculatePointsSavings(expSavings, calSavings, income);
+
 //Set user Level (Begineer, Intermediate , Expert)
         if (budgetRule == "50/30/20" && currentPts == 2000) {
           userLevel = "Expert";
@@ -187,10 +190,11 @@ class _AddExpPageState extends State<AddExpPage> {
         "SavingsPoints": savingsspts,
         "CurrentPoints": currentPts,
         "CombinePoints": combinePts,
+        "PtsSavings": savePts,
       });
 
       // Save into transaction history
-      var data = {
+      var transactionData = {
         "id": id,
         "title": titleEditController.text,
         "amount": amount,
@@ -208,7 +212,21 @@ class _AddExpPageState extends State<AddExpPage> {
           .doc(user.uid)
           .collection("transactions")
           .doc(id)
-          .set(data);
+          .set(transactionData);
+
+      var ExpensesData = {
+        "Total Income": income,
+        "Level": userLevel,
+        "budgetRule": budgetRule,
+        "saving pts": savePts,
+      };
+
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid)
+          .collection("expenses_record")
+          .doc(monthyear)
+          .update(ExpensesData);
 
       setState(() {
         isLoader = false;

@@ -83,4 +83,15 @@ class Points {
 
     return curBudgetRule;
   }
+
+  int calculatePointsSavings(double savings, double calSaving, double income) {
+    int calPoints = 0;
+    double savingPercent = (savings / calSaving) * 100;
+
+    if (savingPercent < 200) {
+      calPoints = (savingPercent ~/ 10) * 10;
+    }
+
+    return calPoints;
+  }
 }

@@ -103,7 +103,7 @@ class PointsLeaderboardState extends State<PointsLeaderboard> {
             ),
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Leaderboard",
+              "Budget Leaderboard",
               style: TextStyle(fontSize: 25, color: Colors.white),
             ),
           ),

@@ -34,6 +34,7 @@ class _MainPageState extends State<MainPage> {
     try {
       await database.createMonthlyIncomeDocument(userId, context);
       await database.createMonthlyPointHistory(userId);
+      await database.createMonthlyExpensesRecord(userId);
       // await pts.userPointStreak(userId);
     } catch (error) {
       print("Initialization error: $error");
@@ -50,7 +51,7 @@ class _MainPageState extends State<MainPage> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.teal.shade900,
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -107,18 +108,12 @@ class _MainPageState extends State<MainPage> {
             //     ],
             //   ),
             // ),
-            ViewHistory(
-              userId: userId,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ViewHistory(
+                userId: userId,
+              ),
             ),
-            //   Container(
-            //     padding: const EdgeInsets.all(10),
-            //     color: Color.fromARGB(255, 115, 114, 114),
-            //     child: const Column(
-            //       children: [
-            //         DebtReminder(),
-            //       ],
-            //     ),
-            //   ),
           ],
         ),
       ),
