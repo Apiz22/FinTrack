@@ -1,5 +1,6 @@
 import 'package:FinTrack/gamification/points.dart';
 import 'package:FinTrack/gamification/view_history.dart';
+import 'package:FinTrack/pages/summary.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -108,12 +109,13 @@ class _MainPageState extends State<MainPage> {
             //     ],
             //   ),
             // ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ViewHistory(
-                userId: userId,
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: ViewHistory(
+            //     userId: userId,
+            //   ),
+            // ),
+            SummaryHistory()
           ],
         ),
       ),

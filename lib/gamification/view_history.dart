@@ -1,3 +1,4 @@
+import 'package:FinTrack/widgets/timeline_month.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +16,18 @@ class _ViewHistoryState extends State<ViewHistory> {
   Map<String, Map<String, dynamic>>? allExpensesData;
   String? selectedMonth;
 
+  var monthYear = "";
+
+  @override
+  void initState() {
+    super.initState();
+    DateTime now = DateTime.now();
+    setState(() {
+      selectedMonth = DateFormat("MMM y").format(now);
+      monthYear = DateFormat("MMM y").format(now);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -24,7 +37,7 @@ class _ViewHistoryState extends State<ViewHistory> {
       child: Column(
         children: [
           Container(
-            color: Colors.black45,
+            color: Colors.teal.shade900,
             padding: EdgeInsets.all(10),
             width: double.infinity,
             child: Text(
@@ -52,29 +65,22 @@ class _ViewHistoryState extends State<ViewHistory> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    DropdownButton<String>(
-                      hint: Text("Select Month"),
-                      value: selectedMonth,
-                      items: allIncomeData!.keys.map((String month) {
-                        return DropdownMenuItem<String>(
-                          value: month,
-                          child: Text(month),
-                        );
-                      }).toList(),
-                      onChanged: (String? newMonth) {
-                        setState(() {
-                          selectedMonth = newMonth;
-                        });
+                    TimeLineMonth(
+                      onChanged: (String? value) {
+                        if (value != null) {
+                          setState(() {
+                            monthYear = value;
+                          });
+                        }
                       },
                     ),
                     SizedBox(height: 20),
-                    if (selectedMonth != null) ...[
-                      IncomeDataWidget(
-                          incomeData: allIncomeData![selectedMonth]!),
+                    ...[
+                      IncomeDataWidget(incomeData: allIncomeData?[monthYear]),
                       SizedBox(height: 20),
                       ExpensesDataWidget(
-                          expensesData: allExpensesData![selectedMonth]!),
-                    ]
+                          expensesData: allExpensesData?[monthYear]),
+                    ],
                   ],
                 );
               }
@@ -114,12 +120,15 @@ class _ViewHistoryState extends State<ViewHistory> {
 }
 
 class IncomeDataWidget extends StatelessWidget {
-  final Map<String, dynamic> incomeData;
+  final Map<String, dynamic>? incomeData;
 
   const IncomeDataWidget({super.key, required this.incomeData});
 
   @override
   Widget build(BuildContext context) {
+    if (incomeData == null) {
+      return Text("No income data available.");
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -132,23 +141,26 @@ class IncomeDataWidget extends StatelessWidget {
           ),
         ),
         SizedBox(height: 8),
-        Text('Total Income: ${incomeData['totalIncome']}'),
-        Text('Remain Amount: ${incomeData['remainAmount']}'),
-        Text('Needs: ${incomeData['needs']}'),
-        Text('Wants: ${incomeData['wants']}'),
-        Text('Savings: ${incomeData['savings']}'),
+        Text('Total Income: ${incomeData!['totalIncome']}'),
+        Text('Remain Amount: ${incomeData!['remainAmount']}'),
+        Text('Needs: ${incomeData!['needs']}'),
+        Text('Wants: ${incomeData!['wants']}'),
+        Text('Savings: ${incomeData!['savings']}'),
       ],
     );
   }
 }
 
 class ExpensesDataWidget extends StatelessWidget {
-  final Map<String, dynamic> expensesData;
+  final Map<String, dynamic>? expensesData;
 
   const ExpensesDataWidget({super.key, required this.expensesData});
 
   @override
   Widget build(BuildContext context) {
+    if (expensesData == null) {
+      return Text("No expenses data available.");
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -161,13 +173,13 @@ class ExpensesDataWidget extends StatelessWidget {
           ),
         ),
         SizedBox(height: 8),
-        Text('Level: ${expensesData['Level']}'),
-        Text('Total Income: ${expensesData['Total Income']}'),
-        Text('Budget Rule: ${expensesData['budgetRule']}'),
+        Text('Level: ${expensesData!['Level']}'),
+        Text('Total Income: ${expensesData!['Total Income']}'),
+        Text('Budget Rule: ${expensesData!['budgetRule']}'),
         // Uncomment the following lines if needed
-        // Text('Savings Points: ${expensesData['SavingsPoints']}'),
-        // Text('Wants Points: ${expensesData['WantsPoints']}'),
-        // Text('Current Ranking Saving: ${expensesData['currentRankingSaving']}'),
+        // Text('Savings Points: ${expensesData!['SavingsPoints']}'),
+        // Text('Wants Points: ${expensesData!['WantsPoints']}'),
+        // Text('Current Ranking Saving: ${expensesData!['currentRankingSaving']}'),
       ],
     );
   }

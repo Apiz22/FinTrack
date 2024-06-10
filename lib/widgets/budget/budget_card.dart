@@ -1,7 +1,5 @@
-import 'package:FinTrack/gamification/points.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import '../../gamification/class/badge_class.dart';
 import '../../gamification/progress_bar.dart';
 

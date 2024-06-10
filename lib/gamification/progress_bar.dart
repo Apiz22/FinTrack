@@ -21,8 +21,7 @@ class ProgressBar extends StatelessWidget {
       radius: 30,
       lineWidth: 10,
       percent: percent.clamp(0.0, 1.0), // Ensures percent is between 0 and 1,
-      progressColor:
-          percent > 1.0 ? Colors.red.shade200 : Colors.green.shade200,
+      progressColor: percent > 1.0 ? Colors.amber : Colors.teal.shade900,
       backgroundColor: Colors.grey.shade500,
       circularStrokeCap: CircularStrokeCap.round,
       center: Text(

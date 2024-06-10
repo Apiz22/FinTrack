@@ -255,9 +255,22 @@ class _AddExpPageState extends State<AddExpPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Add New Transaction",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.teal.shade800,
+                ),
+                child: const Text(
+                  "Add New Transaction",
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(height: 20),
               TextFormField(

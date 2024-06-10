@@ -1,0 +1,201 @@
+import 'package:FinTrack/widgets/timeline_month.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+class SummaryHistory extends StatefulWidget {
+  const SummaryHistory({super.key});
+
+  @override
+  State<SummaryHistory> createState() => _SummaryHistoryState();
+}
+
+class _SummaryHistoryState extends State<SummaryHistory> {
+  var monthYear = "";
+
+  @override
+  void initState() {
+    super.initState();
+    DateTime now = DateTime.now();
+    setState(() {
+      monthYear = DateFormat("MMM y").format(now);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.amber,
+            border: Border.all(),
+            borderRadius: BorderRadius.circular(8)),
+        child: Column(
+          children: [
+            Container(
+              color: Colors.teal.shade900,
+              padding: EdgeInsets.all(10),
+              width: double.infinity,
+              child: Text(
+                "Expenses Record Summary",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            TimeLineMonth(onChanged: ((String? value) {
+              if (value != null) {
+                setState(() {
+                  monthYear = value;
+                });
+              }
+            })),
+            // Text(
+            //   "Selected Month: $monthYear",
+            //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            // ),
+            SummaryRecord(selectMonth: monthYear),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SummaryRecord extends StatelessWidget {
+  final String selectMonth;
+  final String userId;
+
+  SummaryRecord({
+    super.key,
+    required this.selectMonth,
+  }) : userId = FirebaseAuth.instance.currentUser!.uid;
+
+  Future<Map<String, dynamic>?> fetchMonthlyData() async {
+    DocumentSnapshot incomeSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection("monthly_income")
+        .doc(selectMonth)
+        .get();
+
+    DocumentSnapshot pointsSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection("point_history")
+        .doc(selectMonth)
+        .get();
+
+    if (incomeSnapshot.exists || pointsSnapshot.exists) {
+      Map<String, dynamic> mergedData = {};
+      if (incomeSnapshot.exists) {
+        mergedData.addAll(incomeSnapshot.data() as Map<String, dynamic>);
+      }
+      if (pointsSnapshot.exists) {
+        mergedData.addAll(pointsSnapshot.data() as Map<String, dynamic>);
+      }
+      return mergedData;
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: fetchMonthlyData(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData || snapshot.data == null) {
+          return Text('No data available for $selectMonth');
+        } else {
+          Map<String, dynamic> data = snapshot.data!;
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    width: double.infinity,
+                    color: Colors.teal.shade900,
+                    padding: const EdgeInsets.all(10),
+                    child: Text(
+                      'Income & Points Data for $selectMonth',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  // SizedBox(height: 8),
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (data.containsKey('totalIncome'))
+                          Text(
+                            'Total Income: RM ${data['totalIncome'].toStringAsFixed(2)}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        if (data.containsKey('remainAmount'))
+                          Text(
+                            'Remain Amount: ${data['remainAmount']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        if (data.containsKey('needs'))
+                          Text(
+                            'Needs: ${data['needs']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        if (data.containsKey('wants'))
+                          Text(
+                            'Wants: ${data['wants']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        if (data.containsKey('savings'))
+                          Text(
+                            'Savings: ${data['savings']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        if (data.containsKey('level'))
+                          Text(
+                            'Level: ${data['level']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        if (data.containsKey('CurrentPoints'))
+                          Text(
+                            'Current Points: ${data['CurrentPoints']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        if (data.containsKey('budgetRule'))
+                          Text(
+                            'Budget Rule: ${data['budgetRule']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+}
