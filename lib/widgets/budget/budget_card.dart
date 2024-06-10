@@ -1,3 +1,4 @@
+import 'package:FinTrack/service/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../gamification/class/badge_class.dart';
@@ -180,31 +181,6 @@ class BudgetCard extends StatelessWidget {
         children: [
           budgetCategory(
               context, header, amount, calAmount, description, onComplete),
-          // IconButton(
-          //   //info budget
-          //   icon: const Icon(Icons.info),
-          //   onPressed: () {
-          //     showDialog(
-          //       context: context,
-          //       builder: (BuildContext context) {
-          //         return AlertDialog(
-          //           title: Text(header),
-          //           content: SingleChildScrollView(
-          //             child: Text(description),
-          //           ),
-          //           actions: <Widget>[
-          //             TextButton(
-          //               onPressed: () {
-          //                 Navigator.of(context).pop();
-          //               },
-          //               child: const Text('Close'),
-          //             ),
-          //           ],
-          //         );
-          //       },
-          //     );
-          //   },
-          // ),
         ],
       ),
     );
