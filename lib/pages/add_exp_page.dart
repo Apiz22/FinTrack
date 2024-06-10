@@ -1,3 +1,4 @@
+import 'package:FinTrack/service/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ class _AddExpPageState extends State<AddExpPage> {
   var uid = const Uuid();
 
   final Points points = Points();
+  final Database database = Database();
 
   Future<void> submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -87,11 +89,13 @@ class _AddExpPageState extends State<AddExpPage> {
       int wantspts = pointsDoc["WantsPoints"];
       int savingsspts = pointsDoc["SavingsPoints"];
       String budgetRule = pointsDoc["budgetRule"];
+
       DocumentSnapshot userFile = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .get();
       int winStreak = userFile["ruleWinStreak"] ?? 0;
+      // String budgetNextMonth = userFile["nextBudget"];
 
       // Calculate expenses amount + pts
       if (type == "credit") {
@@ -136,8 +140,10 @@ class _AddExpPageState extends State<AddExpPage> {
         if ((currentPts == 1000 && budgetRule == "80/20") ||
             (currentPts == 2000 && budgetRule == "50/30/20")) {
           winStreak += 1;
+          database.UpgradechangeRuleBasedOnPts(budgetRule);
         } else {
           winStreak = 0;
+          database.DownchangeRuleBasedOnPts(budgetRule);
         }
 
         savePts = points.calculatePointsSavings(expSavings, calSavings, income);

@@ -25,6 +25,7 @@ class _UserPageState extends State<UserPage> {
   final Badges badges = Badges();
   final Points points = Points();
   int _totalBadgesObtained = 0;
+  int achiveStreak = 0;
   int currentPts = 0;
   String currentBudget = "";
   String username = "";
@@ -48,6 +49,7 @@ class _UserPageState extends State<UserPage> {
     totalBadges();
     getCurrenPtsAndCurrentBudget();
     getUsername();
+    getWinStreak();
   }
 
   logOut() async {
@@ -77,6 +79,13 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
+  void getWinStreak() async {
+    int winstreak = await database.getUserWinStreak(userId);
+    setState(() {
+      achiveStreak = winstreak;
+    });
+  }
+
   void getUsername() async {
     final userDoc =
         await FirebaseFirestore.instance.collection("users").doc(userId).get();
@@ -87,35 +96,35 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
-  void changeCurrentRule() async {
-    if (currentPts >= 2000 && currentBudget == "50/30/20") {
-      database.saveBudgetRuleToFirebase("50/30/20");
-    } else if (currentPts <= 1000 && currentBudget == "80/20") {
-      database.saveBudgetRuleToFirebase("80/20");
-    } else {
-      return _showIneligibleDialog(context);
-    }
-  }
+  // void changeCurrentRule() async {
+  //   if (currentPts >= 2000 && currentBudget == "50/30/20") {
+  //     database.saveBudgetRuleToFirebase("50/30/20");
+  //   } else if (currentPts <= 1000 && currentBudget == "80/20") {
+  //     database.saveBudgetRuleToFirebase("80/20");
+  //   } else {
+  //     return _showIneligibleDialog(context);
+  //   }
+  // }
 
-  void _showIneligibleDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Not Eligible'),
-          content: Text('You are not eligible to change the rule.'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showIneligibleDialog(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Not Eligible'),
+  //         content: Text('You are not eligible to change the rule.'),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: Text('OK'),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   void saveProfilePicture(String picturePath) async {
     await FirebaseFirestore.instance.collection("users").doc(userId).update({
@@ -316,7 +325,7 @@ class _UserPageState extends State<UserPage> {
             children: [
               DropdownButtonFormField<String>(
                 value: selectedBudgetRule,
-                onChanged: (_totalBadgesObtained >= 0)
+                onChanged: (achiveStreak > 0)
                     ? (String? value) {
                         setState(() {
                           selectedBudgetRule = value;
@@ -335,7 +344,7 @@ class _UserPageState extends State<UserPage> {
                 ],
                 decoration: InputDecoration(
                   labelText: 'Budget Rule',
-                  enabled: _totalBadgesObtained > 1,
+                  enabled: achiveStreak > 0,
                 ),
               ),
             ],
@@ -344,7 +353,7 @@ class _UserPageState extends State<UserPage> {
             ElevatedButton(
               onPressed: (_totalBadgesObtained > 1)
                   ? () {
-                      database.saveBudgetRuleToFirebase(selectedBudgetRule);
+                      database.updateNextRuleToFirebase(selectedBudgetRule);
                       Navigator.pop(context);
                     }
                   : null,

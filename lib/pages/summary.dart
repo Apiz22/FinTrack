@@ -25,42 +25,39 @@ class _SummaryHistoryState extends State<SummaryHistory> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.amber,
-            border: Border.all(),
-            borderRadius: BorderRadius.circular(8)),
-        child: Column(
-          children: [
-            Container(
-              color: Colors.teal.shade900,
-              padding: EdgeInsets.all(10),
-              width: double.infinity,
-              child: Text(
-                "Expenses Record Summary",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+    return Container(
+      // decoration: BoxDecoration(
+      //     // color: Colors.amber.shade100,
+      //     border: Border.all(),
+      //     borderRadius: BorderRadius.circular(8)),
+      child: Column(
+        children: [
+          Container(
+            color: Colors.teal.shade900,
+            padding: EdgeInsets.all(10),
+            width: double.infinity,
+            child: Text(
+              "Expenses Record Summary",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
             ),
-            TimeLineMonth(onChanged: ((String? value) {
-              if (value != null) {
-                setState(() {
-                  monthYear = value;
-                });
-              }
-            })),
-            // Text(
-            //   "Selected Month: $monthYear",
-            //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            // ),
-            SummaryRecord(selectMonth: monthYear),
-          ],
-        ),
+          ),
+          TimeLineMonth(onChanged: ((String? value) {
+            if (value != null) {
+              setState(() {
+                monthYear = value;
+              });
+            }
+          })),
+          // Text(
+          //   "Selected Month: $monthYear",
+          //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          // ),
+          SummaryRecord(selectMonth: monthYear),
+        ],
       ),
     );
   }
@@ -154,22 +151,22 @@ class SummaryRecord extends StatelessWidget {
                           ),
                         if (data.containsKey('remainAmount'))
                           Text(
-                            'Remain Amount: ${data['remainAmount']}',
+                            'Remain Amount: RM ${data['remainAmount'].toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
                         if (data.containsKey('needs'))
                           Text(
-                            'Needs: ${data['needs']}',
+                            'Needs: RM ${data['needs'].toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
                         if (data.containsKey('wants'))
                           Text(
-                            'Wants: ${data['wants']}',
+                            'Wants: RM ${data['wants'].toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
                         if (data.containsKey('savings'))
                           Text(
-                            'Savings: ${data['savings']}',
+                            'Savings: RM ${data['savings'].toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
                         if (data.containsKey('level'))
@@ -179,7 +176,7 @@ class SummaryRecord extends StatelessWidget {
                           ),
                         if (data.containsKey('CurrentPoints'))
                           Text(
-                            'Current Points: ${data['CurrentPoints']}',
+                            'Overall points: ${data['CurrentPoints']} pts',
                             style: TextStyle(fontSize: 18),
                           ),
                         if (data.containsKey('budgetRule'))
