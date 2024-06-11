@@ -1,5 +1,3 @@
-import 'package:FinTrack/gamification/points_leaderboard.dart';
-import 'package:FinTrack/pages/home_screen.dart';
 import 'package:FinTrack/service/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -114,7 +112,7 @@ class _BudgetCardState extends State<BudgetCard> {
 
                 // Function to handle awarding the badge
                 void awardSavingsBadge() {
-                  badges.awardBadge("Savings is my Goal", currentDate, context);
+                  badges.awardBadge("Savings is my Goal", context);
                 }
 
                 // Variables to store progress percentages
@@ -132,7 +130,7 @@ class _BudgetCardState extends State<BudgetCard> {
                       combinedWantsNeeds / combinedCalWantsNeeds;
                   if (combinedWantsNeedsPercentage == 1.0 &&
                       savingsPercent == 1.0) {
-                    badges.awardBadge("Reach Goal 80/20", currentDate, context);
+                    badges.awardBadge("Reach Goal 80/20", context);
                   }
 
                   budgetRows = [
@@ -153,12 +151,11 @@ class _BudgetCardState extends State<BudgetCard> {
                       awardSavingsBadge,
                     ),
                   ];
-                } else if (budgetRule == '50/30/20') {
+                } else {
                   if (needsPercent == 1.0 &&
                       wantsPercent == 1.0 &&
                       savingsPercent == 1.0) {
-                    badges.awardBadge(
-                        "Reach Goal 50/30/20", currentDate, context);
+                    badges.awardBadge("Reach Goal 50/30/20", context);
                   }
                   budgetRows = [
                     buildRow(
@@ -186,14 +183,15 @@ class _BudgetCardState extends State<BudgetCard> {
                       awardSavingsBadge,
                     ),
                   ];
-                } else {
-                  budgetRows = [
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text("Invalid budget rule."),
-                    ),
-                  ];
                 }
+                // else {
+                //   budgetRows = [
+                //     const Padding(
+                //       padding: EdgeInsets.all(16.0),
+                //       child: Text("Invalid budget rule."),
+                //     ),
+                //   ];
+                // }
 
                 return Column(
                   children: [

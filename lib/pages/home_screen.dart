@@ -1,6 +1,5 @@
 import 'package:FinTrack/gamification/points.dart';
 import 'package:FinTrack/pages/summary.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -34,7 +33,7 @@ class _MainPageState extends State<MainPage> {
     try {
       await database.createMonthlyIncomeDocument(userId, context);
       await database.createMonthlyPointHistory(userId);
-      await database.createMonthlyExpensesRecord(userId);
+      // await database.createMonthlyExpensesRecord(userId);
       // await pts.userPointStreak(userId);
     } catch (error) {
       print("Initialization error: $error");

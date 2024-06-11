@@ -1,4 +1,5 @@
 import 'package:FinTrack/gamification/saving_leaderboard.dart';
+import 'package:FinTrack/gamification/test_badges.dart';
 import 'package:flutter/material.dart';
 
 import '../gamification/class/badge_class.dart';
@@ -14,20 +15,20 @@ class RankPage extends StatefulWidget {
 class RankPageState extends State<RankPage> {
   // Instance of Badges class
   final Badges badges = Badges();
-  int totalBadgesObtained = 0;
+  // int totalBadgesObtained = 0;
 
   @override
   void initState() {
     super.initState();
-    totalBadges();
+    // totalBadges();
   }
 
-  void totalBadges() async {
-    int badgesCount = await badges.retrieveTotalBadge();
-    setState(() {
-      totalBadgesObtained = badgesCount;
-    });
-  }
+  // void totalBadges() async {
+  //   int badgesCount = await badges.retrieveTotalBadge();
+  //   setState(() {
+  //     totalBadgesObtained = badgesCount;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +49,7 @@ class RankPageState extends State<RankPage> {
                 const PointsLeaderboard(),
                 SizedBox(height: 50),
                 const SavingLeaderboard(),
+                // NumberGuessingGame(),
               ],
             ),
           ),

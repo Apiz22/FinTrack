@@ -1,66 +1,77 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Badges {
-  Future<void> awardBadge(
-      String badgeName, String currentDate, BuildContext context) async {
+  Future<void> awardBadge(String badgeName, BuildContext context) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception("User not logged in");
       }
 
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      DocumentSnapshot userDoc =
-          await firestore.collection('users').doc(user.uid).get();
+      final firestore = FirebaseFirestore.instance;
+      final currentDate = DateFormat('MMM y').format(DateTime.now());
 
-//check exist badges
-      if (userDoc.exists) {
-        QuerySnapshot userBadges = await firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection('user_badges')
-            .where('name', isEqualTo: badgeName)
-            .get();
-
-        if (userBadges.docs.isEmpty) {
-          QuerySnapshot badgeSnapshot = await firestore
-              .collection('badges')
-              .where('name', isEqualTo: badgeName)
-              .get();
-
-          if (badgeSnapshot.docs.isNotEmpty) {
-            var badgeData =
-                badgeSnapshot.docs.first.data() as Map<String, dynamic>;
-            await firestore
-                .collection('users')
-                .doc(user.uid)
-                .collection('user_badges')
-                .add({
-              'badgeId': badgeSnapshot.docs.first.id,
-              'timestamp': FieldValue.serverTimestamp(),
-              'name': badgeData['name'],
-              'description': badgeData['description'],
-              'imageUrl': badgeData['imageUrl'],
-            });
-
-            await updateTotalBadges(user.uid); // Update total badges
-
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content:
-                      Text('Congratulations! You have been awarded a badge.')),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Badge not found.')),
-            );
-          }
-        }
-      } else {
+      // Check if the user document exists
+      final userDoc = await firestore.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
         throw Exception("User document not found");
       }
+
+      // Check if the badge has already been awarded in the current month
+      final userBadgesQuery = await firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('user_badges')
+          .where('name', isEqualTo: badgeName)
+          .where('monthYear', isEqualTo: currentDate)
+          .get();
+
+      if (userBadgesQuery.docs.isNotEmpty) {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text('Badge already awarded this month.')),
+        // );
+        return;
+      }
+
+      // Get the badge details
+      final badgeQuery = await firestore
+          .collection('badges')
+          .where('name', isEqualTo: badgeName)
+          .get();
+
+      if (badgeQuery.docs.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Badge not found.')),
+        );
+        return;
+      }
+
+      final badgeData = badgeQuery.docs.first.data();
+      final badgeId = badgeQuery.docs.first.id;
+
+      // Award the badge to the user
+      await firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('user_badges')
+          .add({
+        'badgeId': badgeId,
+        'timestamp': FieldValue.serverTimestamp(),
+        'name': badgeData['name'],
+        'description': badgeData['description'],
+        'imageUrl': badgeData['imageUrl'],
+        'monthYear': currentDate,
+      });
+
+      await updateTotalBadges(user.uid, currentDate);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Congratulations! You have been awarded a badge.')),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error awarding badge: $e')),
@@ -68,17 +79,18 @@ class Badges {
     }
   }
 
-  Future<void> updateTotalBadges(String userId) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
+  Future<void> updateTotalBadges(String userId, String currentDate) async {
+    final firestore = FirebaseFirestore.instance;
 
     // Get the total number of badges
-    QuerySnapshot userBadges = await firestore
+    final userBadgesQuery = await firestore
         .collection('users')
         .doc(userId)
         .collection('user_badges')
+        .where('monthYear', isEqualTo: currentDate)
         .get();
 
-    int totalBadgesObtained = userBadges.docs.length;
+    final totalBadgesObtained = userBadgesQuery.docs.length;
 
     // Update the total badges count in the user document
     await firestore.collection('users').doc(userId).update({
@@ -86,49 +98,50 @@ class Badges {
     });
   }
 
-  // Retrieve user obtained badges and update the total badge count
-  Future<int> retrieveTotalBadge() async {
-    int totalBadgesObtained = 0;
+  Future<int> retrieveTotalBadge(String monthYear) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception("User not logged in");
       }
 
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final firestore = FirebaseFirestore.instance;
 
       // Get the total number of badges
-      QuerySnapshot userBadges = await firestore
+      final userBadgesQuery = await firestore
           .collection('users')
           .doc(user.uid)
           .collection('user_badges')
+          .where('monthYear', isEqualTo: monthYear)
           .get();
 
-      // Calculate total badges
-      totalBadgesObtained = userBadges.docs.length;
+      final totalBadgesObtained = userBadgesQuery.docs.length;
 
       // Update the total badges count in the user document
       await firestore.collection('users').doc(user.uid).update({
         'totalBadgesObtained': totalBadgesObtained,
       });
+
+      return totalBadgesObtained;
     } catch (e) {
       print("Error retrieving total badges: $e");
+      return 0;
     }
-    return totalBadgesObtained;
   }
 
-  Stream<List<QueryDocumentSnapshot>> retrieveBadgesList() {
+  Stream<List<QueryDocumentSnapshot>> retrieveBadgesList(String currentDate) {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       throw Exception("User not logged in");
     }
 
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final firestore = FirebaseFirestore.instance;
 
     return firestore
         .collection('users')
         .doc(user.uid)
         .collection('user_badges')
+        .where('monthYear', isEqualTo: currentDate)
         .snapshots()
         .map((snapshot) => snapshot.docs);
   }

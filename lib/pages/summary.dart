@@ -26,10 +26,6 @@ class _SummaryHistoryState extends State<SummaryHistory> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // decoration: BoxDecoration(
-      //     // color: Colors.amber.shade100,
-      //     border: Border.all(),
-      //     borderRadius: BorderRadius.circular(8)),
       child: Column(
         children: [
           Container(
@@ -52,10 +48,6 @@ class _SummaryHistoryState extends State<SummaryHistory> {
               });
             }
           })),
-          // Text(
-          //   "Selected Month: $monthYear",
-          //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          // ),
           SummaryRecord(selectMonth: monthYear),
         ],
       ),
@@ -144,16 +136,26 @@ class SummaryRecord extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (data.containsKey('budgetRule'))
+                          Text(
+                            'Budget Rule: ${data['budgetRule']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        if (data.containsKey('currentLevel'))
+                          Text(
+                            'User Level: ${data['currentLevel']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
                         if (data.containsKey('totalIncome'))
                           Text(
                             'Total Income: RM ${data['totalIncome'].toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
-                        if (data.containsKey('remainAmount'))
-                          Text(
-                            'Remain Amount: RM ${data['remainAmount'].toStringAsFixed(2)}',
-                            style: TextStyle(fontSize: 18),
-                          ),
+                        // if (data.containsKey('remainAmount'))
+                        //   Text(
+                        //     'Remain Amount: RM ${data['remainAmount'].toStringAsFixed(2)}',
+                        //     style: TextStyle(fontSize: 18),
+                        //   ),
                         if (data.containsKey('needs'))
                           Text(
                             'Needs: RM ${data['needs'].toStringAsFixed(2)}',
@@ -179,9 +181,14 @@ class SummaryRecord extends StatelessWidget {
                             'Overall points: ${data['CurrentPoints']} pts',
                             style: TextStyle(fontSize: 18),
                           ),
-                        if (data.containsKey('budgetRule'))
+                        if (data.containsKey('currentRanking'))
                           Text(
-                            'Budget Rule: ${data['budgetRule']}',
+                            'Ranking for overall: No. ${data['currentRanking']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        if (data.containsKey('currentRankingSaving'))
+                          Text(
+                            'Saving Ranking: No. ${data['currentRankingSaving']}',
                             style: TextStyle(fontSize: 18),
                           ),
                       ],

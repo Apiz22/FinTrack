@@ -1,3 +1,4 @@
+import 'package:FinTrack/pages/home_screen.dart';
 import 'package:FinTrack/service/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,13 +14,14 @@ class UserPage extends StatefulWidget {
   State<UserPage> createState() => _UserPageState();
 }
 
+String currentmonthyear = DateFormat("MMM y").format(DateTime.now());
+
 class _UserPageState extends State<UserPage> {
   var isLogOut = false;
   final userId = FirebaseAuth.instance.currentUser!.uid;
   DateTime date = DateTime.now();
   String? selectedBudgetRule;
   int dayCount = 0;
-  String currentmonthyear = DateFormat("MMM y").format(DateTime.now());
 
   // Instance of Badges class
   final Badges badges = Badges();
@@ -63,7 +65,7 @@ class _UserPageState extends State<UserPage> {
   }
 
   void totalBadges() async {
-    int badgesCount = await badges.retrieveTotalBadge();
+    int badgesCount = await badges.retrieveTotalBadge(currentmonthyear);
     setState(() {
       _totalBadgesObtained = badgesCount;
     });
@@ -582,7 +584,7 @@ class _UserPageState extends State<UserPage> {
   Container badgesList() {
     return Container(
       child: StreamBuilder<List<QueryDocumentSnapshot>>(
-        stream: badges.retrieveBadgesList(),
+        stream: badges.retrieveBadgesList(currentmonthyear),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Text("Error loading data");

@@ -77,20 +77,20 @@ class Database {
     }
   }
 
-  Future<void> createMonthlyExpensesRecord(String userId) async {
-    final docExpRec =
-        users.doc(userId).collection('expenses_record').doc(currentMonthYear);
-    final documentExists = await docExpRec.get().then((doc) => doc.exists);
+  // Future<void> createMonthlyExpensesRecord(String userId) async {
+  //   final docExpRec =
+  //       users.doc(userId).collection('expenses_record').doc(currentMonthYear);
+  //   final documentExists = await docExpRec.get().then((doc) => doc.exists);
 
-    if (!documentExists) {
-      final budgetRule = await getCurrentUserBudgetRule(userId);
-      await docExpRec.set({
-        "budgetRule": budgetRule,
-        "Total Income": 0,
-        "Level": "Beginner",
-      });
-    }
-  }
+  //   if (!documentExists) {
+  //     final budgetRule = await getCurrentUserBudgetRule(userId);
+  //     await docExpRec.set({
+  //       "budgetRule": budgetRule,
+  //       "Total Income": 0,
+  //       "Level": "Beginner",
+  //     });
+  //   }
+  // }
 
   Stream<DocumentSnapshot> getPointsStream(String userId, String monthYear) {
     return FirebaseFirestore.instance

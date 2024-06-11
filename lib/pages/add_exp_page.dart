@@ -1,3 +1,4 @@
+import 'package:FinTrack/gamification/class/badge_class.dart';
 import 'package:FinTrack/service/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,6 +34,7 @@ class _AddExpPageState extends State<AddExpPage> {
 
   final Points points = Points();
   final Database database = Database();
+  final Badges badges = Badges();
 
   Future<void> submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -148,6 +150,8 @@ class _AddExpPageState extends State<AddExpPage> {
 
         savePts = points.calculatePointsSavings(expSavings, calSavings, income);
 
+        awardSavePoints(savePts);
+
 //Set user Level (Begineer, Intermediate , Expert)
         if (budgetRule == "50/30/20" && currentPts == 2000) {
           userLevel = "Expert";
@@ -243,6 +247,36 @@ class _AddExpPageState extends State<AddExpPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Transaction added successfully!')),
       );
+    }
+  }
+
+  void awardSavePoints(int savePts) {
+    switch (savePts) {
+      // case 10:
+      //   badges.awardBadge("Save 10 pts", context);
+      //   break;
+      case 20:
+        badges.awardBadge("Save 20 pts", context);
+        break;
+      case 40:
+        badges.awardBadge("Save 40 pts", context);
+        break;
+      case 60:
+        badges.awardBadge("Save 60 pts", context);
+        break;
+      case 80:
+        badges.awardBadge("Save 80 pts", context);
+        break;
+      case 100:
+        badges.awardBadge("Save 100 pts", context);
+        break;
+      case 110:
+        badges.awardBadge("Save 110 pts", context);
+        break;
+
+      default:
+        // Add any other cases or a default case if needed
+        break;
     }
   }
 

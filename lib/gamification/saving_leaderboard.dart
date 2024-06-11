@@ -50,7 +50,7 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
           final PtsSavings = pointsData['PtsSavings'] ?? 0;
           final profilePicture = data['profilePicture'] ?? '';
 
-          if (PtsSavings > 0) {
+          if (PtsSavings > 0 && PtsSavings < 200) {
             users.add({
               'id': userId,
               'name': data['username'] ?? 'Unknown',
