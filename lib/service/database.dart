@@ -148,4 +148,29 @@ class Database {
       return 0;
     }
   }
+
+  Future<double> getRemainAmount() async {
+    // Get the current month and year in "MMM y" format
+    String currentMonthYear = DateFormat("MMM y").format(DateTime.now());
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    // Fetch the document
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('monthly_income')
+        .doc(currentMonthYear)
+        .get();
+
+    // Check if the document exists
+    if (userDoc.exists) {
+      // Safely cast the data to a Map
+      final data = userDoc.data();
+      // Return the remainAmount or 0 if it doesn't exist
+      return data?["remainAmount"] ?? 0.0;
+    } else {
+      // Return 0 if the document does not exist
+      return 0.0;
+    }
+  }
 }
