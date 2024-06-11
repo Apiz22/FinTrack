@@ -1,5 +1,4 @@
 import 'package:FinTrack/gamification/points.dart';
-import 'package:FinTrack/gamification/view_history.dart';
 import 'package:FinTrack/pages/summary.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
