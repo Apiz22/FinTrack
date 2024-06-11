@@ -71,12 +71,6 @@ class _MainPageState extends State<MainPage> {
             Container(
               width: double.infinity,
               color: Colors.teal.shade300,
-              // decoration: BoxDecoration(
-              //   gradient: LinearGradient(
-              //       begin: Alignment.bottomRight,
-              //       end: Alignment.bottomLeft,
-              //       colors: [Colors.blue, Colors.red]),
-              // ),
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 //view top 3 (total balance, credit and debit)
@@ -96,24 +90,6 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
             ),
-            // Container(
-            //   padding: const EdgeInsets.all(10),
-            //   color: const Color.fromARGB(255, 199, 124, 124),
-            //   child: const Column(
-            //     children: [
-            //       Note(),
-            //       SizedBox(
-            //         height: 10,
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: ViewHistory(
-            //     userId: userId,
-            //   ),
-            // ),
             SummaryHistory()
           ],
         ),
@@ -121,16 +97,16 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-// Function to save the selected budget rule to Firebase
-  void saveBudgetRuleToFirebase(String? budgetRule) {
-    if (budgetRule != null) {
-      FirebaseFirestore.instance.collection("users").doc(userId).update({
-        'currentRule': budgetRule,
-      }).then((value) {
-        print('Budget rule saved successfully!');
-      }).catchError((error) {
-        print('Failed to save budget rule: $error');
-      });
-    }
-  }
+// // Function to save the selected budget rule to Firebase
+//   void saveBudgetRuleToFirebase(String? budgetRule) {
+//     if (budgetRule != null) {
+//       FirebaseFirestore.instance.collection("users").doc(userId).update({
+//         'currentRule': budgetRule,
+//       }).then((value) {
+//         print('Budget rule saved successfully!');
+//       }).catchError((error) {
+//         print('Failed to save budget rule: $error');
+//       });
+//     }
+//   }
 }

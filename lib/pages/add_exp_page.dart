@@ -238,6 +238,8 @@ class _AddExpPageState extends State<AddExpPage> {
         isLoader = false;
       });
 
+      //for calculation & reward badges
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Transaction added successfully!')),
       );

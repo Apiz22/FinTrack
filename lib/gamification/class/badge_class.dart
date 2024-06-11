@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Badges {
-  Future<void> awardBadge(String badgeName, BuildContext context) async {
+  Future<void> awardBadge(
+      String badgeName, String currentDate, BuildContext context) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
@@ -14,6 +15,7 @@ class Badges {
       DocumentSnapshot userDoc =
           await firestore.collection('users').doc(user.uid).get();
 
+//check exist badges
       if (userDoc.exists) {
         QuerySnapshot userBadges = await firestore
             .collection('users')
