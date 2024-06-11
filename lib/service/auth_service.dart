@@ -24,7 +24,7 @@ class AuthService {
         builder: (context) {
           return AlertDialog(
             title: const Text("Sign Up Failed"),
-            content: Text("Sorry !! This email account already exist"),
+            content: Text(" Something went wrong related to : ${e.toString()}"),
           );
         },
       );

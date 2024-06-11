@@ -1,3 +1,4 @@
+import 'package:FinTrack/service/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class _AddExpPageState extends State<AddExpPage> {
   var category = ""; // Initialize to an empty string
   var budget = "needs";
   String userLevel = "";
+  int savePts = 0;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -30,6 +32,7 @@ class _AddExpPageState extends State<AddExpPage> {
   var uid = const Uuid();
 
   final Points points = Points();
+  final Database database = Database();
 
   Future<void> submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -86,11 +89,13 @@ class _AddExpPageState extends State<AddExpPage> {
       int wantspts = pointsDoc["WantsPoints"];
       int savingsspts = pointsDoc["SavingsPoints"];
       String budgetRule = pointsDoc["budgetRule"];
+
       DocumentSnapshot userFile = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .get();
       int winStreak = userFile["ruleWinStreak"] ?? 0;
+      // String budgetNextMonth = userFile["nextBudget"];
 
       // Calculate expenses amount + pts
       if (type == "credit") {
@@ -117,7 +122,8 @@ class _AddExpPageState extends State<AddExpPage> {
               points.calculatePointsForBudget(expSavings, calSavings, 40);
 
           currentPts = needspts + wantspts + savingsspts;
-        } else {
+        } //rule == 80/20
+        else {
           double combineExp = expNeeds + expWants;
           if (combineExp > (income * 0.8)) {
             double over = combineExp - (income * 0.8);
@@ -134,9 +140,13 @@ class _AddExpPageState extends State<AddExpPage> {
         if ((currentPts == 1000 && budgetRule == "80/20") ||
             (currentPts == 2000 && budgetRule == "50/30/20")) {
           winStreak += 1;
+          database.UpgradechangeRuleBasedOnPts(budgetRule);
         } else {
           winStreak = 0;
+          database.DownchangeRuleBasedOnPts(budgetRule);
         }
+
+        savePts = points.calculatePointsSavings(expSavings, calSavings, income);
 
 //Set user Level (Begineer, Intermediate , Expert)
         if (budgetRule == "50/30/20" && currentPts == 2000) {
@@ -186,10 +196,11 @@ class _AddExpPageState extends State<AddExpPage> {
         "SavingsPoints": savingsspts,
         "CurrentPoints": currentPts,
         "CombinePoints": combinePts,
+        "PtsSavings": savePts,
       });
 
       // Save into transaction history
-      var data = {
+      var transactionData = {
         "id": id,
         "title": titleEditController.text,
         "amount": amount,
@@ -207,7 +218,21 @@ class _AddExpPageState extends State<AddExpPage> {
           .doc(user.uid)
           .collection("transactions")
           .doc(id)
-          .set(data);
+          .set(transactionData);
+
+      var ExpensesData = {
+        "Total Income": income,
+        "Level": userLevel,
+        "budgetRule": budgetRule,
+        "saving pts": savePts,
+      };
+
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid)
+          .collection("expenses_record")
+          .doc(monthyear)
+          .update(ExpensesData);
 
       setState(() {
         isLoader = false;
@@ -236,9 +261,22 @@ class _AddExpPageState extends State<AddExpPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Add New Transaction",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.teal.shade800,
+                ),
+                child: const Text(
+                  "Add New Transaction",
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(height: 20),
               TextFormField(

@@ -30,9 +30,14 @@ class Database {
     }
   }
 
-  Future<String> getUserBudgetRule(String userId) async {
+  Future<String> getCurrentUserBudgetRule(String userId) async {
     final userDoc = await users.doc(userId).get();
     return userDoc.exists ? userDoc["currentRule"] ?? "" : "";
+  }
+
+  Future<String> getNextMonthUserBudgetRule(String userId) async {
+    final userDoc = await users.doc(userId).get();
+    return userDoc.exists ? userDoc["nextBudget"] ?? "" : "";
   }
 
   Future<void> createMonthlyPointHistory(String userId) async {
@@ -41,7 +46,7 @@ class Database {
     final documentExists = await docRef.get().then((doc) => doc.exists);
 
     if (!documentExists) {
-      final budgetRule = await getUserBudgetRule(userId);
+      final budgetRule = await getCurrentUserBudgetRule(userId);
       await docRef.set({
         "budgetRule": budgetRule,
         "CurrentPoints": 0,
@@ -62,17 +67,28 @@ class Database {
         .get()
         .then((doc) => doc.exists);
 
-    // final prefs = await SharedPreferences.getInstance();
-    // final alertShownKey = 'alert_shown_$currentMonthYear';
-
     if (!documentExists) {
-      // prefs.setBool(alertShownKey, true); // Set flag to true
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => IncomeInputPage(userId: userId),
         ),
       );
+    }
+  }
+
+  Future<void> createMonthlyExpensesRecord(String userId) async {
+    final docExpRec =
+        users.doc(userId).collection('expenses_record').doc(currentMonthYear);
+    final documentExists = await docExpRec.get().then((doc) => doc.exists);
+
+    if (!documentExists) {
+      final budgetRule = await getCurrentUserBudgetRule(userId);
+      await docExpRec.set({
+        "budgetRule": budgetRule,
+        "Total Income": 0,
+        "Level": "Beginner",
+      });
     }
   }
 
@@ -85,7 +101,7 @@ class Database {
         .snapshots();
   }
 
-  void saveBudgetRuleToFirebase(String? budgetRule) {
+  void UpdateCurrentBudgetRuleToFirebase(String? budgetRule) {
     final userId = FirebaseAuth.instance.currentUser!.uid;
 
     if (budgetRule != null) {
@@ -99,34 +115,37 @@ class Database {
     }
   }
 
-  // Future<void> determineUserBudgetRuleChange(String userId, monthYear) async {
-  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  //   DocumentSnapshot userDoc =
-  //       await firestore.collection('users').doc(userId).get();
-  //   DocumentSnapshot ptsDoc = await firestore
-  //       .collection('users')
-  //       .doc(userId)
-  //       .collection('point_history')
-  //       .doc(monthYear)
-  //       .get();
-  //   final documentSnapshot = ptsDoc;
-  //   final documentExists = documentSnapshot.exists;
+  void UpgradechangeRuleBasedOnPts(String budgetRule) {
+    if ((budgetRule == "80/20") || (budgetRule == "50/30/20")) {
+      updateNextRuleToFirebase("50/30/20");
+    }
+  }
 
-  //   if (documentExists) {
-  //     double currentPts = ptsDoc["CurrentPoints"];
-  //     String budgetRule = ptsDoc["budgetRule"];
-  //     int ruleStreak = userDoc["ruleStreak"] ?? 0; // Default to 0 if null
+  void DownchangeRuleBasedOnPts(String budgetRule) {
+    if ((budgetRule == "80/20") || (budgetRule == "50/30/20")) {
+      updateNextRuleToFirebase("80/20");
+    }
+  }
 
-  //     if ((budgetRule == "80/20" && currentPts == 1000) ||
-  //         (budgetRule == "50/30/20" && currentPts == 2000)) {
-  //       ruleStreak += 1;
-  //     } else {
-  //       ruleStreak = 0; // Reset streak if conditions are not met
-  //     }
+  void updateNextRuleToFirebase(String? nextBudgetRule) {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
 
-  //     await FirebaseFirestore.instance.collection("users").doc(userId).update({
-  //       "ruleStreak": ruleStreak,
-  //     });
-  //   }
-  // }
+    if (nextBudgetRule != null) {
+      FirebaseFirestore.instance.collection("users").doc(userId).update({
+        'nextBudget': nextBudgetRule,
+      }).catchError((error) {
+        print('Failed to update budget rule: $error');
+      });
+    }
+  }
+
+  Future<int> getUserWinStreak(String userId) async {
+    final userDoc = await users.doc(userId).get();
+    if (userDoc.exists) {
+      final data = userDoc.data() as Map<String, dynamic>?;
+      return data?["ruleWinStreak"] ?? 0;
+    } else {
+      return 0;
+    }
+  }
 }

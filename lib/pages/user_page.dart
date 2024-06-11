@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import '../gamification/class/badge_class.dart';
 import '../gamification/points.dart';
 
@@ -26,6 +25,7 @@ class _UserPageState extends State<UserPage> {
   final Badges badges = Badges();
   final Points points = Points();
   int _totalBadgesObtained = 0;
+  int achiveStreak = 0;
   int currentPts = 0;
   String currentBudget = "";
   String username = "";
@@ -49,6 +49,7 @@ class _UserPageState extends State<UserPage> {
     totalBadges();
     getCurrenPtsAndCurrentBudget();
     getUsername();
+    getWinStreak();
   }
 
   logOut() async {
@@ -78,6 +79,13 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
+  void getWinStreak() async {
+    int winstreak = await database.getUserWinStreak(userId);
+    setState(() {
+      achiveStreak = winstreak;
+    });
+  }
+
   void getUsername() async {
     final userDoc =
         await FirebaseFirestore.instance.collection("users").doc(userId).get();
@@ -88,35 +96,35 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
-  void changeCurrentRule() async {
-    if (currentPts >= 2000 && currentBudget == "50/30/20") {
-      database.saveBudgetRuleToFirebase("50/30/20");
-    } else if (currentPts <= 1000 && currentBudget == "80/20") {
-      database.saveBudgetRuleToFirebase("80/20");
-    } else {
-      return _showIneligibleDialog(context);
-    }
-  }
+  // void changeCurrentRule() async {
+  //   if (currentPts >= 2000 && currentBudget == "50/30/20") {
+  //     database.saveBudgetRuleToFirebase("50/30/20");
+  //   } else if (currentPts <= 1000 && currentBudget == "80/20") {
+  //     database.saveBudgetRuleToFirebase("80/20");
+  //   } else {
+  //     return _showIneligibleDialog(context);
+  //   }
+  // }
 
-  void _showIneligibleDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Not Eligible'),
-          content: Text('You are not eligible to change the rule.'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showIneligibleDialog(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Not Eligible'),
+  //         content: Text('You are not eligible to change the rule.'),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: Text('OK'),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   void saveProfilePicture(String picturePath) async {
     await FirebaseFirestore.instance.collection("users").doc(userId).update({
@@ -217,53 +225,51 @@ class _UserPageState extends State<UserPage> {
       children: [
         DrawerHeader(
           decoration: BoxDecoration(
-            color: Colors.teal,
+            color: Colors.teal.shade200,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                radius: 40,
-                backgroundImage: AssetImage(profilePicturePath),
+              Center(
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundImage: AssetImage(profilePicturePath),
+                ),
               ),
               const SizedBox(width: 20),
-              Column(
-                children: [
-                  SizedBox(height: 10),
-                  Text(
-                    username,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 10),
+                    Text(
+                      username,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                      ),
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.teal.shade50,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.teal),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.teal.shade50,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.teal),
+                      ),
+                      child: Text(
+                        "Current Points: $currentPts",
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                    child: Text(
-                      "Current Points: $currentPts",
-                      style:
-                          TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
         ),
-        // ListTile(
-        //   leading: const Icon(Icons.edit),
-        //   title: const Text('Edit Username'),
-        //   onTap: () {
-        //     // Navigator.pop(context);
-        //     // editBudgetRule(context);
-        //   },
-        // ),
         ListTile(
           leading: const Icon(Icons.edit),
           title: const Text('Edit Budget Rule'),
@@ -304,13 +310,6 @@ class _UserPageState extends State<UserPage> {
             logOut();
           },
         ),
-        ListTile(
-          leading: const Icon(Icons.edit),
-          title: const Text('Delete Account'),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
       ],
     );
   }
@@ -326,7 +325,7 @@ class _UserPageState extends State<UserPage> {
             children: [
               DropdownButtonFormField<String>(
                 value: selectedBudgetRule,
-                onChanged: (_totalBadgesObtained >= 0)
+                onChanged: (achiveStreak > 0)
                     ? (String? value) {
                         setState(() {
                           selectedBudgetRule = value;
@@ -345,7 +344,7 @@ class _UserPageState extends State<UserPage> {
                 ],
                 decoration: InputDecoration(
                   labelText: 'Budget Rule',
-                  enabled: _totalBadgesObtained > 1,
+                  enabled: achiveStreak > 0,
                 ),
               ),
             ],
@@ -354,7 +353,7 @@ class _UserPageState extends State<UserPage> {
             ElevatedButton(
               onPressed: (_totalBadgesObtained > 1)
                   ? () {
-                      database.saveBudgetRuleToFirebase(selectedBudgetRule);
+                      database.updateNextRuleToFirebase(selectedBudgetRule);
                       Navigator.pop(context);
                     }
                   : null,
@@ -580,9 +579,8 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  SizedBox badgesList() {
-    return SizedBox(
-      height: 500,
+  Container badgesList() {
+    return Container(
       child: StreamBuilder<List<QueryDocumentSnapshot>>(
         stream: badges.retrieveBadgesList(),
         builder: (context, snapshot) {
@@ -595,61 +593,61 @@ class _UserPageState extends State<UserPage> {
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Column(
               children: [
-                Center(child: const Text('No badges obtained')),
+                Center(
+                    child: const Text(
+                        'No badges obtained yet. Try keep track your money expenses and stay stick with the budget')),
               ],
             );
           }
           final badgesList = snapshot.data!;
-          return Container(
-            padding: const EdgeInsets.all(10),
-            color: Colors.grey.shade100,
-            child: ListView.builder(
-              itemCount: badgesList.length,
-              itemBuilder: (context, index) {
-                final badge = badgesList[index].data() as Map<String, dynamic>;
-                final imageUrl = badge['imageUrl'] ?? '';
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: badgesList.length,
+            itemBuilder: (context, index) {
+              final badge = badgesList[index].data() as Map<String, dynamic>;
+              final imageUrl = badge['imageUrl'] ?? '';
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: (index % 2 == 0)
-                          ? Colors.teal.shade200
-                          : Colors.teal.shade50,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.black),
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: (index % 2 == 0)
+                        ? Colors.teal.shade200
+                        : Colors.teal.shade50,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.black),
+                  ),
+                  child: ListTile(
+                    leading: ClipOval(
+                      child: Container(
+                        color: Colors.grey.shade300,
+                        padding: const EdgeInsets.all(1),
+                        child: imageUrl.isNotEmpty
+                            ? Image.network(
+                                imageUrl,
+                                width: 50,
+                                height: 50,
+                              )
+                            : Image.asset(
+                                'assets/img/default.png',
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
                     ),
-                    child: ListTile(
-                      leading: ClipOval(
-                        child: Container(
-                          color: Colors.grey.shade300,
-                          padding: const EdgeInsets.all(1),
-                          child: imageUrl.isNotEmpty
-                              ? Image.network(
-                                  imageUrl,
-                                  width: 50,
-                                  height: 50,
-                                )
-                              : Image.asset(
-                                  'assets/img/default.png',
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                ),
-                        ),
-                      ),
-                      title: Text(badge['name']),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(badge['description']),
-                        ],
-                      ),
+                    title: Text(badge['name']),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(badge['description']),
+                      ],
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           );
         },
       ),

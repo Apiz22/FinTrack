@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 
 import 'transaction_list.dart';
 
-class TypeTabBar extends StatelessWidget {
+class TypeTabBar extends StatefulWidget {
   const TypeTabBar(
       {super.key, required this.category, required this.monthYear});
 
   final String category;
   final String monthYear;
 
+  @override
+  State<TypeTabBar> createState() => _TypeTabBarState();
+}
+
+class _TypeTabBarState extends State<TypeTabBar> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -24,17 +29,17 @@ class TypeTabBar extends StatelessWidget {
             ),
           ]),
           SizedBox(
-            height: 400,
+            height: 300,
             child: TabBarView(children: [
               TransactionList(
-                category: category,
+                category: widget.category,
                 type: "debit",
-                monthYear: monthYear,
+                monthYear: widget.monthYear,
               ),
               TransactionList(
-                category: category,
+                category: widget.category,
                 type: "credit",
-                monthYear: monthYear,
+                monthYear: widget.monthYear,
               ),
             ]),
           )

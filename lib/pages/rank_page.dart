@@ -1,8 +1,8 @@
+import 'package:FinTrack/gamification/saving_leaderboard.dart';
 import 'package:flutter/material.dart';
 
 import '../gamification/class/badge_class.dart';
-import '../gamification/leaderboard.dart';
-import '../gamification/test_badges.dart';
+import '../gamification/points_leaderboard.dart';
 
 class RankPage extends StatefulWidget {
   const RankPage({super.key});
@@ -49,7 +49,9 @@ class RankPageState extends State<RankPage> {
                 //   "User Current Badges: $totalBadgesObtained",
                 //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 // ),
-                const Leaderboard(),
+                const PointsLeaderboard(),
+                SizedBox(height: 50),
+                const SavingLeaderboard(),
                 // const NumberGuessingGame(),
               ],
             ),
