@@ -40,13 +40,19 @@ class Database {
     return userDoc.exists ? userDoc["nextBudget"] ?? "" : "";
   }
 
+  Future<String> getUserCurrentLevel(String userId) async {
+    final userDoc = await users.doc(userId).get();
+    return userDoc.exists ? userDoc["currentLevel"] ?? "" : "";
+  }
+
+//create new montly based on user selected month budget
   Future<void> createMonthlyPointHistory(String userId) async {
     final docRef =
         users.doc(userId).collection('point_history').doc(currentMonthYear);
     final documentExists = await docRef.get().then((doc) => doc.exists);
 
     if (!documentExists) {
-      final budgetRule = await getCurrentUserBudgetRule(userId);
+      final budgetRule = await getNextMonthUserBudgetRule(userId);
       await docRef.set({
         "budgetRule": budgetRule,
         "CurrentPoints": 0,

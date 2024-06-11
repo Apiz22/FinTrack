@@ -151,11 +151,11 @@ class SummaryRecord extends StatelessWidget {
                             'Total Income: RM ${data['totalIncome'].toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
-                        // if (data.containsKey('remainAmount'))
-                        //   Text(
-                        //     'Remain Amount: RM ${data['remainAmount'].toStringAsFixed(2)}',
-                        //     style: TextStyle(fontSize: 18),
-                        //   ),
+                        if (data.containsKey('remainAmount'))
+                          Text(
+                            'Remain Amount: RM ${data['remainAmount'].toStringAsFixed(2)}',
+                            style: TextStyle(fontSize: 18),
+                          ),
                         if (data.containsKey('needs'))
                           Text(
                             'Needs: RM ${data['needs'].toStringAsFixed(2)}',
@@ -179,6 +179,11 @@ class SummaryRecord extends StatelessWidget {
                         if (data.containsKey('CurrentPoints'))
                           Text(
                             'Overall points: ${data['CurrentPoints']} pts',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        if (data.containsKey('PtsSavings'))
+                          Text(
+                            'Savings points: ${data['PtsSavings']} pts',
                             style: TextStyle(fontSize: 18),
                           ),
                         if (data.containsKey('currentRanking'))

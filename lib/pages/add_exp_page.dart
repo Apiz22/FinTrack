@@ -50,233 +50,217 @@ class _AddExpPageState extends State<AddExpPage> {
         isLoader = true;
       });
 
-      final user = FirebaseAuth.instance.currentUser;
-      int timestamp = DateTime.now().microsecondsSinceEpoch;
-      var amount = double.parse(amountEditController.text);
-      DateTime date = DateTime.now();
-      var id = uid.v4();
-      String monthyear = DateFormat("MMM y").format(date);
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        int timestamp = DateTime.now().microsecondsSinceEpoch;
+        var amount = double.parse(amountEditController.text);
+        DateTime date = DateTime.now();
+        var id = uid.v4();
+        String monthyear = DateFormat("MMM y").format(date);
 
-      // Retrieve user current income
-      final userDoc = await FirebaseFirestore.instance
-          .collection("users")
-          .doc(user!.uid)
-          .collection('monthly_income')
-          .doc(monthyear)
-          .get();
+        // Retrieve user current income
+        final userDoc = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user!.uid)
+            .collection('monthly_income')
+            .doc(monthyear)
+            .get();
 
-      double income = userDoc["totalIncome"].toDouble();
-      double remainAmount = userDoc["remainAmount"].toDouble();
-      double totalCredit = userDoc["totalCredit"].toDouble();
-      double totalDebit = userDoc["totalDebit"].toDouble();
-      double expNeeds = userDoc["needs"].toDouble();
-      double expWants = userDoc["wants"].toDouble();
-      double expSavings = userDoc["savings"].toDouble();
-      double calNeeds = userDoc["cal_needs"].toDouble();
-      double calWants = userDoc["cal_wants"].toDouble();
-      double calSavings = userDoc["cal_savings"].toDouble();
+        double income = userDoc["totalIncome"].toDouble();
+        double remainAmount = userDoc["remainAmount"].toDouble();
+        double totalCredit = userDoc["totalCredit"].toDouble();
+        double totalDebit = userDoc["totalDebit"].toDouble();
+        double expNeeds = userDoc["needs"].toDouble();
+        double expWants = userDoc["wants"].toDouble();
+        double expSavings = userDoc["savings"].toDouble();
+        double calNeeds = userDoc["cal_needs"].toDouble();
+        double calWants = userDoc["cal_wants"].toDouble();
+        double calSavings = userDoc["cal_savings"].toDouble();
 
-      int currentPts = 0;
-      int combinePts = 0;
+        int currentPts = 0;
+        int combinePts = 0;
 
-//Retrieve user current points
-      final pointsDoc = await FirebaseFirestore.instance
-          .collection("users")
-          .doc(user.uid)
-          .collection('point_history')
-          .doc(monthyear)
-          .get();
+        // Retrieve user current points
+        final pointsDoc = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user.uid)
+            .collection('point_history')
+            .doc(monthyear)
+            .get();
 
-      int needspts = pointsDoc["NeedsPoints"];
-      int wantspts = pointsDoc["WantsPoints"];
-      int savingsspts = pointsDoc["SavingsPoints"];
-      String budgetRule = pointsDoc["budgetRule"];
+        int needspts = pointsDoc["NeedsPoints"];
+        int wantspts = pointsDoc["WantsPoints"];
+        int savingsspts = pointsDoc["SavingsPoints"];
+        String budgetRule = pointsDoc["budgetRule"];
 
-      DocumentSnapshot userFile = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      int winStreak = userFile["ruleWinStreak"] ?? 0;
-      // String budgetNextMonth = userFile["nextBudget"];
-
-      // Calculate expenses amount + pts
-      if (type == "credit") {
-        remainAmount += amount;
-        totalCredit += amount;
-      }
-      //Debit
-      else {
-        remainAmount -= amount;
-        totalDebit += amount;
-        if (budget == "needs") {
-          expNeeds += amount;
-        } else if (budget == "wants") {
-          expWants += amount;
-        } else {
-          expSavings += amount;
-        }
-
-// calculate points
-        if (budgetRule == "50/30/20") {
-          needspts = points.calculatePointsForBudget(expNeeds, calNeeds, 100);
-          wantspts = points.calculatePointsForBudget(expWants, calWants, 60);
-          savingsspts =
-              points.calculatePointsForBudget(expSavings, calSavings, 40);
-
-          currentPts = needspts + wantspts + savingsspts;
-        } //rule == 80/20
-        else {
-          double combineExp = expNeeds + expWants;
-          if (combineExp > (income * 0.8)) {
-            double over = combineExp - (income * 0.8);
-            combinePts = ((10 * 80) - over).toInt();
-          } else {
-            combinePts = (10 * ((combineExp / (income * 0.8)) * 80)).toInt();
-          }
-          savingsspts =
-              points.calculatePointsForBudget(expSavings, calSavings, 20);
-
-          currentPts = combinePts + savingsspts;
-        }
-
-        if ((currentPts == 1000 && budgetRule == "80/20") ||
-            (currentPts == 2000 && budgetRule == "50/30/20")) {
-          winStreak += 1;
-          database.UpgradechangeRuleBasedOnPts(budgetRule);
-        } else {
-          winStreak = 0;
-          database.DownchangeRuleBasedOnPts(budgetRule);
-        }
-
-        savePts = points.calculatePointsSavings(expSavings, calSavings, income);
-
-        awardSavePoints(savePts);
-
-//Set user Level (Begineer, Intermediate , Expert)
-        if (budgetRule == "50/30/20" && currentPts == 2000) {
-          userLevel = "Expert";
-        } else if ((budgetRule == "80/20" && currentPts == 1000) ||
-            (budgetRule == "50/30/20" && currentPts <= 2000)) {
-          userLevel = "Intermediate";
-        } else {
-          userLevel = "Beginner";
-        }
-
-        await FirebaseFirestore.instance
+        DocumentSnapshot userFile = await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
-            .update({
-          "ruleWinStreak": winStreak,
-          "currentLevel": userLevel,
-        });
+            .get();
+        int winStreak = userFile["ruleWinStreak"] ?? 0;
+        // String budgetNextMonth = userFile["nextBudget"];
 
-//Update Income
+        // Calculate expenses amount + pts
+        if (type == "credit") {
+          remainAmount += amount;
+          totalCredit += amount;
+        }
+        // Debit
+        else {
+          remainAmount -= amount;
+          totalDebit += amount;
+          if (budget == "needs") {
+            expNeeds += amount;
+          } else if (budget == "wants") {
+            expWants += amount;
+          } else {
+            expSavings += amount;
+          }
+
+          // Calculate points
+          if (budgetRule == "50/30/20") {
+            needspts = points.calculatePointsForBudget(expNeeds, calNeeds, 100);
+            wantspts = points.calculatePointsForBudget(expWants, calWants, 60);
+            savingsspts =
+                points.calculatePointsForBudget(expSavings, calSavings, 40);
+
+            currentPts = needspts + wantspts + savingsspts;
+          } // rule == 80/20
+          else {
+            double combineExp = expNeeds + expWants;
+            if (combineExp > (income * 0.8)) {
+              double over = combineExp - (income * 0.8);
+              combinePts = ((10 * 80) - over).toInt();
+            } else {
+              combinePts = (10 * ((combineExp / (income * 0.8)) * 80)).toInt();
+            }
+            savingsspts =
+                points.calculatePointsForBudget(expSavings, calSavings, 20);
+
+            currentPts = combinePts + savingsspts;
+          }
+
+          // Change the user budget
+          if ((currentPts == 1000 && budgetRule == "80/20") ||
+              (currentPts == 2000 && budgetRule == "50/30/20")) {
+            winStreak += 1;
+            database.UpgradechangeRuleBasedOnPts(budgetRule);
+          } else {
+            winStreak = 0;
+            database.DownchangeRuleBasedOnPts(budgetRule);
+          }
+
+          savePts =
+              points.calculatePointsSavings(expSavings, calSavings, income);
+
+          awardSavePoints(savePts);
+
+          // Set user Level (Beginner, Intermediate, Expert)
+          if (budgetRule == "50/30/20" && currentPts == 2000) {
+            userLevel = "Expert";
+          } else if ((budgetRule == "80/20" && currentPts == 1000) ||
+              (budgetRule == "50/30/20" && currentPts <= 2000)) {
+            userLevel = "Intermediate";
+          } else {
+            userLevel = "Beginner";
+          }
+
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .update({
+            "ruleWinStreak": winStreak,
+            "currentLevel": userLevel,
+          });
+
+          // Update Income
+          await FirebaseFirestore.instance
+              .collection("users")
+              .doc(user.uid)
+              .collection('monthly_income')
+              .doc(monthyear)
+              .update({
+            "needs": expNeeds,
+            "wants": expWants,
+            "savings": expSavings,
+            "remainAmount": remainAmount,
+            "totalCredit": totalCredit,
+            "totalDebit": totalDebit,
+            "currentLevel": userLevel,
+            "updatedAt": timestamp,
+          });
+        }
+
+        // Update points
         await FirebaseFirestore.instance
             .collection("users")
             .doc(user.uid)
-            .collection('monthly_income')
+            .collection('point_history')
             .doc(monthyear)
             .update({
-          "needs": expNeeds,
-          "wants": expWants,
-          "savings": expSavings,
+          "NeedsPoints": needspts,
+          "WantsPoints": wantspts,
+          "SavingsPoints": savingsspts,
+          "CurrentPoints": currentPts,
+          "CombinePoints": combinePts,
+          "PtsSavings": savePts,
+        });
+
+        // Save into transaction history
+        var transactionData = {
+          "id": id,
+          "title": titleEditController.text,
+          "amount": amount,
+          "type": type,
+          "timestamp": timestamp,
           "remainAmount": remainAmount,
           "totalCredit": totalCredit,
           "totalDebit": totalDebit,
-          "currentLevel": userLevel,
-          "updatedAt": timestamp,
+          "monthyear": monthyear,
+          "category": category,
+        };
+
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user.uid)
+            .collection("transactions")
+            .doc(id)
+            .set(transactionData);
+
+        setState(() {
+          isLoader = false;
         });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Transaction added successfully!')),
+        );
+      } catch (e) {
+        setState(() {
+          isLoader = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error adding transaction: $e')),
+        );
       }
-
-      // Update points
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(user.uid)
-          .collection('point_history')
-          .doc(monthyear)
-          .update({
-        "NeedsPoints": needspts,
-        "WantsPoints": wantspts,
-        "SavingsPoints": savingsspts,
-        "CurrentPoints": currentPts,
-        "CombinePoints": combinePts,
-        "PtsSavings": savePts,
-      });
-
-      // Save into transaction history
-      var transactionData = {
-        "id": id,
-        "title": titleEditController.text,
-        "amount": amount,
-        "type": type,
-        "timestamp": timestamp,
-        "remainAmount": remainAmount,
-        "totalCredit": totalCredit,
-        "totalDebit": totalDebit,
-        "monthyear": monthyear,
-        "category": category,
-      };
-
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(user.uid)
-          .collection("transactions")
-          .doc(id)
-          .set(transactionData);
-
-      var ExpensesData = {
-        "Total Income": income,
-        "Level": userLevel,
-        "budgetRule": budgetRule,
-        "saving pts": savePts,
-      };
-
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(user.uid)
-          .collection("expenses_record")
-          .doc(monthyear)
-          .update(ExpensesData);
-
-      setState(() {
-        isLoader = false;
-      });
-
-      //for calculation & reward badges
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Transaction added successfully!')),
-      );
     }
   }
 
   void awardSavePoints(int savePts) {
-    switch (savePts) {
-      // case 10:
-      //   badges.awardBadge("Save 10 pts", context);
-      //   break;
-      case 20:
-        badges.awardBadge("Save 20 pts", context);
-        break;
-      case 40:
-        badges.awardBadge("Save 40 pts", context);
-        break;
-      case 60:
-        badges.awardBadge("Save 60 pts", context);
-        break;
-      case 80:
-        badges.awardBadge("Save 80 pts", context);
-        break;
-      case 100:
-        badges.awardBadge("Save 100 pts", context);
-        break;
-      case 110:
-        badges.awardBadge("Save 110 pts", context);
-        break;
+    // Define a map of points to badge names
+    final badgePoints = {
+      20: "Save 20 pts",
+      40: "Save 40 pts",
+      60: "Save 60 pts",
+      80: "Save 80 pts",
+      100: "Save 100 pts",
+      110: "Save 110 pts",
+    };
 
-      default:
-        // Add any other cases or a default case if needed
-        break;
+    // Iterate through the map in reverse order
+    for (var points in badgePoints.keys.toList().reversed) {
+      if (savePts >= points) {
+        badges.awardBadge(badgePoints[points]!, context);
+      }
     }
   }
 

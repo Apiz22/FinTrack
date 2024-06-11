@@ -48,6 +48,7 @@ class _SignUpPageState extends State<SignUpPage> {
         "ruleWinStreak": 0,
         "currentLevel": "Beginner",
         "profilePicture": "assets/img/Pfps.jpg",
+        "nextBudget": "80/20",
       };
 
       try {

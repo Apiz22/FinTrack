@@ -29,6 +29,7 @@ class _UserPageState extends State<UserPage> {
   int _totalBadgesObtained = 0;
   int achiveStreak = 0;
   int currentPts = 0;
+  String currentLevel = "";
   String currentBudget = "";
   String username = "";
   String profilePicturePath = 'assets/img/Pfps.jpg';
@@ -49,7 +50,7 @@ class _UserPageState extends State<UserPage> {
   void initState() {
     super.initState();
     totalBadges();
-    getCurrenPtsAndCurrentBudget();
+    get_CurrenPts_CurrentBudget_CurrentLvl();
     getUsername();
     getWinStreak();
   }
@@ -71,13 +72,14 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
-  void getCurrenPtsAndCurrentBudget() async {
+  void get_CurrenPts_CurrentBudget_CurrentLvl() async {
     int curPts = await points.retrieveCurrentPts(userId);
     String curBud = await points.retrieveCurrentBudgetRule(userId);
-
+    String curLvl = await database.getUserCurrentLevel(userId);
     setState(() {
       currentPts = curPts;
       currentBudget = curBud;
+      currentLevel = curLvl;
     });
   }
 
@@ -327,13 +329,14 @@ class _UserPageState extends State<UserPage> {
             children: [
               DropdownButtonFormField<String>(
                 value: selectedBudgetRule,
-                onChanged: (achiveStreak > 0)
-                    ? (String? value) {
-                        setState(() {
-                          selectedBudgetRule = value;
-                        });
-                      }
-                    : null,
+                onChanged:
+                    (currentLevel == "Intermediate" || currentLevel == "Expert")
+                        ? (String? value) {
+                            setState(() {
+                              selectedBudgetRule = value;
+                            });
+                          }
+                        : null,
                 items: const [
                   DropdownMenuItem<String>(
                     value: '80/20',
@@ -346,7 +349,7 @@ class _UserPageState extends State<UserPage> {
                 ],
                 decoration: InputDecoration(
                   labelText: 'Budget Rule',
-                  enabled: achiveStreak > 0,
+                  // enabled: achiveStreak > 0,
                 ),
               ),
             ],

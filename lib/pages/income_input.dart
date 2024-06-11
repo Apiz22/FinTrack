@@ -1,3 +1,4 @@
+import 'package:FinTrack/service/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +11,8 @@ class IncomeInputPage extends StatefulWidget {
   @override
   State<IncomeInputPage> createState() => _IncomeInputPageState();
 }
+
+final Database database = Database();
 
 class _IncomeInputPageState extends State<IncomeInputPage> {
   final TextEditingController incomeController = TextEditingController();
@@ -43,7 +46,7 @@ class _IncomeInputPageState extends State<IncomeInputPage> {
                 children: [
                   const SizedBox(height: 20),
                   Text(
-                    'Enter Your Monthly Income ${currentMonthYear}',
+                    'Enter Your Monthly Income for ${currentMonthYear}',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -94,7 +97,8 @@ class _IncomeInputPageState extends State<IncomeInputPage> {
                         'cal_needs': calNeeds,
                         'cal_wants': calWants,
                         'cal_savings': calSavings,
-                        'budgetRule': await _getUserBudgetRule(widget.userId),
+                        'budgetRule': await database
+                            .getNextMonthUserBudgetRule(widget.userId),
                         'currentLevel': await getUserCurrentLvl(widget.userId),
                       }).then((_) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -158,11 +162,11 @@ class _IncomeInputPageState extends State<IncomeInputPage> {
     }
   }
 
-  Future<String> _getUserBudgetRule(String userId) async {
-    final userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    return userDoc.exists ? userDoc["currentRule"] ?? "" : "";
-  }
+  // Future<String> _getUserBudgetRule(String userId) async {
+  //   final userDoc =
+  //       await FirebaseFirestore.instance.collection('users').doc(userId).get();
+  //   return userDoc.exists ? userDoc["currentRule"] ?? "" : "";
+  // }
 
   Future<String> getUserCurrentLvl(String userId) async {
     final userDoc =

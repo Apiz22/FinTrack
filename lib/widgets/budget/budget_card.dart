@@ -235,7 +235,8 @@ class _BudgetCardState extends State<BudgetCard> {
                       children: [
                         Text(
                           "Your next month budget: $nextBudget",
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w600),
                         ),
                         IconButton(
                             onPressed: () {
