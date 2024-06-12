@@ -2,6 +2,7 @@ import 'package:FinTrack/service/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../gamification/class/badge_class.dart';
 import '../gamification/points.dart';
@@ -100,36 +101,6 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
-  // void changeCurrentRule() async {
-  //   if (currentPts >= 2000 && currentBudget == "50/30/20") {
-  //     database.saveBudgetRuleToFirebase("50/30/20");
-  //   } else if (currentPts <= 1000 && currentBudget == "80/20") {
-  //     database.saveBudgetRuleToFirebase("80/20");
-  //   } else {
-  //     return _showIneligibleDialog(context);
-  //   }
-  // }
-
-  // void _showIneligibleDialog(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text('Not Eligible'),
-  //         content: Text('You are not eligible to change the rule.'),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             child: Text('OK'),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   void saveProfilePicture(String picturePath) async {
     await FirebaseFirestore.instance.collection("users").doc(userId).update({
       'profilePicture': picturePath,
@@ -144,18 +115,21 @@ class _UserPageState extends State<UserPage> {
   }
 
   Future<void> changePhoneNumber(String newPhoneNumber) async {
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(userId)
-        .update({'phone': newPhoneNumber});
-  }
+    try {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userId)
+          .update({'phone': newPhoneNumber});
 
-  // Future<void> changePassword(String newPassword) async {
-  //   await FirebaseFirestore.instance
-  //       .collection("users")
-  //       .doc(userId)
-  //       .update({'password': newPassword});
-  // }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Phone number updated successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update phone number: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -350,10 +324,38 @@ class _UserPageState extends State<UserPage> {
           ),
           actions: [
             ElevatedButton(
-              onPressed: (_totalBadgesObtained > 1)
+              onPressed: (_totalBadgesObtained >= 1)
                   ? () {
-                      database.updateNextRuleToFirebase(selectedBudgetRule);
-                      Navigator.pop(context);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Confirm Change'),
+                            content: Text(
+                                'Do you really want to change the budget rule to "$selectedBudgetRule"?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Close the confirmation dialog
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  database.updateNextRuleToFirebase(
+                                      selectedBudgetRule);
+                                  Navigator.of(context)
+                                      .pop(); // Close the confirmation dialog
+                                  Navigator.of(context)
+                                      .pop(); // Close the main dialog
+                                },
+                                child: const Text('Confirm'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     }
                   : null,
               child: const Text('Save'),
@@ -377,12 +379,66 @@ class _UserPageState extends State<UserPage> {
               labelText: 'New Phone Number',
             ),
             keyboardType: TextInputType.phone,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(11)
+            ],
           ),
           actions: [
             ElevatedButton(
               onPressed: () {
-                changePhoneNumber(phoneController.text);
-                Navigator.pop(context);
+                if (phoneController.text.length == 10 ||
+                    phoneController.text.length == 11) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Confirm Change'),
+                        content: Text(
+                            'Do you really want to change the phone number to "${phoneController.text}"?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pop(); // Close the confirmation dialog
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              changePhoneNumber(phoneController.text);
+                              Navigator.of(context)
+                                  .pop(); // Close the confirmation dialog
+                              Navigator.of(context)
+                                  .pop(); // Close the main dialog
+                            },
+                            child: const Text('Confirm'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Invalid Phone Number'),
+                        content: const Text(
+                            'Phone number must be either 10 or 11 digits.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pop(); // Close the error dialog
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
               },
               child: const Text('Save'),
             ),

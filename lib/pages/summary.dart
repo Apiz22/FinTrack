@@ -103,14 +103,17 @@ class SummaryRecord extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data == null) {
-          return Text('No data available for $selectMonth');
+          return Text(
+            'No data available for $selectMonth',
+            style: TextStyle(fontSize: 18),
+          );
         } else {
           Map<String, dynamic> data = snapshot.data!;
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.teal.shade50,
                   border: Border.all(),
                   borderRadius: BorderRadius.circular(8)),
               child: Column(
@@ -139,7 +142,9 @@ class SummaryRecord extends StatelessWidget {
                         if (data.containsKey('budgetRule'))
                           Text(
                             'Budget Rule: ${data['budgetRule']}',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
                           ),
                         if (data.containsKey('currentLevel'))
                           Text(
@@ -194,6 +199,11 @@ class SummaryRecord extends StatelessWidget {
                         if (data.containsKey('currentRankingSaving'))
                           Text(
                             'Saving Ranking: No. ${data['currentRankingSaving']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        if (data['budgetRule'] == "80/20")
+                          Text(
+                            'Needs & Wants: RM ${(data['needs'] + data['wants']).toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
                       ],

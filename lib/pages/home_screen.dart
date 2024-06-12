@@ -78,13 +78,9 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
             Container(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                //display the progress bar
-                child: BudgetCard(
-                  userId: userId,
-                  currentIncome: currentIncomeDate,
-                ),
+              child: BudgetCard(
+                userId: userId,
+                currentIncome: currentIncomeDate,
               ),
             ),
             SummaryHistory()

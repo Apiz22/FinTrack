@@ -187,88 +187,111 @@ class _BudgetCardState extends State<BudgetCard> {
 
                 return Column(
                   children: [
-                    Container(
-                      color: Colors.amber,
-                      child: Column(
-                        children: [
-                          Text(
-                            "Your current Budget & Level: ",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${data["budgetRule"]} (${data['currentLevel']})',
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              IconButton(
-                                  onPressed: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: ((context) {
-                                          return AlertDialog(
-                                            title: Text("About Level"),
-                                            content: Text(
-                                                "Level can be into 3 category"),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Text("Close"))
-                                            ],
-                                          );
-                                        }));
-                                  },
-                                  icon: Icon(Icons.info))
-                            ],
-                          ),
-                        ],
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.teal.shade50,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Your current Budget & Level: ",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '${data["budgetRule"]} (${data['currentLevel']})',
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87),
+                                ),
+                                IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: ((context) {
+                                            return AlertDialog(
+                                              title: Text("About Level"),
+                                              content: Text(
+                                                  "Level can be into 3 category"),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Text("Close"))
+                                              ],
+                                            );
+                                          }));
+                                    },
+                                    icon: Icon(Icons.info))
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    Container(
-                      color: Colors.grey,
-                      child: Column(
-                        children: [
-                          Text(
-                            "Next Month Budget:",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "$nextBudget",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w600),
-                              ),
-                              IconButton(
-                                  onPressed: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: ((context) {
-                                          return AlertDialog(
-                                            title: Text("How to change"),
-                                            content: Text(
-                                                "You can set this in your profile when you reach your monthly goals."),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Text("Close"))
-                                            ],
-                                          );
-                                        }));
-                                  },
-                                  icon: Icon(Icons.info))
-                            ],
-                          ),
-                        ],
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.teal.shade50,
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Next Month Budget:",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "$nextBudget",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87),
+                                ),
+                                IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: ((context) {
+                                            return AlertDialog(
+                                              title: Text("How to change"),
+                                              content: Text(
+                                                  "You can set this in your profile when you reach your monthly goals."),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Text("Close"))
+                                              ],
+                                            );
+                                          }));
+                                    },
+                                    icon: Icon(Icons.info))
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     ...budgetRows,
@@ -318,7 +341,7 @@ class _BudgetCardState extends State<BudgetCard> {
                           child: Text(
                             header,
                             style: const TextStyle(
-                              color: Colors.black,
+                              color: Colors.black87,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
@@ -354,7 +377,7 @@ class _BudgetCardState extends State<BudgetCard> {
                     Text(
                       "RM ${amount.toStringAsFixed(2)} / ${calAmount.toStringAsFixed(2)}",
                       style: const TextStyle(
-                        color: Colors.black,
+                        color: Colors.black87,
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
                       ),
