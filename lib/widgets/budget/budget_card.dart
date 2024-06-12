@@ -139,7 +139,8 @@ class _BudgetCardState extends State<BudgetCard> {
                       "Wants & Needs",
                       combinedWantsNeeds,
                       combinedCalWantsNeeds,
-                      "Wants and Needs combined.",
+                      "\nNeeds: These are expenses that are essential for survival and well-being. They include items like housing, utilities, food, healthcare, and transportation. If you stopped spending money on these items, there would be severe negative consequences." +
+                          "\nWants: These are non-essential expenses that enhance your quality of life but are not necessary for survival. Examples include dining out, entertainment, and gym memberships. Wants may improve your life but cutting them from your budget wouldn’t have the same severe consequences as cutting needs.",
                       () {},
                     ),
                     buildRow(
@@ -221,8 +222,11 @@ class _BudgetCardState extends State<BudgetCard> {
                                           builder: ((context) {
                                             return AlertDialog(
                                               title: Text("About Level"),
-                                              content: Text(
-                                                  "Level can be into 3 category"),
+                                              content: Text("Level can be into 3 category :" +
+                                                  "\n 1) Beginner - Achieve when you cannot achieve the any budget rule yet" +
+                                                  "\n 2) Intermediate - Achieve when you follow the rule 80/20" +
+                                                  "\n 3) Expert - Achieve when you can follow the 50/30/20" +
+                                                  "\n Reminder** Your budget can change based on your monthly transactions"),
                                               actions: <Widget>[
                                                 TextButton(
                                                     onPressed: () {
@@ -275,7 +279,9 @@ class _BudgetCardState extends State<BudgetCard> {
                                             return AlertDialog(
                                               title: Text("How to change"),
                                               content: Text(
-                                                  "You can set this in your profile when you reach your monthly goals."),
+                                                  "1) This can will change when you can achive the budget rule montly." +
+                                                      "\n2) You can change this budget rule in your profile when you reach your monthly goals and the the current level is intermediate or expert. " +
+                                                      "\n3) You can stick to the current budget rule  by change it at profile."),
                                               actions: <Widget>[
                                                 TextButton(
                                                     onPressed: () {

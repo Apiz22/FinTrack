@@ -161,19 +161,26 @@ class SummaryRecord extends StatelessWidget {
                             'Remain Amount: RM ${data['remainAmount'].toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
-                        if (data.containsKey('needs'))
+                        if (data.containsKey('needs') &&
+                            data['budgetRule'] == "50/30/20")
                           Text(
                             'Needs: RM ${data['needs'].toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
-                        if (data.containsKey('wants'))
+                        if (data.containsKey('wants') &&
+                            data['budgetRule'] == "50/30/20")
                           Text(
                             'Wants: RM ${data['wants'].toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
+                        if (data['budgetRule'] == "80/20")
+                          Text(
+                            'Expenses on Needs & Wants: RM ${(data['needs'] + data['wants']).toStringAsFixed(2)}',
+                            style: TextStyle(fontSize: 18),
+                          ),
                         if (data.containsKey('savings'))
                           Text(
-                            'Savings: RM ${data['savings'].toStringAsFixed(2)}',
+                            'Expenses on Savings: RM ${data['savings'].toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
                         if (data.containsKey('level'))
@@ -199,11 +206,6 @@ class SummaryRecord extends StatelessWidget {
                         if (data.containsKey('currentRankingSaving'))
                           Text(
                             'Saving Ranking: No. ${data['currentRankingSaving']}',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        if (data['budgetRule'] == "80/20")
-                          Text(
-                            'Needs & Wants: RM ${(data['needs'] + data['wants']).toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
                       ],

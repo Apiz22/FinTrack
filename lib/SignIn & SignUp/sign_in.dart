@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../service/auth_service.dart';
 import '../utils/appvalidator.dart';
 import 'forgot_pass.dart';
-import 'sign_up.dart';
 
 class SignInPage extends StatefulWidget {
   final Function()? onTap;

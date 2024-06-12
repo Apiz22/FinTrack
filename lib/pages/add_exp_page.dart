@@ -251,7 +251,7 @@ class _AddExpPageState extends State<AddExpPage> {
       double expWants, double calWants, double expSavings, double calSavings) {
     // Variables to store progress percentages
     double needsPercent = expNeeds / calNeeds;
-    double wantsPercent = expWants / calWants;
+    // double wantsPercent = expWants / calWants;
     double savingsPercent = expSavings / calSavings;
 
     if (rule == "50/30/20") {

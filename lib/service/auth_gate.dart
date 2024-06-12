@@ -1,8 +1,6 @@
 import 'package:FinTrack/SignIn%20&%20SignUp/login_or_register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import '../SignIn & SignUp/sign_in.dart';
 import '../utils/dashboard.dart';
 
 class AuthGate extends StatelessWidget {
