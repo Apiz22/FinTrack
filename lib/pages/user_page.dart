@@ -1,4 +1,3 @@
-import 'package:FinTrack/pages/home_screen.dart';
 import 'package:FinTrack/service/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,11 +36,12 @@ class _UserPageState extends State<UserPage> {
   final List<String> profilePictures = [
     'assets/img/Pfps.jpg',
     'assets/img/default.png',
-    'assets/img/pedro.jpeg',
     'assets/img/male1.jpg',
-    'assets/img/male2.jpg',
     'assets/img/female1.jpg',
-    'assets/img/default.png'
+    'assets/img/male2.jpg',
+    'assets/img/male3.jpg',
+    'assets/img/female2.jpg',
+    'assets/img/pedro.jpeg',
   ];
 
   Database database = Database();
@@ -165,7 +165,8 @@ class _UserPageState extends State<UserPage> {
           "User Page",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.teal.shade900,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       endDrawer: Drawer(
         child: userDrawer(context),
@@ -173,23 +174,6 @@ class _UserPageState extends State<UserPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Container(
-            //   padding: const EdgeInsets.all(8.0),
-            //   margin: const EdgeInsets.symmetric(vertical: 10),
-            //   decoration: BoxDecoration(
-            //     color: Colors.teal.shade50,
-            //     borderRadius: BorderRadius.circular(10),
-            //     border: Border.all(color: Colors.teal),
-            //   ),
-            //   child: Text(
-            //     "Current Points: $currentPts",
-            //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            //   ),
-            // ),
-            // ElevatedButton(
-            //   onPressed: changeCurrentRule,
-            //   child: const Text("Update Rule based on Points"),
-            // ),
             Container(
               padding: const EdgeInsets.all(8.0),
               margin: const EdgeInsets.symmetric(vertical: 10),
@@ -204,16 +188,26 @@ class _UserPageState extends State<UserPage> {
               ),
             ),
             Container(
-              // color: Colors.amber,
-              padding: const EdgeInsets.all(8),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
-                    "Badges Collections",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                  Container(
+                    color: Colors.teal.shade800,
+                    alignment: Alignment.center,
+                    width: double.infinity,
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      "Badges Collections",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  badgesList(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: badgesList(),
+                  ),
                 ],
               ),
             ),
@@ -229,7 +223,7 @@ class _UserPageState extends State<UserPage> {
       children: [
         DrawerHeader(
           decoration: BoxDecoration(
-            color: Colors.teal.shade200,
+            color: Colors.teal.shade800,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -593,14 +587,19 @@ class _UserPageState extends State<UserPage> {
             return const Text("Error loading data");
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: const CircularProgressIndicator());
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(child: const CircularProgressIndicator()),
+            );
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Column(
               children: [
                 Center(
                     child: const Text(
-                        'No badges obtained yet. Try keep track your money expenses and stay stick with the budget')),
+                  'No badges obtained yet. Try keep track your money expenses and stay stick with the budget',
+                  style: TextStyle(fontSize: 18),
+                )),
               ],
             );
           }

@@ -23,7 +23,7 @@ class RankPageState extends State<RankPage> {
           "Ranking page",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal.shade500,
+        backgroundColor: Colors.teal.shade900,
       ),
       body: SingleChildScrollView(
         child: Container(

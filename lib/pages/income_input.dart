@@ -29,7 +29,8 @@ class _IncomeInputPageState extends State<IncomeInputPage> {
           'Enter Total Income',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal.shade500,
+        backgroundColor: Colors.teal.shade900,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

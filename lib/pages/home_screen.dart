@@ -33,8 +33,6 @@ class _MainPageState extends State<MainPage> {
     try {
       await database.createMonthlyIncomeDocument(userId, context);
       await database.createMonthlyPointHistory(userId);
-      // await database.createMonthlyExpensesRecord(userId);
-      // await pts.userPointStreak(userId);
     } catch (error) {
       print("Initialization error: $error");
     }
@@ -95,17 +93,4 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
-
-// // Function to save the selected budget rule to Firebase
-//   void saveBudgetRuleToFirebase(String? budgetRule) {
-//     if (budgetRule != null) {
-//       FirebaseFirestore.instance.collection("users").doc(userId).update({
-//         'currentRule': budgetRule,
-//       }).then((value) {
-//         print('Budget rule saved successfully!');
-//       }).catchError((error) {
-//         print('Failed to save budget rule: $error');
-//       });
-//     }
-//   }
 }

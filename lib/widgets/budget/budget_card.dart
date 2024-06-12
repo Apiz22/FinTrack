@@ -22,10 +22,10 @@ class _BudgetCardState extends State<BudgetCard> {
   @override
   void initState() {
     super.initState();
-    _getNextBudget();
+    getNextBudget();
   }
 
-  Future<void> _getNextBudget() async {
+  Future<void> getNextBudget() async {
     String budget = await database.getNextMonthUserBudgetRule(widget.userId);
     setState(() {
       nextBudget = budget;
@@ -184,81 +184,92 @@ class _BudgetCardState extends State<BudgetCard> {
                     ),
                   ];
                 }
-                // else {
-                //   budgetRows = [
-                //     const Padding(
-                //       padding: EdgeInsets.all(16.0),
-                //       child: Text("Invalid budget rule."),
-                //     ),
-                //   ];
-                // }
 
                 return Column(
                   children: [
-                    Text(
-                      "Your current Budget: ",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Container(
+                      color: Colors.amber,
+                      child: Column(
+                        children: [
+                          Text(
+                            "Your current Budget & Level: ",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${data["budgetRule"]} (${data['currentLevel']})',
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: ((context) {
+                                          return AlertDialog(
+                                            title: Text("About Level"),
+                                            content: Text(
+                                                "Level can be into 3 category"),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text("Close"))
+                                            ],
+                                          );
+                                        }));
+                                  },
+                                  icon: Icon(Icons.info))
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '${data["budgetRule"]} (${data['currentLevel']})',
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        IconButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: ((context) {
-                                    return AlertDialog(
-                                      title: Text("About Level"),
-                                      content:
-                                          Text("Level can be into 3 category"),
-                                      actions: <Widget>[
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: Text("Close"))
-                                      ],
-                                    );
-                                  }));
-                            },
-                            icon: Icon(Icons.info))
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Your next month budget: $nextBudget",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w600),
-                        ),
-                        IconButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: ((context) {
-                                    return AlertDialog(
-                                      title: Text("How to change"),
-                                      content: Text(
-                                          "You can set this in your profile when you reach your monthly goals."),
-                                      actions: <Widget>[
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: Text("Close"))
-                                      ],
-                                    );
-                                  }));
-                            },
-                            icon: Icon(Icons.info))
-                      ],
+                    Container(
+                      color: Colors.grey,
+                      child: Column(
+                        children: [
+                          Text(
+                            "Next Month Budget:",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "$nextBudget",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w600),
+                              ),
+                              IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: ((context) {
+                                          return AlertDialog(
+                                            title: Text("How to change"),
+                                            content: Text(
+                                                "You can set this in your profile when you reach your monthly goals."),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text("Close"))
+                                            ],
+                                          );
+                                        }));
+                                  },
+                                  icon: Icon(Icons.info))
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                     ...budgetRows,
                   ],

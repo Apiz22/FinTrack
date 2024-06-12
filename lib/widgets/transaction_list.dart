@@ -37,10 +37,18 @@ class TransactionList extends StatelessWidget {
           if (snapshot.hasError) {
             return const Text('Something went wrong');
           } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text("Loading");
+            return const Text(
+              "Loading",
+              style: TextStyle(fontSize: 16),
+            );
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Text("No transactions found");
+            return Center(
+              child: const Text(
+                "No transactions found",
+                style: TextStyle(fontSize: 16),
+              ),
+            );
           }
 
           var data = snapshot.data!.docs;

@@ -16,6 +16,7 @@ class NavBar extends StatelessWidget {
       selectedIndex: selectedIndex,
       onDestinationSelected: onDestinationSelected,
       indicatorColor: Colors.teal.shade500,
+      animationDuration: Duration(milliseconds: 1200),
       destinations: const <Widget>[
         //NavigationDestination
         NavigationDestination(

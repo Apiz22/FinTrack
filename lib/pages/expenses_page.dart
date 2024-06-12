@@ -33,7 +33,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
           "Expenses page",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal.shade500,
+        backgroundColor: Colors.teal.shade900,
       ),
       body: SingleChildScrollView(
         child: Column(children: [

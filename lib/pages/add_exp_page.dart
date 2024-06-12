@@ -140,20 +140,13 @@ class _AddExpPageState extends State<AddExpPage> {
             currentPts = combinePts + savingsspts;
           }
 
-          // Change the user budget
-          if ((currentPts == 1000 && budgetRule == "80/20") ||
-              (currentPts == 2000 && budgetRule == "50/30/20")) {
-            winStreak += 1;
-            database.UpgradechangeRuleBasedOnPts(budgetRule);
-          } else {
-            winStreak = 0;
-            database.DownchangeRuleBasedOnPts(budgetRule);
-          }
-
           savePts =
               points.calculatePointsSavings(expSavings, calSavings, income);
 
           awardSavePoints(savePts);
+          // Variables to store progress percentages
+          awardBasedOnPercent(budgetRule, expNeeds, calNeeds, expWants,
+              calWants, expSavings, calSavings);
 
           // Set user Level (Beginner, Intermediate, Expert)
           if (budgetRule == "50/30/20" && currentPts == 2000) {
@@ -173,6 +166,15 @@ class _AddExpPageState extends State<AddExpPage> {
             "currentLevel": userLevel,
           });
 
+          // Change the user budget for next month
+          if ((currentPts == 1000 && budgetRule == "80/20") ||
+              (currentPts == 2000 && budgetRule == "50/30/20")) {
+            winStreak += 1;
+            database.UpgradechangeRuleBasedOnPts(budgetRule);
+          } else {
+            winStreak = 0;
+            database.DownchangeRuleBasedOnPts(budgetRule);
+          }
           // Update Income
           await FirebaseFirestore.instance
               .collection("users")
@@ -245,6 +247,26 @@ class _AddExpPageState extends State<AddExpPage> {
     }
   }
 
+  void awardBasedOnPercent(String rule, double expNeeds, double calNeeds,
+      double expWants, double calWants, double expSavings, double calSavings) {
+    // Variables to store progress percentages
+    double needsPercent = expNeeds / calNeeds;
+    double wantsPercent = expWants / calWants;
+    double savingsPercent = expSavings / calSavings;
+
+    if (rule == "50/30/20") {
+      if (needsPercent > 1.0) {
+        badges.awardBadge("Good Guess", context);
+      }
+    }
+    // if (wantsPercent > 1.0) {
+    //   badges.awardBadge("Good Guess", context);
+    // }
+    if (savingsPercent >= 1.0) {
+      badges.awardBadge("Savings is my Goal", context);
+    }
+  }
+
   void awardSavePoints(int savePts) {
     // Define a map of points to badge names
     final badgePoints = {
@@ -272,169 +294,175 @@ class _AddExpPageState extends State<AddExpPage> {
           "Add Expense",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.teal.shade900,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.teal.shade800,
-                ),
-                child: const Text(
-                  "Add New Transaction",
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.teal.shade600,
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: titleEditController,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: appValidator.isEmptyCheck,
-                decoration: InputDecoration(
-                  labelText: "Title",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  hintText: "Enter transaction title",
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                ),
+              child: const Text(
+                "Add New Transaction",
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: amountEditController,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: appValidator.amountValidator,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "(RM) Amount",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  hintText: "Enter transaction amount",
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                ),
-              ),
-              const SizedBox(height: 20),
-              CategoryDropDown(
-                cattype: category,
-                onChanged: (String? value) {
-                  if (value != null) {
-                    setState(() {
-                      category = value;
-                    });
-                  }
-                },
-              ),
-              const SizedBox(height: 20),
-              DropdownButtonFormField(
-                value: budget,
-                items: const [
-                  DropdownMenuItem(
-                    value: "needs",
-                    child: Text("Needs"),
-                  ),
-                  DropdownMenuItem(
-                    value: "wants",
-                    child: Text("Wants"),
-                  ),
-                  DropdownMenuItem(
-                    value: "savings",
-                    child: Text("Savings"),
-                  ),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(
-                      () {
-                        budget = value as String;
-                      },
-                    );
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: "Budget Type",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                ),
-              ),
-              const SizedBox(height: 20),
-              DropdownButtonFormField(
-                value: type,
-                items: const [
-                  DropdownMenuItem(
-                    value: "debit",
-                    child: Text("Debit"),
-                  ),
-                  DropdownMenuItem(
-                    value: "credit",
-                    child: Text("Credit"),
-                  ),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(
-                      () {
-                        type = value as String;
-                      },
-                    );
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: "Transaction Type",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                ),
-              ),
-              const SizedBox(height: 30),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (!isLoader) {
-                      submitForm();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 50, vertical: 15),
-                    backgroundColor: Colors.teal.shade100,
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: titleEditController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: appValidator.isEmptyCheck,
+                      decoration: InputDecoration(
+                        labelText: "Title",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        hintText: "Enter transaction title",
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: amountEditController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: appValidator.amountValidator,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "(RM) Amount",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        hintText: "Enter transaction amount",
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                      ),
                     ),
-                  ),
-                  child: isLoader
-                      ? const CircularProgressIndicator(
-                          color: Colors.white,
-                        )
-                      : const Text("Add Transaction"),
+                    const SizedBox(height: 20),
+                    CategoryDropDown(
+                      cattype: category,
+                      onChanged: (String? value) {
+                        if (value != null) {
+                          setState(() {
+                            category = value;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField(
+                      value: budget,
+                      items: const [
+                        DropdownMenuItem(
+                          value: "needs",
+                          child: Text("Needs"),
+                        ),
+                        DropdownMenuItem(
+                          value: "wants",
+                          child: Text("Wants"),
+                        ),
+                        DropdownMenuItem(
+                          value: "savings",
+                          child: Text("Savings"),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(
+                            () {
+                              budget = value as String;
+                            },
+                          );
+                        }
+                      },
+                      decoration: InputDecoration(
+                        labelText: "Budget Type",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField(
+                      value: type,
+                      items: const [
+                        DropdownMenuItem(
+                          value: "debit",
+                          child: Text("Debit"),
+                        ),
+                        DropdownMenuItem(
+                          value: "credit",
+                          child: Text("Credit"),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(
+                            () {
+                              type = value as String;
+                            },
+                          );
+                        }
+                      },
+                      decoration: InputDecoration(
+                        labelText: "Transaction Type",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (!isLoader) {
+                            submitForm();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 50, vertical: 15),
+                          backgroundColor: Colors.teal.shade100,
+                          textStyle: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        child: isLoader
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : const Text("Add Transaction"),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

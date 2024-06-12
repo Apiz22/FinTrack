@@ -157,7 +157,10 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
             ),
           ),
           _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Center(child: CircularProgressIndicator()),
+                )
               : ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -166,13 +169,13 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
                     Color color;
                     switch (index) {
                       case 0:
-                        color = Color.fromARGB(255, 255, 223, 0);
+                        color = Color.fromARGB(255, 255, 224, 22);
                         break;
                       case 1:
-                        color = Color.fromARGB(255, 192, 192, 192);
+                        color = Color.fromARGB(255, 211, 211, 211);
                         break;
                       case 2:
-                        color = Color.fromARGB(255, 203, 109, 81);
+                        color = Color.fromARGB(255, 220, 131, 104);
                         break;
                       default:
                         color = Colors.white;
@@ -244,7 +247,7 @@ class UserTile extends StatelessWidget {
         Expanded(
           flex: 3,
           child: Text(
-            '${user['PtsSavings']} points',
+            '${user['PtsSavings']} Pts',
             textAlign: TextAlign.end,
             style: const TextStyle(fontSize: 20),
           ),

@@ -41,6 +41,7 @@ dependencies:
   percent_indicator: ^4.2.3
   image_picker: ^1.1.1
   shimmer: ^3.0.0
+  fl_chart: ^0.68.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -84,6 +85,9 @@ flutter:
     - assets/img/Pfps.jpg
     - assets/img/male1.jpg
     - assets/img/male2.jpg
+    - assets/img/female1.jpg
+    - assets/img/male3.jpg
+    - assets/img/female2.jpg
 
 
 
