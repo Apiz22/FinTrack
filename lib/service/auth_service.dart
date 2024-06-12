@@ -15,9 +15,9 @@ class AuthService {
       await database.addUser(data, context);
 
       // Navigate to Dashboard after successful registration
-      Navigator.pop(
-        context,
-      );
+      // Navigator.pop(
+      //   context,
+      // );
     } catch (e) {
       showDialog(
         context: context,
@@ -37,16 +37,38 @@ class AuthService {
         email: data['email'],
         password: data['password'],
       );
-    } catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("Login Failed"),
-            content: Text(e.toString()),
-          );
-        },
-      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Login Failed"),
+              content: Text("User Not Found"),
+            );
+          },
+        );
+      } else if (e.code == 'wrong-password') {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Login Failed"),
+              content: Text("Wrong password"),
+            );
+          },
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Login Failed"),
+              content: Text(e.toString()),
+            );
+          },
+        );
+      }
     }
   }
 }

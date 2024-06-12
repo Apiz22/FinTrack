@@ -5,7 +5,8 @@ import 'forgot_pass.dart';
 import 'sign_up.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+  final Function()? onTap;
+  const SignInPage({super.key, required this.onTap});
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -182,14 +183,27 @@ class _SignInPageState extends State<SignInPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text("Don't have an account?"),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SignUpPage()),
-                          );
-                        },
+                      // TextButton(
+                      //   onPressed: () {
+                      //     Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //           builder: (context) => const SignUpPage()),
+                      //     );
+                      //   },
+                      //   child: const Text(
+                      //     "Sign Up",
+                      //     style: TextStyle(
+                      //       color: Colors.teal,
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      GestureDetector(
+                        onTap: widget.onTap,
                         child: const Text(
                           "Sign Up",
                           style: TextStyle(
@@ -197,7 +211,7 @@ class _SignInPageState extends State<SignInPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ],

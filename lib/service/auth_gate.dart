@@ -1,3 +1,4 @@
+import 'package:FinTrack/SignIn%20&%20SignUp/login_or_register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -12,10 +13,11 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const SignInPage();
+          if (snapshot.hasData) {
+            return const Dashboard();
           }
-          return const Dashboard();
+          //if user is NOT sign in
+          return const LoginOrRegister();
         });
   }
 }

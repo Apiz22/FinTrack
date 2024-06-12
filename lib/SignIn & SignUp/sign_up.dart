@@ -3,7 +3,9 @@ import '../service/auth_service.dart';
 import '../utils/appvalidator.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  final Function()? onTap;
+
+  const SignUpPage({super.key, required this.onTap});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -257,12 +259,25 @@ class _SignUpPageState extends State<SignUpPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Already have an account?"),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(
-                          context,
-                        );
-                      },
+                    // TextButton(
+                    //   onPressed: () {
+                    //     Navigator.pop(
+                    //       context,
+                    //     );
+                    //   },
+                    //   child: const Text(
+                    //     "Sign In",
+                    //     style: TextStyle(
+                    //       color: Colors.teal,
+                    //       fontWeight: FontWeight.bold,
+                    //     ),
+                    //   ),
+                    // ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    GestureDetector(
+                      onTap: widget.onTap,
                       child: const Text(
                         "Sign In",
                         style: TextStyle(
@@ -270,7 +285,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               ],
