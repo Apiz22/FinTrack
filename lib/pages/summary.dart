@@ -175,12 +175,12 @@ class SummaryRecord extends StatelessWidget {
                           ),
                         if (data['budgetRule'] == "80/20")
                           Text(
-                            'Expenses on Needs & Wants: RM ${(data['needs'] + data['wants']).toStringAsFixed(2)}',
+                            'Needs & Wants: RM ${(data['needs'] + data['wants']).toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
                         if (data.containsKey('savings'))
                           Text(
-                            'Expenses on Savings: RM ${data['savings'].toStringAsFixed(2)}',
+                            'Savings: RM ${data['savings'].toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 18),
                           ),
                         if (data.containsKey('level'))
@@ -198,14 +198,16 @@ class SummaryRecord extends StatelessWidget {
                             'Savings points: ${data['PtsSavings']} pts',
                             style: TextStyle(fontSize: 18),
                           ),
-                        if (data.containsKey('currentRanking'))
+                        if (data.containsKey('currentRanking') &&
+                            data.containsKey('totalUserRanking'))
                           Text(
-                            'Ranking for overall: No. ${data['currentRanking']}',
+                            'Ranking for overall: No. ${data['currentRanking']} / ${data['totalUserRanking']}',
                             style: TextStyle(fontSize: 18),
                           ),
-                        if (data.containsKey('currentRankingSaving'))
+                        if (data.containsKey('currentRankingSaving') &&
+                            data.containsKey('totalUserSavings'))
                           Text(
-                            'Saving Ranking: No. ${data['currentRankingSaving']}',
+                            'Saving Ranking: No. ${data['currentRankingSaving']} / ${data['totalUserSavings']}',
                             style: TextStyle(fontSize: 18),
                           ),
                       ],

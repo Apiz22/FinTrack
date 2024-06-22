@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -14,6 +15,7 @@ String monthyear = DateFormat("MMM y").format(date);
 
 class _SavingLeaderboardState extends State<SavingLeaderboard> {
   String selectedCategory = '80/20';
+  String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
   List<Map<String, dynamic>> _users = [];
   bool _isLoading = true;
@@ -33,6 +35,7 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
       final querySnapshot =
           await FirebaseFirestore.instance.collection('users').get();
       final List<Map<String, dynamic>> users = [];
+      Map<String, dynamic>? currentUser;
 
       for (var doc in querySnapshot.docs) {
         final data = doc.data();
@@ -51,17 +54,28 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
           final profilePicture = data['profilePicture'] ?? '';
 
           if (PtsSavings > 0 && PtsSavings < 200) {
-            users.add({
+            final user = {
               'id': userId,
               'name': data['username'] ?? 'Unknown',
               'profilePicture': profilePicture,
               'PtsSavings': PtsSavings,
-            });
+            };
+
+            if (userId == currentUserId) {
+              currentUser = user;
+            } else {
+              users.add(user);
+            }
           }
         }
       }
 
       users.sort((a, b) => b['PtsSavings'].compareTo(a['PtsSavings']));
+
+      if (currentUser != null &&
+          !users.any((user) => user['id'] == currentUserId)) {
+        users.add(currentUser);
+      }
 
       setState(() {
         _users = users;
@@ -149,7 +163,6 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      // color: Colors.teal.shade500,
                     ),
                   ),
                 ),
@@ -194,6 +207,7 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
                           child: UserTile(
                             rank: index + 1,
                             user: _users[index],
+                            isCurrentUser: _users[index]['id'] == currentUserId,
                           ),
                         ),
                       ),
@@ -209,8 +223,10 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
 class UserTile extends StatelessWidget {
   final int rank;
   final Map<String, dynamic> user;
+  final bool isCurrentUser;
 
-  const UserTile({required this.rank, required this.user});
+  const UserTile(
+      {required this.rank, required this.user, required this.isCurrentUser});
 
   @override
   Widget build(BuildContext context) {
@@ -238,7 +254,7 @@ class UserTile extends StatelessWidget {
               ),
               const SizedBox(width: 20),
               Text(
-                '${user['name']}',
+                isCurrentUser ? '=You=' : '${user['name']}',
                 style: const TextStyle(fontSize: 20),
               ),
             ],
@@ -264,8 +280,9 @@ Future<void> updateUserRankings(List<Map<String, dynamic>> users) async {
         FirebaseFirestore.instance.collection('users').doc(users[i]['id']);
     final pointHistoryRef = userRef.collection('point_history').doc(monthyear);
 
-    batch.update(userRef, {'currentRankingSaving': i + 1});
+    // batch.update(userRef, {'currentRankingSaving': i + 1});
     batch.update(pointHistoryRef, {'currentRankingSaving': i + 1});
+    batch.update(pointHistoryRef, {'totalUserSavings': users.length});
   }
   await batch.commit();
 }

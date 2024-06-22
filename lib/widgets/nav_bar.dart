@@ -28,26 +28,26 @@ class NavBar extends StatelessWidget {
           ),
         ),
         NavigationDestination(
-          icon: Icon(Icons.money),
-          label: 'Expenses',
+          icon: Icon(Icons.attach_money),
+          label: 'Track',
           selectedIcon: Icon(
-            Icons.money,
+            Icons.attach_money,
             color: Colors.white,
           ),
         ),
         NavigationDestination(
           icon: Icon(Icons.add),
-          label: 'Add Expenses',
+          label: 'Add',
           selectedIcon: Icon(
             Icons.add,
             color: Colors.white,
           ),
         ),
         NavigationDestination(
-          icon: Icon(Icons.book),
-          label: 'Leaderboard',
+          icon: Icon(Icons.games),
+          label: 'Rank',
           selectedIcon: Icon(
-            Icons.book,
+            Icons.games,
             color: Colors.white,
           ),
         ),

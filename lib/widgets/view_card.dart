@@ -90,16 +90,16 @@ class TotalCard extends StatelessWidget {
             children: [
               OneCard(
                 color: Colors.green,
-                header: 'Credit',
-                amount: '${data["totalCredit"].toStringAsFixed(2)}',
+                header: 'Debit',
+                amount: '${data["totalDebit"].toStringAsFixed(2)}',
               ),
               const SizedBox(
                 width: 5,
               ),
               OneCard(
                 color: Color.fromARGB(255, 233, 178, 13),
-                header: 'Debit',
-                amount: '${data["totalDebit"].toStringAsFixed(2)}',
+                header: 'Credit',
+                amount: '${data["totalCredit"].toStringAsFixed(2)}',
               ),
             ],
           ),
@@ -147,7 +147,7 @@ class OneCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 30),
                       Icon(
-                        header == "Credit"
+                        header == "Debit"
                             ? Icons.arrow_upward_outlined
                             : Icons.arrow_downward,
                         color: color,

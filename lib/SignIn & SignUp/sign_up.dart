@@ -113,7 +113,7 @@ class _SignUpPageState extends State<SignUpPage> {
           'Sign Up',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.teal.shade900,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

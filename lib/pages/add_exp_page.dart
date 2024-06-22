@@ -18,8 +18,8 @@ class AddExpPage extends StatefulWidget {
 }
 
 class _AddExpPageState extends State<AddExpPage> {
-  var type = "debit";
-  var category = ""; // Initialize to an empty string
+  String type = "";
+  var category = "";
   var budget = "needs";
   String userLevel = "";
   int savePts = 0;
@@ -101,97 +101,102 @@ class _AddExpPageState extends State<AddExpPage> {
         // String budgetNextMonth = userFile["nextBudget"];
 
         // Calculate expenses amount + pts
-        if (type == "credit") {
-          remainAmount += amount;
+        // if (type == "credit") {
+        //   // remainAmount += amount;
+        //   // totalCredit += amount;
+        // }
+        // // Debit
+        // else {
+        remainAmount -= amount;
+        // totalDebit += amount;
+        if (budget == "needs") {
+          type = "credit";
           totalCredit += amount;
-        }
-        // Debit
-        else {
-          remainAmount -= amount;
+          expNeeds += amount;
+        } else if (budget == "wants") {
+          type = "credit";
+          totalCredit += amount;
+          expWants += amount;
+        } else {
+          type = "debit";
+          expSavings += amount;
           totalDebit += amount;
-          if (budget == "needs") {
-            expNeeds += amount;
-          } else if (budget == "wants") {
-            expWants += amount;
-          } else {
-            expSavings += amount;
-          }
-
-          // Calculate points
-          if (budgetRule == "50/30/20") {
-            needspts = points.calculatePointsForBudget(expNeeds, calNeeds, 100);
-            wantspts = points.calculatePointsForBudget(expWants, calWants, 60);
-            savingsspts =
-                points.calculatePointsForBudget(expSavings, calSavings, 40);
-
-            currentPts = needspts + wantspts + savingsspts;
-          } // rule == 80/20
-          else {
-            double combineExp = expNeeds + expWants;
-            if (combineExp > (income * 0.8)) {
-              double over = combineExp - (income * 0.8);
-              combinePts = ((10 * 80) - over).toInt();
-            } else {
-              combinePts = (10 * ((combineExp / (income * 0.8)) * 80)).toInt();
-            }
-            savingsspts =
-                points.calculatePointsForBudget(expSavings, calSavings, 20);
-
-            currentPts = combinePts + savingsspts;
-          }
-
-          savePts =
-              points.calculatePointsSavings(expSavings, calSavings, income);
-
-          awardSavePoints(savePts);
-          // Variables to store progress percentages
-          awardBasedOnPercent(budgetRule, expNeeds, calNeeds, expWants,
-              calWants, expSavings, calSavings);
-
-          // Set user Level (Beginner, Intermediate, Expert)
-          if (budgetRule == "50/30/20" && currentPts == 2000) {
-            userLevel = "Expert";
-          } else if ((budgetRule == "80/20" && currentPts == 1000) ||
-              (budgetRule == "50/30/20" && currentPts <= 2000)) {
-            userLevel = "Intermediate";
-          } else {
-            userLevel = "Beginner";
-          }
-
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .update({
-            "ruleWinStreak": winStreak,
-            "currentLevel": userLevel,
-          });
-
-          // Change the user budget for next month
-          if ((currentPts == 1000 && budgetRule == "80/20") ||
-              (currentPts == 2000 && budgetRule == "50/30/20")) {
-            winStreak += 1;
-            database.UpgradechangeRuleBasedOnPts(budgetRule);
-          } else {
-            winStreak = 0;
-            database.DownchangeRuleBasedOnPts(budgetRule);
-          }
-          // Update Income
-          await FirebaseFirestore.instance
-              .collection("users")
-              .doc(user.uid)
-              .collection('monthly_income')
-              .doc(monthyear)
-              .update({
-            "needs": expNeeds,
-            "wants": expWants,
-            "savings": expSavings,
-            "remainAmount": remainAmount,
-            "totalCredit": totalCredit,
-            "totalDebit": totalDebit,
-            "currentLevel": userLevel,
-            "updatedAt": timestamp,
-          });
         }
+
+        // Calculate points
+        if (budgetRule == "50/30/20") {
+          needspts = points.calculatePointsForBudget(expNeeds, calNeeds, 100);
+          wantspts = points.calculatePointsForBudget(expWants, calWants, 60);
+          savingsspts =
+              points.calculatePointsForBudget(expSavings, calSavings, 40);
+
+          currentPts = needspts + wantspts + savingsspts;
+        } // rule == 80/20
+        else {
+          double combineExp = expNeeds + expWants;
+          if (combineExp > (income * 0.8)) {
+            double over = combineExp - (income * 0.8);
+            combinePts = ((10 * 80) - over).toInt();
+          } else {
+            combinePts = (10 * ((combineExp / (income * 0.8)) * 80)).toInt();
+          }
+          savingsspts =
+              points.calculatePointsForBudget(expSavings, calSavings, 20);
+
+          currentPts = combinePts + savingsspts;
+        }
+
+        savePts = points.calculatePointsSavings(expSavings, calSavings, income);
+
+        awardSavePoints(savePts);
+        // Variables to store progress percentages
+        awardBasedOnPercent(budgetRule, expNeeds, calNeeds, expWants, calWants,
+            expSavings, calSavings);
+
+        // Set user Level (Beginner, Intermediate, Expert)
+        if (budgetRule == "50/30/20" && currentPts == 2000) {
+          userLevel = "Expert";
+        } else if ((budgetRule == "80/20" && currentPts == 1000) ||
+            (budgetRule == "50/30/20" && currentPts <= 2000)) {
+          userLevel = "Intermediate";
+        } else {
+          userLevel = "Beginner";
+        }
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({
+          "ruleWinStreak": winStreak,
+          "currentLevel": userLevel,
+        });
+
+        // Change the user budget for next month
+        if ((currentPts == 1000 && budgetRule == "80/20") ||
+            (currentPts == 2000 && budgetRule == "50/30/20")) {
+          winStreak += 1;
+          database.UpgradechangeRuleBasedOnPts(budgetRule);
+        } else {
+          winStreak = 0;
+          database.DownchangeRuleBasedOnPts(budgetRule);
+        }
+        // Update Income
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(user.uid)
+            .collection('monthly_income')
+            .doc(monthyear)
+            .update({
+          "needs": expNeeds,
+          "wants": expWants,
+          "savings": expSavings,
+          "remainAmount": remainAmount,
+          "totalCredit": totalCredit,
+          "totalDebit": totalDebit,
+          "currentLevel": userLevel,
+          "updatedAt": timestamp,
+        });
+        // }
 
         // Update points
         await FirebaseFirestore.instance
@@ -401,37 +406,37 @@ class _AddExpPageState extends State<AddExpPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    DropdownButtonFormField(
-                      value: type,
-                      items: const [
-                        DropdownMenuItem(
-                          value: "debit",
-                          child: Text("Debit"),
-                        ),
-                        DropdownMenuItem(
-                          value: "credit",
-                          child: Text("Credit"),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(
-                            () {
-                              type = value as String;
-                            },
-                          );
-                        }
-                      },
-                      decoration: InputDecoration(
-                        labelText: "Transaction Type",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                      ),
-                    ),
-                    const SizedBox(height: 30),
+                    // DropdownButtonFormField(
+                    //   value: type,
+                    //   items: const [
+                    //     DropdownMenuItem(
+                    //       value: "debit",
+                    //       child: Text("Debit"),
+                    //     ),
+                    //     DropdownMenuItem(
+                    //       value: "credit",
+                    //       child: Text("Credit"),
+                    //     ),
+                    //   ],
+                    //   onChanged: (value) {
+                    //     if (value != null) {
+                    //       setState(
+                    //         () {
+                    //           type = value as String;
+                    //         },
+                    //       );
+                    //     }
+                    //   },
+                    //   decoration: InputDecoration(
+                    //     labelText: "Transaction Type",
+                    //     border: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(10.0),
+                    //     ),
+                    //     filled: true,
+                    //     fillColor: Colors.grey[200],
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 30),
                     Center(
                       child: ElevatedButton(
                         onPressed: () {

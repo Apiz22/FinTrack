@@ -54,7 +54,7 @@ class _TransactionItemState extends State<TransactionItem> {
                 height: 30,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
-                  color: widget.data['type'] == 'credit'
+                  color: widget.data['type'] == 'debit'
                       ? Colors.green.withOpacity(0.3)
                       : Colors.red.withOpacity(0.3),
                 ),
@@ -63,7 +63,6 @@ class _TransactionItemState extends State<TransactionItem> {
                     appIcons
                         .getExpenseCategoryIcons('${widget.data['category']}'),
                     color: Colors.black87,
-                    // color: data['type'] == 'credit' ? Colors.green : Colors.red,
                   ),
                 ),
               ),
@@ -80,9 +79,9 @@ class _TransactionItemState extends State<TransactionItem> {
                   ),
                 ),
                 Text(
-                  " ${widget.data['type'] == 'credit' ? '+' : '-'} RM ${widget.data['amount'].toStringAsFixed(2)}",
+                  " ${widget.data['type'] == 'debit' ? '+' : '-'} RM ${widget.data['amount'].toStringAsFixed(2)}",
                   style: TextStyle(
-                    color: widget.data['type'] == 'credit'
+                    color: widget.data['type'] == 'debit'
                         ? Colors.green
                         : Colors.red,
                     fontWeight: FontWeight.bold,

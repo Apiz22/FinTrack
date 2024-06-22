@@ -107,13 +107,13 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Center(
+                  Center(
                     child: Text(
                       "FinTrack",
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: Colors.teal,
+                        color: Colors.teal.shade900,
                       ),
                     ),
                   ),
