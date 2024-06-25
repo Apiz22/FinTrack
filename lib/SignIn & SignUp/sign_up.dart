@@ -123,7 +123,7 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 50),
+                const SizedBox(height: 20),
                 const Center(
                   child: Text(
                     "Create New Account",
@@ -134,31 +134,16 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
-                Text(
-                  "Username",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _userNameController,
                   keyboardType: TextInputType.name,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
+                  maxLength: 12,
                   validator: appValidator.validateUserName,
                   decoration: _buildInputDecoration("Username", Icons.person),
                 ),
                 const SizedBox(height: 20),
-                Text(
-                  "Email",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 8),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -167,14 +152,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   decoration: _buildInputDecoration("Email", Icons.email),
                 ),
                 const SizedBox(height: 20),
-                Text(
-                  "Phone Number",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 8),
                 TextFormField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
@@ -191,14 +168,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   decoration:
                       _buildInputDecoration("Phone Number", Icons.phone),
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  "Password",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[700],
-                  ),
-                ),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _passwordController,
@@ -209,14 +178,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       isPassword: true),
                 ),
                 const SizedBox(height: 20),
-                Text(
-                  "Confirm Password",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 8),
                 TextFormField(
                   controller: _reConfirmpasswordController,
                   autovalidateMode: AutovalidateMode.onUserInteraction,

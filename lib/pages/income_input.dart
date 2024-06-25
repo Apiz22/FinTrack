@@ -148,16 +148,29 @@ class _IncomeInputPageState extends State<IncomeInputPage> {
         String wholeNumber = parts[0];
         String decimalPart = parts.length > 1 ? parts[1] : '';
 
+// Remove leading zeros from the whole number part if necessary
+        wholeNumber =
+            wholeNumber.isEmpty ? '0' : int.parse(wholeNumber).toString();
+
         // Limit the decimal part to two digits
         if (decimalPart.length > 2) {
           decimalPart = decimalPart.substring(0, 2);
         }
 
         // Update the text in the TextEditingController
+        String newText = '$wholeNumber.$decimalPart';
         incomeController.value = incomeController.value.copyWith(
-          text: '$wholeNumber.$decimalPart',
-          selection: TextSelection.collapsed(
-              offset: '$wholeNumber.$decimalPart'.length),
+          text: newText,
+          selection: TextSelection.collapsed(offset: newText.length),
+        );
+      } else {
+        // If there's no decimal point, ensure the text remains valid
+        String newText = text;
+        // Remove leading zeros
+        newText = int.parse(newText).toString();
+        incomeController.value = incomeController.value.copyWith(
+          text: newText,
+          selection: TextSelection.collapsed(offset: newText.length),
         );
       }
     }

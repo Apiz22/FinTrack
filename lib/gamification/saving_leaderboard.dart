@@ -14,11 +14,11 @@ DateTime date = DateTime.now();
 String monthyear = DateFormat("MMM y").format(date);
 
 class _SavingLeaderboardState extends State<SavingLeaderboard> {
-  String selectedCategory = '80/20';
   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
   List<Map<String, dynamic>> _users = [];
   bool _isLoading = true;
+  Map<String, dynamic>? _currentUser;
 
   @override
   void initState() {
@@ -53,18 +53,16 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
           final PtsSavings = pointsData['PtsSavings'] ?? 0;
           final profilePicture = data['profilePicture'] ?? '';
 
-          if (PtsSavings > 0 && PtsSavings < 200) {
-            final user = {
+          if (PtsSavings > 0) {
+            Map<String, dynamic> user = {
               'id': userId,
               'name': data['username'] ?? 'Unknown',
               'profilePicture': profilePicture,
               'PtsSavings': PtsSavings,
             };
-
+            users.add(user);
             if (userId == currentUserId) {
               currentUser = user;
-            } else {
-              users.add(user);
             }
           }
         }
@@ -72,14 +70,10 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
 
       users.sort((a, b) => b['PtsSavings'].compareTo(a['PtsSavings']));
 
-      if (currentUser != null &&
-          !users.any((user) => user['id'] == currentUserId)) {
-        users.add(currentUser);
-      }
-
       setState(() {
         _users = users;
         _isLoading = false;
+        _currentUser = currentUser;
       });
 
       updateUserRankings(users);
@@ -91,14 +85,11 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
     }
   }
 
-  String calculateDaysRemaining() {
-    final firstDayNextMonth = DateTime(date.year, date.month + 1, 1);
-    final difference = firstDayNextMonth.difference(date).inDays;
-    return difference.toString();
-  }
-
   @override
   Widget build(BuildContext context) {
+    int currentUserRank =
+        _users.indexWhere((user) => user['id'] == currentUserId) + 1;
+
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.black),
@@ -119,9 +110,6 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
               "Saving Leaderboard",
               style: TextStyle(fontSize: 25, color: Colors.white),
             ),
-          ),
-          SizedBox(
-            height: 10,
           ),
           Container(
             padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -158,7 +146,7 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
                 Expanded(
                   flex: 3,
                   child: Text(
-                    "Points",
+                    "Savings Points",
                     textAlign: TextAlign.end,
                     style: TextStyle(
                       fontSize: 16,
@@ -174,45 +162,70 @@ class _SavingLeaderboardState extends State<SavingLeaderboard> {
                   padding: const EdgeInsets.all(8.0),
                   child: const Center(child: CircularProgressIndicator()),
                 )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _users.length > 10 ? 10 : _users.length,
-                  itemBuilder: (context, index) {
-                    Color color;
-                    switch (index) {
-                      case 0:
-                        color = Color.fromARGB(255, 255, 224, 22);
-                        break;
-                      case 1:
-                        color = Color.fromARGB(255, 211, 211, 211);
-                        break;
-                      case 2:
-                        color = Color.fromARGB(255, 220, 131, 104);
-                        break;
-                      default:
-                        color = Colors.white;
-                    }
-                    return Container(
-                      color: Colors.teal.shade200,
-                      child: Padding(
-                        padding: const EdgeInsets.all(3.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            color: color,
-                            borderRadius: BorderRadius.circular(10),
+              : Column(
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _users.length > 10 ? 10 : _users.length,
+                      itemBuilder: (context, index) {
+                        Color color;
+                        switch (index) {
+                          case 0:
+                            color = Color.fromARGB(255, 255, 224, 22);
+                            break;
+                          case 1:
+                            color = Color.fromARGB(255, 211, 211, 211);
+                            break;
+                          case 2:
+                            color = Color.fromARGB(255, 220, 131, 104);
+                            break;
+                          default:
+                            color = Colors.white;
+                        }
+                        return Container(
+                          color: Colors.teal.shade200,
+                          child: Padding(
+                            padding: const EdgeInsets.all(3.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: color,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: EdgeInsets.all(5),
+                              child: UserTile(
+                                rank: index + 1,
+                                user: _users[index],
+                                isCurrentUser:
+                                    _users[index]['id'] == currentUserId,
+                              ),
+                            ),
                           ),
-                          padding: EdgeInsets.all(5),
-                          child: UserTile(
-                            rank: index + 1,
-                            user: _users[index],
-                            isCurrentUser: _users[index]['id'] == currentUserId,
+                        );
+                      },
+                    ),
+                    if (currentUserRank > 10 && _currentUser != null)
+                      Container(
+                        color: Colors.teal.shade200,
+                        child: Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
+                            padding: EdgeInsets.all(5),
+                            child: UserTile(
+                              rank: currentUserRank,
+                              user: _currentUser!,
+                              isCurrentUser: true,
+                            ),
                           ),
                         ),
                       ),
-                    );
-                  },
+                  ],
                 ),
         ],
       ),
@@ -254,8 +267,12 @@ class UserTile extends StatelessWidget {
               ),
               const SizedBox(width: 20),
               Text(
-                isCurrentUser ? '=You=' : '${user['name']}',
-                style: const TextStyle(fontSize: 20),
+                isCurrentUser ? 'You' : '${user['name']}',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight:
+                      isCurrentUser ? FontWeight.w800 : FontWeight.normal,
+                ),
               ),
             ],
           ),
@@ -265,7 +282,10 @@ class UserTile extends StatelessWidget {
           child: Text(
             '${user['PtsSavings']} Pts',
             textAlign: TextAlign.end,
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: isCurrentUser ? FontWeight.w900 : FontWeight.normal,
+            ),
           ),
         ),
       ],
@@ -280,7 +300,6 @@ Future<void> updateUserRankings(List<Map<String, dynamic>> users) async {
         FirebaseFirestore.instance.collection('users').doc(users[i]['id']);
     final pointHistoryRef = userRef.collection('point_history').doc(monthyear);
 
-    // batch.update(userRef, {'currentRankingSaving': i + 1});
     batch.update(pointHistoryRef, {'currentRankingSaving': i + 1});
     batch.update(pointHistoryRef, {'totalUserSavings': users.length});
   }

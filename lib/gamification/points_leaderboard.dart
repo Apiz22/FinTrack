@@ -330,7 +330,11 @@ class UserTile extends StatelessWidget {
               const SizedBox(width: 20),
               Text(
                 isCurrentUser ? 'You' : '${user['name']}',
-                style: const TextStyle(fontSize: 20),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight:
+                      isCurrentUser ? FontWeight.w900 : FontWeight.normal,
+                ),
               ),
             ],
           ),
@@ -340,7 +344,10 @@ class UserTile extends StatelessWidget {
           child: Text(
             '${user['currentPoints']} Pts',
             textAlign: TextAlign.end,
-            style: const TextStyle(fontSize: 20),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: isCurrentUser ? FontWeight.w900 : FontWeight.normal,
+            ),
           ),
         ),
       ],

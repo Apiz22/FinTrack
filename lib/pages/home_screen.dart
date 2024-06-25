@@ -83,7 +83,10 @@ class _MainPageState extends State<MainPage> {
                 currentIncome: currentIncomeDate,
               ),
             ),
-            SummaryHistory()
+            SummaryHistory(
+              currentMonth: currentIncomeDate,
+              userId: userId,
+            )
           ],
         ),
       ),

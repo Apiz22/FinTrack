@@ -293,6 +293,7 @@ class _AddExpPageState extends State<AddExpPage> {
 
   @override
   Widget build(BuildContext context) {
+    amountEditController.addListener(_formatIncomeInput);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -471,5 +472,43 @@ class _AddExpPageState extends State<AddExpPage> {
         ),
       ),
     );
+  }
+
+  void _formatIncomeInput() {
+    final text = amountEditController.text;
+    if (text.isNotEmpty) {
+      // Check if the input contains a decimal point
+      if (text.contains('.')) {
+        // Split the input into parts before and after the decimal point
+        List<String> parts = text.split('.');
+        String wholeNumber = parts[0];
+        String decimalPart = parts.length > 1 ? parts[1] : '';
+
+        // Remove leading zeros from the whole number part if necessary
+        wholeNumber =
+            wholeNumber.isEmpty ? '0' : int.parse(wholeNumber).toString();
+
+        // Limit the decimal part to two digits
+        if (decimalPart.length > 2) {
+          decimalPart = decimalPart.substring(0, 2);
+        }
+
+        // Update the text in the TextEditingController
+        String newText = '$wholeNumber.$decimalPart';
+        amountEditController.value = amountEditController.value.copyWith(
+          text: newText,
+          selection: TextSelection.collapsed(offset: newText.length),
+        );
+      } else {
+        // If there's no decimal point, ensure the text remains valid
+        String newText = text;
+        // Remove leading zeros
+        newText = int.parse(newText).toString();
+        amountEditController.value = amountEditController.value.copyWith(
+          text: newText,
+          selection: TextSelection.collapsed(offset: newText.length),
+        );
+      }
+    }
   }
 }
